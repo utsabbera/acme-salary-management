@@ -16,9 +16,7 @@ dev-frontend:
 gen-client:
 	cd frontend && pnpm openapi-ts
 
-
 migrate:
-	cd backend && uv run alembic revision --autogenerate -m "$(MSG)"
 	cd backend && uv run alembic upgrade head
 
 
