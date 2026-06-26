@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import RowMapping, Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,8 +11,8 @@ class EmployeeRepository:
         self._session = session
 
     def _apply_filters(
-        self, stmt: Select, search: str | None, department: str | None, country: str | None
-    ) -> Select:
+        self, stmt: Select[Any], search: str | None, department: str | None, country: str | None
+    ) -> Select[Any]:
         if search:
             stmt = stmt.where(
                 or_(
