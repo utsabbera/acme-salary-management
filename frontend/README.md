@@ -1,4 +1,4 @@
-# Frontend AGENTS.md
+# Frontend README
 
 Next.js 16, React 19, TypeScript 6, Tailwind CSS 4, Biome, Vitest.
 

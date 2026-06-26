@@ -1,4 +1,4 @@
-# Backend AGENTS.md
+# Backend README
 
 FastAPI 0.138, Python 3.13, SQLAlchemy 2, Alembic, uv.
 
