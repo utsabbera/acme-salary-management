@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "breakdown": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/breakdown/SKILL.md",
+      "computedHash": "ac36baed9de9626454c40cf41906b115d5bfb7a356e03e7a653157f69c415129"
+    },
+    "commit": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/commit/SKILL.md",
+      "computedHash": "393a6b66c8ea883143ecdf22c96f088f226d886ab6df77ae1c7a3294f0842c3c"
+    },
+    "debug": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/debug/SKILL.md",
+      "computedHash": "533e3112b3fdd8c8e77654bdbfe9ff083df62372798b0e9ac9a660d27ad7b6b0"
+    },
+    "ideate": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ideate/SKILL.md",
+      "computedHash": "42e106fc8df4854dd2a21c0b48a604c354fca3426d0c98a7b1456eae75887eca"
+    },
+    "prd": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/prd/SKILL.md",
+      "computedHash": "1b8bfb279f04041cfc141a2eef3f396e76a923a969cd4cb1c77594052e5d009d"
+    },
+    "refactor": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/refactor/SKILL.md",
+      "computedHash": "db53288b4759de40397fc0e7e58acd0bddcd3c9ce3be2c815a20586e1c7589e8"
+    },
+    "research": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/research/SKILL.md",
+      "computedHash": "7a093da384cafdd8cd9b990bedd391485d8b27962b8cc8288b8c938fe95f3858"
+    },
+    "review": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/review/SKILL.md",
+      "computedHash": "e7f3871d1a3b8c014adc7c9535b6e81939c9a8463a35842a0763d91f9af1c938"
+    },
+    "tdd": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tdd/SKILL.md",
+      "computedHash": "63d3c6ba05bc8d0e6df7d280103a7282a3dfa1ef51b4bb3ed75ab42500535bf3"
+    },
+    "wrap": {
+      "source": "utsabbera/skills",
+      "sourceType": "github",
+      "skillPath": "skills/wrap/SKILL.md",
+      "computedHash": "7e506f4022039b75e68f0306ef5ea89eb3e50a38746afbd520fb8255a256b597"
+    }
+  }
+}
