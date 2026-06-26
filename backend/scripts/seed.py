@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import logging
 import random
 from datetime import date, timedelta
 from decimal import Decimal
@@ -8,9 +9,12 @@ from faker import Faker
 from sqlalchemy import delete
 from uuid6 import uuid7
 
-from app.core.database import async_session_factory
+from app.core.database import async_session_factory, engine
 from app.models.employee import Employee
 from app.models.salary import Salary
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 fake = Faker()
 
@@ -79,8 +83,14 @@ def generate_salaries(employee: Employee) -> list[Salary]:
     return salaries
 
 
-async def main(num_employees: int) -> None:
-    print(f"Starting seed script for {num_employees} employees...")
+async def main(num_employees: int, verbose: bool = False) -> None:
+    if not verbose:
+        engine.echo = False
+        if hasattr(engine, "sync_engine"):
+            engine.sync_engine.echo = False
+        logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+        logging.getLogger("sqlalchemy.engine.Engine").setLevel(logging.WARNING)
+    logger.info(f"Starting seed script for {num_employees} employees...")
 
     employees_to_insert = []
     salaries_to_insert = []
@@ -99,22 +109,22 @@ async def main(num_employees: int) -> None:
         employees_to_insert.append(employee)
         salaries_to_insert.extend(generate_salaries(employee))
 
-    print(
+    logger.info(
         f"Generated {len(employees_to_insert)} employees and "
         f"{len(salaries_to_insert)} salary records."
     )
 
     async with async_session_factory() as session:
-        print("Clearing existing data...")
+        logger.info("Clearing existing data...")
         await session.execute(delete(Salary))
         await session.execute(delete(Employee))
         await session.flush()
 
-        print("Inserting employees...")
+        logger.info("Inserting employees...")
         session.add_all(employees_to_insert)
         await session.flush()
 
-        print("Inserting salary history...")
+        logger.info("Inserting salary history...")
         # Insert in chunks to avoid memory issues
         chunk_size = 2000
         for i in range(0, len(salaries_to_insert), chunk_size):
@@ -123,11 +133,12 @@ async def main(num_employees: int) -> None:
 
         await session.commit()
 
-    print("Seeding complete!")
+    logger.info("Seeding complete!")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Seed the database with mock data.")
     parser.add_argument("--count", type=int, default=10000, help="Number of employees to generate")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose SQL logging")
     args = parser.parse_args()
-    asyncio.run(main(args.count))
+    asyncio.run(main(args.count, args.verbose))
