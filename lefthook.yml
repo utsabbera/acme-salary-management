@@ -1,0 +1,31 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome-check:
+      glob: "**/*.{ts,tsx,js,jsx}"
+      run: pnpm biome check --write {staged_files}
+      stage_fixed: true
+    ruff-format:
+      glob: "backend/**/*.py"
+      run: uv run --project backend ruff format {staged_files}
+      stage_fixed: true
+    ruff-lint:
+      glob: "backend/**/*.py"
+      run: uv run --project backend ruff check --fix {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    conventional-commits:
+      run: |
+        echo "$(cat {1})" | grep -qE \
+          "^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\(.+\))?: .{1,72}" \
+          || (echo "Commit must follow Conventional Commits" && exit 1)
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck-frontend:
+      run: "cd frontend && pnpm tsc --noEmit"
+    mypy:
+      run: "cd backend && uv run mypy app/"
