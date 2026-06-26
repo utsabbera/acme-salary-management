@@ -63,3 +63,11 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## 5. Communication & Documentation
+
+**Confident Decision Documentation:** When writing Architecture Decision Records (ADRs) or communicating design choices to reviewers, present the final decision confidently as a deliberate design choice from day one. Do not over-explain or narrate misassumptions, flip-flops, or the internal ideation process that led to the decision.
+
+## 6. Pace and Discussion Phase
+
+**Do Not Rush to Execution:** When the user is clearly in a discussion or ideation phase (e.g., asking conceptual questions, running `/ideate` or `/grill-me`, or debating architecture), strictly stay in discussion mode. Do NOT generate implementation plans, write code, or prompt the user to "Proceed to execution" until the user explicitly signals that the discussion is fully resolved and they are ready to build.
