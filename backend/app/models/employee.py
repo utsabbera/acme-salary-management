@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 if TYPE_CHECKING:
     from app.models.salary import Salary
 
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import Boolean, DateTime, String, column, func, table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -30,3 +30,20 @@ class Employee(Base):
     salaries: Mapped[list["Salary"]] = relationship(
         "Salary", back_populates="employee", cascade="all, delete-orphan"
     )
+
+
+active_employees = table(
+    "active_employees",
+    column("id"),
+    column("first_name"),
+    column("last_name"),
+    column("email"),
+    column("department"),
+    column("country"),
+    column("salary"),
+    column("currency"),
+    column("salary_usd"),
+    column("valid_from"),
+    column("created_at"),
+    column("updated_at"),
+)

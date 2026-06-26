@@ -1,35 +1,30 @@
-from sqlalchemy import RowMapping, text
+from sqlalchemy import RowMapping, Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.employee import active_employees
 
 
 class EmployeeRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _where_clause(
-        self,
-        search: str | None,
-        department: str | None,
-        country: str | None,
-    ) -> tuple[str, dict[str, str]]:
-        """Build a WHERE clause string and matching params dict."""
-        conditions: list[str] = []
-        params: dict[str, str] = {}
-
+    def _apply_filters(
+        self, stmt: Select, search: str | None, department: str | None, country: str | None
+    ) -> Select:
         if search:
-            conditions.append("(first_name || ' ' || last_name LIKE :search OR email LIKE :search)")
-            params["search"] = f"%{search}%"
-
+            stmt = stmt.where(
+                or_(
+                    (active_employees.c.first_name + " " + active_employees.c.last_name).ilike(
+                        f"%{search}%"
+                    ),
+                    active_employees.c.email.ilike(f"%{search}%"),
+                )
+            )
         if department:
-            conditions.append("department = :department")
-            params["department"] = department
-
+            stmt = stmt.where(active_employees.c.department == department)
         if country:
-            conditions.append("country = :country")
-            params["country"] = country
-
-        where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
-        return where, params
+            stmt = stmt.where(active_employees.c.country == country)
+        return stmt
 
     async def list_paginated(
         self,
@@ -39,20 +34,12 @@ class EmployeeRepository:
         department: str | None = None,
         country: str | None = None,
     ) -> list[RowMapping]:
-        where, params = self._where_clause(search, department, country)
-        params["limit"] = str(limit)
-        params["offset"] = str(offset)
+        stmt = select(active_employees)
+        stmt = self._apply_filters(stmt, search, department, country)
+        stmt = stmt.order_by(active_employees.c.last_name, active_employees.c.first_name)
+        stmt = stmt.offset(offset).limit(limit)
 
-        sql = text(
-            f"""
-            SELECT *
-            FROM active_employees
-            {where}
-            ORDER BY last_name, first_name
-            LIMIT :limit OFFSET :offset
-            """
-        )
-        result = await self._session.execute(sql, params)
+        result = await self._session.execute(stmt)
         return list(result.mappings())
 
     async def count(
@@ -61,7 +48,7 @@ class EmployeeRepository:
         department: str | None = None,
         country: str | None = None,
     ) -> int:
-        where, params = self._where_clause(search, department, country)
-        sql = text(f"SELECT COUNT(*) FROM active_employees {where}")
-        result = await self._session.execute(sql, params)
+        stmt = select(func.count()).select_from(active_employees)
+        stmt = self._apply_filters(stmt, search, department, country)
+        result = await self._session.execute(stmt)
         return int(result.scalar_one())
