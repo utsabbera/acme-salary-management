@@ -11,16 +11,16 @@ router = APIRouter(prefix="/employees", tags=["employees"])
 @router.get("", response_model=PaginatedResponse[EmployeeRead])
 async def list_employees(
     db: DbDep,
-    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
-    size: int = Query(20, ge=1, le=100, description="Items per page (max 100)"),
+    offset: int = Query(0, ge=0, description="Number of items to skip"),
+    limit: int = Query(20, ge=1, le=100, description="Max items to return (max 100)"),
     search: str | None = Query(None, description="Search by name or email"),
     department: str | None = Query(None, description="Filter by department"),
     country: str | None = Query(None, description="Filter by country"),
 ) -> PaginatedResponse[EmployeeRead]:
     service = EmployeeService(EmployeeRepository(db))
     return await service.list_employees(
-        page=page,
-        size=size,
+        offset=offset,
+        limit=limit,
         search=search,
         department=department,
         country=country,

@@ -31,18 +31,17 @@ class TestEmployeeService:
         service = EmployeeService(repo=mock_repo)
 
         result = await service.list_employees(
-            page=2, size=10, search="test", department="IT", country="US"
+            offset=10, limit=10, search="test", department="IT", country="US"
         )
 
         mock_repo.list_paginated.assert_awaited_once_with(
-            page=2, size=10, search="test", department="IT", country="US"
+            offset=10, limit=10, search="test", department="IT", country="US"
         )
         mock_repo.count.assert_awaited_once_with(search="test", department="IT", country="US")
 
         assert result.total == 42
-        assert result.page == 2
-        assert result.size == 10
-        assert result.total_pages == 5  # ceil(42/10)
+        assert result.offset == 10
+        assert result.limit == 10
 
         assert len(result.items) == 1
         item = result.items[0]

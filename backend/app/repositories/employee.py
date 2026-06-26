@@ -33,15 +33,15 @@ class EmployeeRepository:
 
     async def list_paginated(
         self,
-        page: int,
-        size: int,
+        offset: int,
+        limit: int,
         search: str | None = None,
         department: str | None = None,
         country: str | None = None,
     ) -> list[RowMapping]:
         where, params = self._where_clause(search, department, country)
-        params["limit"] = str(size)
-        params["offset"] = str((page - 1) * size)
+        params["limit"] = str(limit)
+        params["offset"] = str(offset)
 
         sql = text(
             f"""

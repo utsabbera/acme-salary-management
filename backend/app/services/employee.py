@@ -8,16 +8,16 @@ class EmployeeService:
 
     async def list_employees(
         self,
-        page: int,
-        size: int,
+        offset: int,
+        limit: int,
         search: str | None = None,
         department: str | None = None,
         country: str | None = None,
     ) -> PaginatedResponse[EmployeeRead]:
         rows, total = (
             await self._repo.list_paginated(
-                page=page,
-                size=size,
+                offset=offset,
+                limit=limit,
                 search=search,
                 department=department,
                 country=country,
@@ -29,4 +29,4 @@ class EmployeeService:
             ),
         )
         items = [EmployeeRead.model_validate(dict(row)) for row in rows]
-        return PaginatedResponse.build(items=items, total=total, page=page, size=size)
+        return PaginatedResponse.build(items=items, total=total, offset=offset, limit=limit)

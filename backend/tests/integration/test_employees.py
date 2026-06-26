@@ -98,21 +98,19 @@ class TestEmployeePagination:
         r = await seeded_client.get("/employees")
         assert r.status_code == 200
         body = r.json()
-        assert body["page"] == 1
-        assert body["size"] == 20
+        assert body["offset"] == 0
+        assert body["limit"] == 20
         assert body["total"] == 5
-        assert body["total_pages"] == 1
         assert len(body["items"]) == 5
 
     async def test_pagination_page_size(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?page=1&size=2")
+        r = await seeded_client.get("/employees?offset=0&limit=2")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 5
-        assert body["total_pages"] == 3
         assert len(body["items"]) == 2
 
-        r2 = await seeded_client.get("/employees?page=2&size=2")
+        r2 = await seeded_client.get("/employees?offset=2&limit=2")
         assert r2.status_code == 200
         body2 = r2.json()
         assert len(body2["items"]) == 2
@@ -121,13 +119,13 @@ class TestEmployeePagination:
         assert page1_ids.isdisjoint(page2_ids)
 
     async def test_pagination_last_page(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?page=3&size=2")
+        r = await seeded_client.get("/employees?offset=4&limit=2")
         assert r.status_code == 200
         body = r.json()
         assert len(body["items"]) == 1  # 5 employees, last page has 1
 
     async def test_pagination_out_of_bounds(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?page=999&size=20")
+        r = await seeded_client.get("/employees?offset=9990&limit=20")
         assert r.status_code == 200
         body = r.json()
         assert body["items"] == []
@@ -247,31 +245,31 @@ class TestEmployeeFilters:
 
 
 class TestEmployeeValidation:
-    async def test_invalid_page_zero(self, client: AsyncClient) -> None:
-        r = await client.get("/employees?page=0")
+    async def test_invalid_offset_negative(self, client: AsyncClient) -> None:
+        r = await client.get("/employees?offset=-1")
         assert r.status_code == 422
 
-    async def test_invalid_page_negative(self, client: AsyncClient) -> None:
-        r = await client.get("/employees?page=-1")
+    async def test_invalid_offset_highly_negative(self, client: AsyncClient) -> None:
+        r = await client.get("/employees?offset=-2")
         assert r.status_code == 422
 
     async def test_invalid_size_zero(self, client: AsyncClient) -> None:
-        r = await client.get("/employees?size=0")
+        r = await client.get("/employees?limit=0")
         assert r.status_code == 422
 
     async def test_invalid_size_exceeds_max(self, client: AsyncClient) -> None:
-        r = await client.get("/employees?size=101")
+        r = await client.get("/employees?limit=101")
         assert r.status_code == 422
 
     async def test_valid_size_boundary_max(self, seeded_client: AsyncClient) -> None:
         """size=100 is the maximum allowed and must succeed."""
-        r = await seeded_client.get("/employees?size=100")
+        r = await seeded_client.get("/employees?limit=100")
         assert r.status_code == 200
-        assert r.json()["size"] == 100
+        assert r.json()["limit"] == 100
 
     async def test_valid_size_one(self, seeded_client: AsyncClient) -> None:
         """size=1 returns exactly one item."""
-        r = await seeded_client.get("/employees?size=1")
+        r = await seeded_client.get("/employees?limit=1")
         assert r.status_code == 200
         assert len(r.json()["items"]) == 1
 
@@ -288,8 +286,8 @@ class TestEmployeeOrdering:
     async def test_ordering_stable_across_pages(self, seeded_client: AsyncClient) -> None:
         """Concatenating pages must reproduce the same order as a single full fetch."""
         full = (await seeded_client.get("/employees")).json()["items"]
-        page1 = (await seeded_client.get("/employees?page=1&size=3")).json()["items"]
-        page2 = (await seeded_client.get("/employees?page=2&size=3")).json()["items"]
+        page1 = (await seeded_client.get("/employees?offset=0&limit=3")).json()["items"]
+        page2 = (await seeded_client.get("/employees?offset=3&limit=3")).json()["items"]
         assert [i["id"] for i in full] == [i["id"] for i in page1 + page2]
 
 
@@ -407,9 +405,8 @@ class TestEmployeeBusinessRules:
         body = r.json()
         assert body["items"] == []
         assert body["total"] == 0
-        assert body["total_pages"] == 0
-        assert body["page"] == 1
-        assert body["size"] == 20
+        assert body["offset"] == 0
+        assert body["limit"] == 20
 
     async def test_salary_field_values(self, seeded_client: AsyncClient) -> None:
         """salary, salary_usd, and currency must match the seeded values."""
@@ -433,7 +430,7 @@ class TestEmployeeBusinessRules:
         assert item["valid_from"] == "2023-01-01"
 
     async def test_response_schema(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?size=1")
+        r = await seeded_client.get("/employees?limit=1")
         assert r.status_code == 200
         item = r.json()["items"][0]
         required_fields = {

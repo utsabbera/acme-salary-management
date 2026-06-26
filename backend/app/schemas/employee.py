@@ -1,6 +1,5 @@
 from datetime import date, datetime
 from decimal import Decimal
-from math import ceil
 from typing import TypeVar
 from uuid import UUID
 
@@ -29,16 +28,14 @@ class EmployeeRead(BaseModel):
 class PaginatedResponse[T](BaseModel):
     items: list[T]
     total: int
-    page: int
-    size: int
-    total_pages: int
+    offset: int
+    limit: int
 
     @classmethod
-    def build(cls, items: list[T], total: int, page: int, size: int) -> "PaginatedResponse[T]":
+    def build(cls, items: list[T], total: int, offset: int, limit: int) -> "PaginatedResponse[T]":
         return cls(
             items=items,
             total=total,
-            page=page,
-            size=size,
-            total_pages=ceil(total / size) if size > 0 else 0,
+            offset=offset,
+            limit=limit,
         )
