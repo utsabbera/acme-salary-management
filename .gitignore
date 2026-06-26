@@ -26,10 +26,6 @@ htmlcov/
 *.db-shm
 *.db-wal
 
-# Alembic
-backend/alembic/versions/*.py
-!backend/alembic/versions/.gitkeep
-
 # Misc
 .DS_Store
 _worktrees/
