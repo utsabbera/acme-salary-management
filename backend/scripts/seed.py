@@ -1,20 +1,21 @@
 import argparse
 import asyncio
-import logging
 import random
 from datetime import date, timedelta
 from decimal import Decimal
 
+import structlog
 from faker import Faker
 from sqlalchemy import delete
 from uuid6 import uuid7
 
 from app.core.database import async_session_factory, engine
+from app.core.logger import setup_logging
 from app.models.employee import Employee
 from app.models.salary import Salary
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-logger = logging.getLogger(__name__)
+setup_logging()
+logger = structlog.get_logger(__name__)
 
 fake = Faker()
 
@@ -88,8 +89,6 @@ async def main(num_employees: int, verbose: bool = False) -> None:
         engine.echo = False
         if hasattr(engine, "sync_engine"):
             engine.sync_engine.echo = False
-        logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
-        logging.getLogger("sqlalchemy.engine.Engine").setLevel(logging.WARNING)
     logger.info(f"Starting seed script for {num_employees} employees...")
 
     employees_to_insert = []

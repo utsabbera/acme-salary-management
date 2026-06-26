@@ -16,6 +16,7 @@ dependencies = [
     "pydantic-settings>=2.14",
     "aiosqlite>=0.22.1",
     "uuid6>=2025.0.1",
+    "structlog>=26.1.0",
 ]
 
 [dependency-groups]
