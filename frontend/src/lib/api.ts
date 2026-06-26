@@ -1,7 +1,7 @@
-import { createClient, createConfig } from "@hey-api/client-fetch";
+import { client } from "./generated/client.gen";
 
-export const apiClient = createClient(
-  createConfig({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
-  }),
-);
+client.setConfig({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+});
+
+export const apiClient = client;

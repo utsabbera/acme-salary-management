@@ -5,6 +5,70 @@ export type ClientOptions = {
 };
 
 /**
+ * EmployeeRead
+ */
+export type EmployeeRead = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * First Name
+     */
+    first_name: string;
+    /**
+     * Last Name
+     */
+    last_name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Country
+     */
+    country: string;
+    /**
+     * Salary
+     */
+    salary: string;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Salary Usd
+     */
+    salary_usd: string;
+    /**
+     * Valid From
+     */
+    valid_from: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * HTTPValidationError
+ */
+export type HttpValidationError = {
+    /**
+     * Detail
+     */
+    detail?: Array<ValidationError>;
+};
+
+/**
  * HealthResponse
  */
 export type HealthResponse = {
@@ -12,6 +76,56 @@ export type HealthResponse = {
      * Status
      */
     status: string;
+};
+
+/**
+ * PaginatedResponse[EmployeeRead]
+ */
+export type PaginatedResponseEmployeeRead = {
+    /**
+     * Items
+     */
+    items: Array<EmployeeRead>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Offset
+     */
+    offset: number;
+    /**
+     * Limit
+     */
+    limit: number;
+};
+
+/**
+ * ValidationError
+ */
+export type ValidationError = {
+    /**
+     * Location
+     */
+    loc: Array<string | number>;
+    /**
+     * Message
+     */
+    msg: string;
+    /**
+     * Error Type
+     */
+    type: string;
+    /**
+     * Input
+     */
+    input?: unknown;
+    /**
+     * Context
+     */
+    ctx?: {
+        [key: string]: unknown;
+    };
 };
 
 export type HealthCheckHealthGetData = {
@@ -29,3 +143,59 @@ export type HealthCheckHealthGetResponses = {
 };
 
 export type HealthCheckHealthGetResponse = HealthCheckHealthGetResponses[keyof HealthCheckHealthGetResponses];
+
+export type ListEmployeesEmployeesGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Offset
+         *
+         * Number of items to skip
+         */
+        offset?: number;
+        /**
+         * Limit
+         *
+         * Max items to return (max 100)
+         */
+        limit?: number;
+        /**
+         * Search
+         *
+         * Search by name or email
+         */
+        search?: string | null;
+        /**
+         * Department
+         *
+         * Filter by department
+         */
+        department?: string | null;
+        /**
+         * Country
+         *
+         * Filter by country
+         */
+        country?: string | null;
+    };
+    url: '/employees';
+};
+
+export type ListEmployeesEmployeesGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListEmployeesEmployeesGetError = ListEmployeesEmployeesGetErrors[keyof ListEmployeesEmployeesGetErrors];
+
+export type ListEmployeesEmployeesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PaginatedResponseEmployeeRead;
+};
+
+export type ListEmployeesEmployeesGetResponse = ListEmployeesEmployeesGetResponses[keyof ListEmployeesEmployeesGetResponses];

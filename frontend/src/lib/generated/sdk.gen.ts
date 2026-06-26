@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { HealthCheckHealthGetData, HealthCheckHealthGetResponses } from './types.gen';
+import type { HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,3 +22,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Health Check
  */
 export const healthCheckHealthGet = <ThrowOnError extends boolean = false>(options?: Options<HealthCheckHealthGetData, ThrowOnError>): RequestResult<HealthCheckHealthGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthCheckHealthGetResponses, unknown, ThrowOnError>({ url: '/health', ...options });
+
+/**
+ * List Employees
+ */
+export const listEmployeesEmployeesGet = <ThrowOnError extends boolean = false>(options?: Options<ListEmployeesEmployeesGetData, ThrowOnError>): RequestResult<ListEmployeesEmployeesGetResponses, ListEmployeesEmployeesGetErrors, ThrowOnError> => (options?.client ?? client).get<ListEmployeesEmployeesGetResponses, ListEmployeesEmployeesGetErrors, ThrowOnError>({ url: '/employees', ...options });
