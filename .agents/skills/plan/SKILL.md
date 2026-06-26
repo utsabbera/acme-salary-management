@@ -24,6 +24,8 @@ Use the following format for the artifact:
 
 Provide a brief description of the problem, any background context, and what the change accomplishes.
 
+Break down the implementation into numbered, logical phases (e.g., Phase 1: Database Models, Phase 2: API Endpoints, Phase 3: Frontend Integration). This ensures incremental delivery and easier testing.
+
 ## User Review Required
 
 Document anything that requires user review or feedback, for example, breaking changes or significant design decisions. Use GitHub alerts (IMPORTANT/WARNING/CAUTION) to highlight critical items.
