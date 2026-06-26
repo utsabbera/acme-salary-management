@@ -1,7 +1,9 @@
 from collections.abc import AsyncGenerator
 
 import pytest
+from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -10,10 +12,17 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.pool import StaticPool
 
-from app.core.database import Base, get_db
+from alembic import command
+from app.core.database import get_db
 from main import create_app
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+
+
+def run_alembic_upgrade(connection: Connection) -> None:
+    alembic_cfg = Config("alembic.ini")
+    alembic_cfg.attributes["connection"] = connection
+    command.upgrade(alembic_cfg, "head")
 
 
 @pytest.fixture(scope="session")
@@ -24,11 +33,8 @@ async def test_engine() -> AsyncGenerator[AsyncEngine]:
         poolclass=StaticPool,
     )
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(run_alembic_upgrade)
     yield engine
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-    await engine.dispose()
 
 
 @pytest.fixture
