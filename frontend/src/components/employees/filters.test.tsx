@@ -108,4 +108,20 @@ describe("Filters", () => {
       expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&country=US");
     });
   });
+
+  it("renders default placeholder text when ALL is selected", () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams(""));
+    render(<Filters />);
+
+    expect(screen.getAllByText("All Departments")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("All Countries")[0]).toBeInTheDocument();
+  });
+
+  it("renders selected value text", () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department=Engineering&country=US"));
+    render(<Filters />);
+
+    expect(screen.getAllByText("Engineering")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("US")[0]).toBeInTheDocument();
+  });
 });

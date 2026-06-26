@@ -54,7 +54,9 @@ export function Filters() {
     <div className="flex gap-4">
       <Select value={department} onValueChange={handleDepartmentChange}>
         <SelectTrigger className="w-[180px]" aria-label="Department">
-          <SelectValue placeholder="Department" />
+          <SelectValue placeholder="Department">
+            {department === "ALL" ? "All Departments" : department}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="ALL">All Departments</SelectItem>
@@ -67,7 +69,9 @@ export function Filters() {
       </Select>
       <Select value={country} onValueChange={handleCountryChange}>
         <SelectTrigger className="w-[180px]" aria-label="Country">
-          <SelectValue placeholder="Country" />
+          <SelectValue placeholder="Country">
+            {country === "ALL" ? "All Countries" : country}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="ALL">All Countries</SelectItem>
