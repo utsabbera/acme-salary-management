@@ -25,6 +25,7 @@ dev = [
     "ruff>=0.15",
     "mypy>=2.1",
     "sqlalchemy[mypy]>=2.0",
+    "faker>=25.0.0",
 ]
 
 [tool.ruff]
