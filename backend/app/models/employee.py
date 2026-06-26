@@ -1,8 +1,5 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
-from uuid import UUID
-
-from uuid6 import uuid7
 
 if TYPE_CHECKING:
     from app.models.salary import Salary
@@ -16,7 +13,7 @@ from app.core.database import Base
 class Employee(Base):
     __tablename__ = "employees"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid7)
+    id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)

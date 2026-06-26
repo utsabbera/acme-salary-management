@@ -42,7 +42,7 @@ class TestDatabaseBehaviors:
         await db_session.flush()
 
         result = await db_session.execute(
-            text("SELECT * FROM active_employees WHERE id = :id"), {"id": employee.id.hex}
+            text("SELECT * FROM active_employees WHERE id = :id"), {"id": employee.id}
         )
         active_record = result.mappings().one()
 
@@ -73,7 +73,7 @@ class TestDatabaseBehaviors:
         await db_session.flush()
 
         result = await db_session.execute(
-            text("SELECT * FROM active_employees WHERE id = :id"), {"id": employee.id.hex}
+            text("SELECT * FROM active_employees WHERE id = :id"), {"id": employee.id}
         )
         rows = result.mappings().all()
         assert len(rows) == 0
@@ -104,7 +104,7 @@ class TestDatabaseBehaviors:
         await db_session.flush()
 
         result = await db_session.execute(
-            text("SELECT * FROM salaries WHERE employee_id = :id"), {"id": employee.id.hex}
+            text("SELECT * FROM salaries WHERE employee_id = :id"), {"id": employee.id}
         )
         salaries = result.mappings().all()
         assert len(salaries) == 0

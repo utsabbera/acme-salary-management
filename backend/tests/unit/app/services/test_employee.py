@@ -12,7 +12,7 @@ class TestEmployeeService:
         mock_repo = AsyncMock()
 
         mock_row = {
-            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "id": 1,
             "first_name": "Test",
             "last_name": "User",
             "email": "test@example.com",

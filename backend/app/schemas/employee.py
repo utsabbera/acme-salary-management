@@ -1,7 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
 from typing import TypeVar
-from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -9,7 +8,7 @@ T = TypeVar("T")
 
 
 class EmployeeRead(BaseModel):
-    id: UUID
+    id: int
     first_name: str
     last_name: str
     email: str

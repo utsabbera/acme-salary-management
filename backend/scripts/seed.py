@@ -7,7 +7,6 @@ from decimal import Decimal
 import structlog
 from faker import Faker
 from sqlalchemy import delete
-from uuid6 import uuid7
 
 from app.core.database import async_session_factory, engine
 from app.core.logger import setup_logging
@@ -64,7 +63,6 @@ def generate_salaries(employee: Employee) -> list[Salary]:
 
         salaries.append(
             Salary(
-                employee_id=employee.id,
                 salary=round(current_salary_local, 2),
                 currency=currency,
                 salary_usd=round(salary_usd, 2),
@@ -92,25 +90,23 @@ async def main(num_employees: int, verbose: bool = False) -> None:
     logger.info(f"Starting seed script for {num_employees} employees...")
 
     employees_to_insert = []
-    salaries_to_insert = []
+    total_salaries = 0
 
     for _ in range(num_employees):
         currency = random.choice(COUNTRIES)
-        employee_id = uuid7()
         employee = Employee(
-            id=employee_id,
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             email=fake.unique.email(),
             department=random.choice(DEPARTMENTS),
             country=currency,
         )
+        employee.salaries = generate_salaries(employee)
+        total_salaries += len(employee.salaries)
         employees_to_insert.append(employee)
-        salaries_to_insert.extend(generate_salaries(employee))
 
     logger.info(
-        f"Generated {len(employees_to_insert)} employees and "
-        f"{len(salaries_to_insert)} salary records."
+        f"Generated {len(employees_to_insert)} employees and {total_salaries} salary records."
     )
 
     async with async_session_factory() as session:
@@ -119,15 +115,11 @@ async def main(num_employees: int, verbose: bool = False) -> None:
         await session.execute(delete(Employee))
         await session.flush()
 
-        logger.info("Inserting employees...")
-        session.add_all(employees_to_insert)
-        await session.flush()
-
-        logger.info("Inserting salary history...")
+        logger.info("Inserting employees and their salaries...")
         # Insert in chunks to avoid memory issues
         chunk_size = 2000
-        for i in range(0, len(salaries_to_insert), chunk_size):
-            session.add_all(salaries_to_insert[i : i + chunk_size])
+        for i in range(0, len(employees_to_insert), chunk_size):
+            session.add_all(employees_to_insert[i : i + chunk_size])
             await session.flush()
 
         await session.commit()
