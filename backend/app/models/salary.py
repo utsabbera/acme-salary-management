@@ -1,7 +1,9 @@
 from datetime import date
 from decimal import Decimal
 from typing import TYPE_CHECKING
-from uuid import UUID, uuid4
+from uuid import UUID
+
+from uuid6 import uuid7
 
 if TYPE_CHECKING:
     from app.models.employee import Employee
@@ -17,7 +19,7 @@ class Salary(Base):
 
     __table_args__ = (Index("ix_salaries_employee_id_valid_to", "employee_id", "valid_to"),)
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid7)
     employee_id: Mapped[UUID] = mapped_column(ForeignKey("employees.id"))
 
     salary: Mapped[Decimal] = mapped_column(Numeric(12, 2))

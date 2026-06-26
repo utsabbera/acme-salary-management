@@ -3,10 +3,10 @@ import asyncio
 import random
 from datetime import date, timedelta
 from decimal import Decimal
-from uuid import uuid4
 
 from faker import Faker
 from sqlalchemy import delete
+from uuid6 import uuid7
 
 from app.core.database import async_session_factory
 from app.models.employee import Employee
@@ -87,7 +87,7 @@ async def main(num_employees: int) -> None:
 
     for _ in range(num_employees):
         currency = random.choice(COUNTRIES)
-        employee_id = uuid4()
+        employee_id = uuid7()
         employee = Employee(
             id=employee_id,
             first_name=fake.first_name(),
