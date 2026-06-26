@@ -1,12 +1,14 @@
 ---
 name: prd
-description: Turn the current conversation into a PRD and write it to docs/prd/. Use when the user wants to formalize a feature into a spec. No re-interview — synthesizes what's already been discussed.
+description: Turn the current conversation into a PRD and file it as a GitHub Epic issue. Use when the user wants to formalize a feature into a spec. No re-interview — synthesizes what's already been discussed.
 ---
 
 Take the current conversation and produce a PRD. Do NOT interview the user — synthesize what you already know.
 
 1. Explore the repo briefly to understand the current state relevant to this feature.
-2. Write the PRD using the template below to `docs/prd/<feature-slug>.md`.
+2. Update the central `docs/requirements.md` file by appending ONLY the high-level User Stories for this new feature. Keep it high-level (the "North Star").
+3. Create a GitHub Epic issue using the `gh` CLI containing the detailed PRD using the template below:
+   `gh issue create --title "[Epic] <Feature Name>" --label "epic" --body "..."`
 
 <prd-template>
 

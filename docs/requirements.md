@@ -15,6 +15,8 @@ A single-tenant, web-based Salary Management application tailored for the HR Man
 4. As an HR Manager, I want to manage employee records (add new employees, update salaries, change departments, and remove employees) so that the system remains the single source of truth for current active salaries.
 5. As an HR Manager, I want to view an individual employee's salary history over time so that I can audit past raises and compensation growth.
 6. As an HR Manager, I want the current view of my data table (pagination, filters, search terms) to be reflected in the URL so that I can easily bookmark and share specific views.
+7. As an HR Manager, I want to define and assign multiple compensation components (e.g., Base Salary, Housing Allowance) to an employee's salary package so that the system accurately reflects real-world compensation structures.
+8. As a Finance Manager, I want to query total spend by specific compensation components (e.g., total housing allowances) so that I can track expenses at a granular level.
 
 **Stretch Goal User Story:**
 6. As an HR Manager, I want to use a natural language command bar on the dashboard to ask complex questions (e.g., "Who are the top 5 earners in Engineering?") so that I can get immediate, ad-hoc insights without needing engineering support to build new reports.
@@ -26,6 +28,7 @@ A single-tenant, web-based Salary Management application tailored for the HR Man
   - Frontend: Next.js 16 (App Router) with React 19, utilizing Server Components for optimal rendering and data fetching.
 - **Database Schema & Data Management:** 
   - SQLite (`aiosqlite`) with a normalized schema. We will use a dedicated `salary_history` table (One-to-Many with `employees`) to enable full **historical salary tracking** (tracking raises and compensation changes over time).
+  - **Salary Breakdown**: We will implement a dynamic relational approach using a `salary_components` table linked to `salary_history`. This allows tracking multiple compensation types (base, bonus, allowances) while maintaining data integrity and robust reporting.
   - **Soft Deletes**: The `employees` table will include an `is_active` boolean to support soft deletes.
   - **Currency Normalization**: A `salary_usd` column will be pre-calculated and stored on each `salary_history` record. For ongoing mutations, a backend service will dynamically calculate `salary_usd` before inserting the new historical salary row.
 - **Frontend State Management:** 
