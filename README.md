@@ -57,6 +57,11 @@ To switch to PostgreSQL:
 DATABASE_URL=postgresql+asyncpg://dev:dev@localhost:5432/app_dev
 cd backend && uv add asyncpg && make db-up
 ```
+## Engineering Practices
+
+- **Monorepo & Trunk-Based Development:** We use a single repository for both frontend and backend to ensure atomic commits and unified tooling. We optimize for continuous deployment by pushing small, frequent commits directly to `main`. See the [Engineering Practices ADR](docs/decisions/engineering-practices.md) for full details on this approach.
+- **Deployment & Hosting:** The application is continuously deployed via GitHub Actions. Frontend is hosted on Vercel, backend on Render, and the database on Neon (Serverless PostgreSQL). See the [Deployment & Hosting ADR](docs/decisions/deployment-and-hosting.md).
+
 # Commit Messages
 
 Conventional Commits — subject line enforced by the commit-msg hook.
