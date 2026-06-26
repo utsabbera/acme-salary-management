@@ -78,3 +78,9 @@ BREAKING CHANGE: <description>
 Types: `feat` `fix` `docs` `style` `refactor` `test` `chore` `ci` `build` `perf` `revert`
 Scope: module/area (`auth`, `db`, `api`) — not the ticket number
 Description: imperative mood, max 72 chars, no trailing period
+
+# Project Origins
+
+This project was bootstrapped and configured using the following tools and templates:
+- **Starter Repo**: [utsabbera/fastapi-nextjs-starter](https://github.com/utsabbera/fastapi-nextjs-starter)
+- **Agent Skills**: [utsabbera/skills](https://github.com/utsabbera/skills)
