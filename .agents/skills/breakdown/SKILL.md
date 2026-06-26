@@ -38,9 +38,6 @@ gh issue create --title "[Area] Short imperative title" --label "feature" --body
 Infer label from: `feature`, `chore`, `bug`, `docs`.
 
 <issue-template>
-## PRD
-
-Link to the source PRD if one exists: `docs/prd/<slug>.md § <relevant section>`
 
 ## What to build
 
