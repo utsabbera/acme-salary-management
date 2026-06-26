@@ -11,9 +11,9 @@ Scan the current conversation for durable learnings, then improve the persistent
 
 Categorize findings into four buckets:
 
-- **Preferences** — user corrections to Claude's behavior or approach → update `CLAUDE.md`
+- **Preferences** — user corrections to Claude's behavior or approach → update `.agents/rules/`
 - **Skill improvements** — patterns or gaps discovered → update the relevant skill file
-- **Project context** — decisions, constraints, or goals not captured elsewhere → write or update a memory file
+- **Project context** — decisions, constraints, or goals not captured elsewhere → write or update an ADR in `docs/decisions/` or PRD in `docs/requirements.md`
 - **GitHub state** — issues resolved in this session → close or comment; follow-ups discovered → create new issues
 
 ### 2. Propose changes
@@ -21,10 +21,10 @@ Categorize findings into four buckets:
 Show a summary of what will be changed before touching anything:
 
 ```
-CLAUDE.md: add "prefer X over Y"
+Rules: add "prefer X over Y" to guidelines.md
 skills/tdd/SKILL.md: add note about Jest mock pattern used today
 GitHub: close #14, comment on #22 with outcome
-Memory: update project context with decision on auth approach
+Context: update docs/requirements.md or add ADR for auth approach
 ```
 
 ### 3. Apply with confirmation
