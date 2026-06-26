@@ -10,8 +10,8 @@ Built with **FastAPI** (Python 3.13) + **Next.js 16** (React 19, TypeScript 6, T
 
 ```bash
 make install          # install all deps (pnpm + uv)
-make db-migrate MSG="initial schema"  # run migrations
-make db-seed          # seed 10,000 employees
+make migrate MSG="initial schema"  # run migrations
+make seed             # seed 10,000 employees
 make dev              # backend :8000 + frontend :3000
 ```
 
@@ -24,9 +24,9 @@ make test                             # run all tests
 make lint                             # biome (frontend) + ruff (backend)
 make typecheck                        # tsc (frontend) + mypy (backend)
 make gen-client                       # regenerate TS client from OpenAPI spec
-make db-migrate MSG="description"     # create + apply Alembic migration
-make db-seed                          # seed database with 10,000 employees
-make db-up                            # start optional PostgreSQL via Docker
+make migrate MSG="description"     # create + apply Alembic migration
+make seed                             # seed database with 10,000 employees
+
 ```
 
 ## Stack
@@ -49,14 +49,7 @@ Makefile      Sole orchestrator
 
 ## Database
 
-Default: `sqlite+aiosqlite:///./dev.db` — no Docker required.
-
-To switch to PostgreSQL:
-```bash
-# backend/.env
-DATABASE_URL=postgresql+asyncpg://dev:dev@localhost:5432/app_dev
-cd backend && uv add asyncpg && make db-up
-```
+Default: `sqlite+aiosqlite:///./dev.db`
 ## Engineering Practices
 
 - **Monorepo & Trunk-Based Development:** We use a single repository for both frontend and backend to ensure atomic commits and unified tooling. We optimize for continuous deployment by pushing small, frequent commits directly to `main`. See the [Engineering Practices ADR](docs/decisions/engineering-practices.md) for full details on this approach.

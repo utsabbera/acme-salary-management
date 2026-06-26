@@ -1,4 +1,4 @@
-.PHONY: install dev dev-backend dev-frontend gen-client db-up db-down db-migrate db-reset lint typecheck test clean
+.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed
 
 install:
 	pnpm install
@@ -16,19 +16,11 @@ dev-frontend:
 gen-client:
 	cd frontend && pnpm openapi-ts
 
-db-up:
-	docker compose up -d
 
-db-down:
-	docker compose down
-
-db-migrate:
+migrate:
 	cd backend && uv run alembic revision --autogenerate -m "$(MSG)"
 	cd backend && uv run alembic upgrade head
 
-db-reset:
-	cd backend && uv run alembic downgrade base
-	cd backend && uv run alembic upgrade head
 
 lint:
 	pnpm biome check frontend/src
@@ -42,6 +34,6 @@ test:
 	cd frontend && pnpm vitest run
 	cd backend && uv run pytest
 
-clean:
-	rm -rf frontend/.next frontend/node_modules
-	rm -rf backend/.venv backend/__pycache__
+
+seed:
+	cd backend && uv run python scripts/seed.py
