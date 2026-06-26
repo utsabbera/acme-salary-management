@@ -79,6 +79,13 @@ Types: `feat` `fix` `docs` `style` `refactor` `test` `chore` `ci` `build` `perf`
 Scope: module/area (`auth`, `db`, `api`) — not the ticket number
 Description: imperative mood, max 72 chars, no trailing period
 
+## Testing Conventions
+
+The standard "Testing Trophy" pattern is strictly enforced across the stack:
+- **Integration Tests:** Used for FastAPI routes, HTTP parameter validation, database queries, and SQLAlchemy models. These run end-to-end against a real test database using `AsyncClient`. We explicitly **do not** write unit tests for FastAPI routers with mocked services, as this leads to tautological tests.
+- **Unit Tests:** Used exclusively for complex, isolated business logic, Pydantic math, and raw SQL query builders.
+- **File Organization:** Always group tests into logical classes (e.g., `class TestPagination:`, `class TestSearch:`) to improve readability and allow for class-scoped fixtures, regardless of the file size.
+
 # Project Origins
 
 This project was bootstrapped and configured using the following tools and templates:
