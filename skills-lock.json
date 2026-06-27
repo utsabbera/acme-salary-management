@@ -19,6 +19,12 @@
       "skillPath": "skills/debug/SKILL.md",
       "computedHash": "533e3112b3fdd8c8e77654bdbfe9ff083df62372798b0e9ac9a660d27ad7b6b0"
     },
+    "handoff": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/handoff/SKILL.md",
+      "computedHash": "5d0f81e38abe6b984e1feaa731927de5291d040982106ac513cf54ec240e00ec"
+    },
     "ideate": {
       "source": "utsabbera/skills",
       "sourceType": "github",
