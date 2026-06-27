@@ -1,6 +1,6 @@
 ---
-name: prd
-description: Turn the current conversation into a PRD and file it as a GitHub Epic issue. Use when the user wants to formalize a feature into a spec. No re-interview — synthesizes what's already been discussed.
+name: epic
+description: Turn the current conversation into an Epic and file it as a GitHub Epic issue. Use when the user wants to formalize a feature into a spec. No re-interview — synthesizes what's already been discussed.
 ---
 
 Take the current conversation and produce a PRD. Do NOT interview the user — synthesize what you already know.
