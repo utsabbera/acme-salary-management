@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { EmployeesTable } from "./employees-table";
 
 const mockEmployees = [
@@ -35,6 +36,10 @@ const mockEmployees = [
 ];
 
 describe("EmployeesTable", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("renders empty state when no employees", () => {
     render(<EmployeesTable employees={[]} />);
     expect(screen.getByText("No employees found.")).toBeInTheDocument();
@@ -55,5 +60,47 @@ describe("EmployeesTable", () => {
     render(<EmployeesTable employees={mockEmployees} />);
     expect(screen.getAllByText("$100,000.00").length).toBeGreaterThan(0);
     expect(screen.getAllByText("£80,000.00").length).toBeGreaterThan(0);
+  });
+
+  it("renders an action menu with Edit and Delete options for each employee", async () => {
+    const user = userEvent.setup();
+    render(<EmployeesTable employees={mockEmployees} />);
+
+    const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
+    expect(actionButtons).toHaveLength(2);
+
+    await user.click(actionButtons[0] as HTMLElement);
+
+    expect(await screen.findByRole("menuitem", { name: /edit/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /delete/i })).toBeInTheDocument();
+  });
+
+  it("opens an Edit dialog pre-filled with employee data when Edit is clicked", async () => {
+    const user = userEvent.setup();
+    render(<EmployeesTable employees={mockEmployees} />);
+
+    const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
+    await user.click(actionButtons[0] as HTMLElement);
+
+    const editOption = await screen.findByRole("menuitem", { name: /edit/i });
+    await user.click(editOption);
+
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText(/edit employee/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/first name/i)).toHaveValue("John");
+  });
+
+  it("opens a Delete confirmation dialog when Delete is clicked", async () => {
+    const user = userEvent.setup();
+    render(<EmployeesTable employees={mockEmployees} />);
+
+    const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
+    await user.click(actionButtons[0] as HTMLElement);
+
+    const deleteOption = await screen.findByRole("menuitem", { name: /delete/i });
+    await user.click(deleteOption);
+
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText(/are you absolutely sure/i)).toBeInTheDocument();
   });
 });
