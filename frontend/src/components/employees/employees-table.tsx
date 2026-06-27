@@ -68,6 +68,8 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
   );
 }
 
+import { useRouter } from "next/navigation";
+
 function EmployeeRow({
   employee,
   formatCurrency,
@@ -75,12 +77,16 @@ function EmployeeRow({
   employee: EmployeeRead;
   formatCurrency: (v: number, c: string) => string;
 }) {
+  const router = useRouter();
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   return (
     <>
-      <TableRow>
+      <TableRow
+        className="cursor-pointer hover:bg-muted/50 transition-colors"
+        onClick={() => router.push(`/employees/${employee.id.toString()}` as never)}
+      >
         <TableCell className="font-medium">
           {employee.first_name} {employee.last_name}
         </TableCell>
@@ -95,7 +101,7 @@ function EmployeeRow({
               )
             : "-"}
         </TableCell>
-        <TableCell className="text-right">
+        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={<Button variant="ghost" size="icon-sm" className="h-8 w-8 p-0" />}
@@ -104,8 +110,21 @@ function EmployeeRow({
               <MoreHorizontal className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setShowEditDialog(true)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem variant="destructive" onClick={() => setShowDeleteDialog(true)}>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowEditDialog(true);
+                }}
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDeleteDialog(true);
+                }}
+              >
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
+import type { CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, GetEmployeeEmployeesEmployeeIdGetData, GetEmployeeEmployeesEmployeeIdGetErrors, GetEmployeeEmployeesEmployeeIdGetResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -44,6 +44,11 @@ export const createEmployeeEmployeesPost = <ThrowOnError extends boolean = false
  * Delete Employee
  */
 export const deleteEmployeeEmployeesEmployeeIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteEmployeeEmployeesEmployeeIdDeleteData, ThrowOnError>): RequestResult<DeleteEmployeeEmployeesEmployeeIdDeleteResponses, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteEmployeeEmployeesEmployeeIdDeleteResponses, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, ThrowOnError>({ url: '/employees/{employee_id}', ...options });
+
+/**
+ * Get Employee
+ */
+export const getEmployeeEmployeesEmployeeIdGet = <ThrowOnError extends boolean = false>(options: Options<GetEmployeeEmployeesEmployeeIdGetData, ThrowOnError>): RequestResult<GetEmployeeEmployeesEmployeeIdGetResponses, GetEmployeeEmployeesEmployeeIdGetErrors, ThrowOnError> => (options.client ?? client).get<GetEmployeeEmployeesEmployeeIdGetResponses, GetEmployeeEmployeesEmployeeIdGetErrors, ThrowOnError>({ url: '/employees/{employee_id}', ...options });
 
 /**
  * Update Employee

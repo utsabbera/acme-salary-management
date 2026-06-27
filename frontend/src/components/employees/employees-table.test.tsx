@@ -201,4 +201,22 @@ describe("EmployeesTable", () => {
 
     expect(mockRefresh).toHaveBeenCalled();
   });
+
+  it("navigates to the employee profile page when a row is clicked", async () => {
+    const user = userEvent.setup();
+    const mockPush = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({
+      push: mockPush,
+      refresh: mockRefresh,
+    } as unknown as ReturnType<typeof useRouter>);
+
+    render(<EmployeesTable employees={mockEmployees} />);
+
+    const row = screen.getByText("John Doe").closest("tr");
+    if (!row) throw new Error("Row not found");
+
+    await user.click(row);
+
+    expect(mockPush).toHaveBeenCalledWith("/employees/1");
+  });
 });

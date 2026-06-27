@@ -53,6 +53,49 @@ export type EmployeeCreate = {
 };
 
 /**
+ * EmployeeDetailRead
+ */
+export type EmployeeDetailRead = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * First Name
+     */
+    first_name: string;
+    /**
+     * Last Name
+     */
+    last_name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Country
+     */
+    country: string;
+    current_salary?: CurrentSalary | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Salary History
+     */
+    salary_history: Array<SalaryHistoryItem>;
+};
+
+/**
  * EmployeeRead
  */
 export type EmployeeRead = {
@@ -157,6 +200,32 @@ export type PaginatedResponseEmployeeRead = {
      * Limit
      */
     limit: number;
+};
+
+/**
+ * SalaryHistoryItem
+ */
+export type SalaryHistoryItem = {
+    /**
+     * Salary Minor Units
+     */
+    salary_minor_units: number;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Salary Usd Minor Units
+     */
+    salary_usd_minor_units: number;
+    /**
+     * Valid From
+     */
+    valid_from: string;
+    /**
+     * Valid To
+     */
+    valid_to: string | null;
 };
 
 /**
@@ -313,6 +382,36 @@ export type DeleteEmployeeEmployeesEmployeeIdDeleteResponses = {
 };
 
 export type DeleteEmployeeEmployeesEmployeeIdDeleteResponse = DeleteEmployeeEmployeesEmployeeIdDeleteResponses[keyof DeleteEmployeeEmployeesEmployeeIdDeleteResponses];
+
+export type GetEmployeeEmployeesEmployeeIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Employee Id
+         */
+        employee_id: number;
+    };
+    query?: never;
+    url: '/employees/{employee_id}';
+};
+
+export type GetEmployeeEmployeesEmployeeIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetEmployeeEmployeesEmployeeIdGetError = GetEmployeeEmployeesEmployeeIdGetErrors[keyof GetEmployeeEmployeesEmployeeIdGetErrors];
+
+export type GetEmployeeEmployeesEmployeeIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: EmployeeDetailRead;
+};
+
+export type GetEmployeeEmployeesEmployeeIdGetResponse = GetEmployeeEmployeesEmployeeIdGetResponses[keyof GetEmployeeEmployeesEmployeeIdGetResponses];
 
 export type UpdateEmployeeEmployeesEmployeeIdPatchData = {
     body: EmployeeUpdate;
