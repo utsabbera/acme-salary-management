@@ -71,3 +71,12 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## 6. Pace and Discussion Phase
 
 **Do Not Rush to Execution:** When the user is clearly in a discussion or ideation phase (e.g., asking conceptual questions, running `/ideate` or `/grill-me`, or debating architecture), strictly stay in discussion mode. Do NOT generate implementation plans, write code, or prompt the user to "Proceed to execution" until the user explicitly signals that the discussion is fully resolved and they are ready to build.
+
+## 7. Self-Explanatory Code over Comments
+
+**No redundant comments:** Code should be inherently self-explanatory. Rely on clean, descriptive naming conventions and structural clarity (like the Arrange-Act-Assert pattern in tests) rather than inline comments. Do not write comments that simply state *what* the code is doing (e.g., `# 1. Create an employee`).
+
+**Exceptions where comments are encouraged:**
+- **Docstrings:** Module, class, or function-level docstrings that describe purpose, inputs, and outputs.
+- **The "Why":** Explanations for complex business logic, mathematical formulas, or non-obvious workarounds for bugs.
+- **Actionable Notes:** Explicit `TODO`, `FIXME`, or `NOTE` comments for temporary or pending work.
