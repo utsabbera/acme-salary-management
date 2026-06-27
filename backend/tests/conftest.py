@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 import pytest
 from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -34,6 +35,13 @@ async def test_engine() -> AsyncGenerator[AsyncEngine]:
     )
     async with engine.begin() as conn:
         await conn.run_sync(run_alembic_upgrade)
+
+        await conn.execute(
+            text(
+                "INSERT INTO exchange_rates (currency, rate, valid_from) "
+                "VALUES ('USD', 1.0, '2020-01-01')"
+            )
+        )
     yield engine
 
 

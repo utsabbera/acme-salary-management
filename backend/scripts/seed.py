@@ -11,6 +11,7 @@ from sqlalchemy import delete
 from app.core.database import async_session_factory, engine
 from app.core.logger import setup_logging
 from app.models.employee import Employee
+from app.models.exchange_rate import ExchangeRate
 from app.models.salary import Salary
 
 setup_logging()
@@ -113,6 +114,20 @@ async def main(num_employees: int, verbose: bool = False) -> None:
         logger.info("Clearing existing data...")
         await session.execute(delete(Salary))
         await session.execute(delete(Employee))
+        await session.execute(delete(ExchangeRate))
+        await session.flush()
+
+        logger.info("Inserting exchange rates...")
+        rates = []
+        for curr, rate in MOCK_FX_RATES.items():
+            rates.append(
+                ExchangeRate(
+                    currency=curr,
+                    rate=rate,
+                    valid_from=date(2020, 1, 1),
+                )
+            )
+        session.add_all(rates)
         await session.flush()
 
         logger.info("Inserting employees and their salaries...")

@@ -1,21 +1,24 @@
 from decimal import Decimal
 
-# Static exchange rates to USD.
-# In a real application, this would come from an external API or database.
-RATES_TO_USD = {
-    "USD": Decimal("1.0"),
-    "EUR": Decimal("1.08"),
-    "GBP": Decimal("1.25"),
-    "INR": Decimal("0.012"),
-}
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.exchange_rate import ExchangeRate
 
 
-def convert_to_usd(amount: Decimal, currency: str) -> Decimal:
+async def convert_to_usd(amount: Decimal, currency: str, session: AsyncSession) -> Decimal:
     """
     Convert a given amount in a specific currency to USD.
+    Returns the usd_amount.
     Raises ValueError if the currency is not supported.
     """
-    rate = RATES_TO_USD.get(currency.upper())
-    if not rate:
+    stmt = select(ExchangeRate).where(
+        ExchangeRate.currency == currency.upper(), ExchangeRate.valid_to.is_(None)
+    )
+    result = await session.execute(stmt)
+    rate_record = result.scalar_one_or_none()
+
+    if not rate_record:
         raise ValueError(f"Unsupported currency: {currency}")
-    return (amount * rate).quantize(Decimal("0.01"))
+
+    return (amount * Decimal(str(rate_record.rate))).quantize(Decimal("0.01"))
