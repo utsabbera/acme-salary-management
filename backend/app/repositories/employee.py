@@ -1,10 +1,11 @@
 from typing import Any
 
-from sqlalchemy import RowMapping, Select, func, or_, select
+from sqlalchemy import Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.employee import Employee, active_employees
+from app.schemas.employee import CurrentSalary, EmployeeRead
 
 
 class EmployeeRepository:
@@ -31,10 +32,11 @@ class EmployeeRepository:
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_active_employee(self, employee_id: int) -> RowMapping | None:
+    async def get_active_employee(self, employee_id: int) -> EmployeeRead | None:
         stmt = select(active_employees).where(active_employees.c.id == employee_id)
         result = await self._session.execute(stmt)
-        return result.mappings().first()
+        row = result.mappings().first()
+        return self._map_row(dict(row)) if row else None
 
     async def commit(self) -> None:
         await self._session.commit()
@@ -64,14 +66,14 @@ class EmployeeRepository:
         search: str | None = None,
         department: str | None = None,
         country: str | None = None,
-    ) -> list[RowMapping]:
+    ) -> list[EmployeeRead]:
         stmt = select(active_employees)
         stmt = self._apply_filters(stmt, search, department, country)
         stmt = stmt.order_by(active_employees.c.last_name, active_employees.c.first_name)
         stmt = stmt.offset(offset).limit(limit)
 
         result = await self._session.execute(stmt)
-        return list(result.mappings())
+        return [self._map_row(dict(row)) for row in result.mappings()]
 
     async def count(
         self,
@@ -83,3 +85,27 @@ class EmployeeRepository:
         stmt = self._apply_filters(stmt, search, department, country)
         result = await self._session.execute(stmt)
         return int(result.scalar_one())
+
+    def _map_row(self, row_dict: dict[str, Any]) -> EmployeeRead:
+        current_salary = None
+        salary_minor_units = row_dict.get("salary_minor_units")
+
+        if salary_minor_units is not None:
+            current_salary = CurrentSalary(
+                salary_minor_units=salary_minor_units,
+                currency=row_dict["currency"],
+                salary_usd_minor_units=row_dict["salary_usd_minor_units"],
+                valid_from=row_dict["valid_from"],
+            )
+
+        return EmployeeRead(
+            id=row_dict["id"],
+            first_name=row_dict["first_name"],
+            last_name=row_dict["last_name"],
+            email=row_dict["email"],
+            department=row_dict["department"],
+            country=row_dict["country"],
+            current_salary=current_salary,
+            created_at=row_dict["created_at"],
+            updated_at=row_dict["updated_at"],
+        )

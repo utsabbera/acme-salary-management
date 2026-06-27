@@ -11,20 +11,19 @@ class TestEmployeeService:
     async def test_list_employees_orchestration(self) -> None:
         mock_repo = AsyncMock()
 
-        mock_row = {
-            "id": 1,
-            "first_name": "Test",
-            "last_name": "User",
-            "email": "test@example.com",
-            "department": "IT",
-            "country": "US",
-            "salary_minor_units": "1000",
-            "currency": "USD",
-            "salary_usd_minor_units": "1000",
-            "valid_from": "2023-01-01",
-            "created_at": "2023-01-01T00:00:00Z",
-            "updated_at": "2023-01-01T00:00:00Z",
-        }
+        from datetime import datetime
+
+        mock_row = EmployeeRead(
+            id=1,
+            first_name="Test",
+            last_name="User",
+            email="test@example.com",
+            department="IT",
+            country="US",
+            current_salary=None,
+            created_at=datetime(2023, 1, 1),
+            updated_at=datetime(2023, 1, 1),
+        )
         mock_repo.list_paginated.return_value = [mock_row]
         mock_repo.count.return_value = 42
 

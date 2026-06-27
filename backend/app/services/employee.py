@@ -1,10 +1,8 @@
-
 from fastapi import HTTPException
 
 from app.models.employee import Employee
 from app.repositories.employee import EmployeeRepository
 from app.schemas.employee import (
-    CurrentSalary,
     EmployeeCreate,
     EmployeeRead,
     EmployeeUpdate,
@@ -67,7 +65,7 @@ class EmployeeService:
         if not active_emp:
             raise HTTPException(status_code=404, detail="Not Found")
 
-        return self._map_row(dict(active_emp))
+        return active_emp
 
     async def delete_employee(self, employee_id: int) -> None:
         employee = await self._repo.get_by_id_with_salaries(employee_id)
@@ -85,7 +83,7 @@ class EmployeeService:
         department: str | None = None,
         country: str | None = None,
     ) -> PaginatedResponse[EmployeeRead]:
-        rows, total = (
+        items, total = (
             await self._repo.list_paginated(
                 offset=offset,
                 limit=limit,
@@ -99,29 +97,4 @@ class EmployeeService:
                 country=country,
             ),
         )
-        items = [self._map_row(dict(row)) for row in rows]
         return PaginatedResponse.build(items=items, total=total, offset=offset, limit=limit)
-
-    def _map_row(self, row_dict: dict) -> EmployeeRead:
-        salary_minor_units = row_dict.get("salary_minor_units")
-        if salary_minor_units is not None:
-            current_salary = CurrentSalary(
-                salary_minor_units=salary_minor_units,
-                currency=row_dict["currency"],
-                salary_usd_minor_units=row_dict["salary_usd_minor_units"],
-                valid_from=row_dict["valid_from"],
-            )
-        else:
-            current_salary = None
-
-        return EmployeeRead(
-            id=row_dict["id"],
-            first_name=row_dict["first_name"],
-            last_name=row_dict["last_name"],
-            email=row_dict["email"],
-            department=row_dict["department"],
-            country=row_dict["country"],
-            current_salary=current_salary,
-            created_at=row_dict["created_at"],
-            updated_at=row_dict["updated_at"],
-        )
