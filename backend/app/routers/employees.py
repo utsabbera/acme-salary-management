@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query
 
 from app.core.deps import DbDep
 from app.repositories.employee import EmployeeRepository
-from app.schemas.employee import EmployeeRead, PaginatedResponse
+from app.schemas.employee import EmployeeCreate, EmployeeRead, EmployeeUpdate, PaginatedResponse
 from app.services.employee import EmployeeService
 
 router = APIRouter(prefix="/employees", tags=["employees"])
@@ -25,3 +25,31 @@ async def list_employees(
         department=department,
         country=country,
     )
+
+
+@router.post("", response_model=EmployeeRead, status_code=201)
+async def create_employee(
+    data: EmployeeCreate,
+    db: DbDep,
+) -> EmployeeRead:
+    service = EmployeeService(EmployeeRepository(db))
+    return await service.create_employee(data)
+
+
+@router.patch("/{employee_id}", response_model=EmployeeRead)
+async def update_employee(
+    employee_id: int,
+    data: EmployeeUpdate,
+    db: DbDep,
+) -> EmployeeRead:
+    service = EmployeeService(EmployeeRepository(db))
+    return await service.update_employee(employee_id, data)
+
+
+@router.delete("/{employee_id}", status_code=204)
+async def delete_employee(
+    employee_id: int,
+    db: DbDep,
+) -> None:
+    service = EmployeeService(EmployeeRepository(db))
+    await service.delete_employee(employee_id)

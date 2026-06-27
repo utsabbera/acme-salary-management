@@ -24,6 +24,25 @@ class EmployeeRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class EmployeeCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    department: str
+    country: str
+    salary: Decimal
+    currency: str
+    valid_from: date | None = None
+
+
+class EmployeeUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+    department: str | None = None
+    country: str | None = None
+
+
 class PaginatedResponse[T](BaseModel):
     items: list[T]
     total: int
