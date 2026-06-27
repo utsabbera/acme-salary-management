@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import { CreateEmployeeDialog } from "@/components/employees/create-employee-dialog";
-import { EmployeeProfileSheet } from "@/components/employees/employee-profile-sheet";
+import { EmployeeProfilePane } from "@/components/employees/employee-profile-pane";
 import { EmployeesTable } from "@/components/employees/employees-table";
 import { Filters } from "@/components/employees/filters";
 import { Pagination } from "@/components/employees/pagination";
 import { SearchInput } from "@/components/employees/search-input";
+import { SidePeekLayout } from "@/components/layout/side-peek-layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
@@ -24,30 +25,36 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
   const limit = typeof params.limit === "string" ? parseInt(params.limit, 10) : 20;
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex-1 flex flex-col p-8 pt-6 gap-6 relative">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
+        <h2 className="text-3xl font-bold tracking-tight">Employees</h2>
         <CreateEmployeeDialog trigger={<Button>Add Employee</Button>} />
       </div>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <SearchInput />
-        <Filters />
-      </div>
-
-      <Suspense fallback={<TableSkeleton />}>
-        <EmployeeData
-          search={search}
-          department={department}
-          country={country}
-          offset={offset}
-          limit={limit}
-        />
-      </Suspense>
-
-      <Suspense fallback={null}>
-        <EmployeeProfileSheet />
-      </Suspense>
+      <SidePeekLayout
+        list={
+          <div className="flex flex-col gap-6 pr-4 min-w-0">
+            <div className="flex items-center gap-4">
+              <SearchInput />
+              <Filters />
+            </div>
+            <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+              <EmployeeData
+                search={search}
+                department={department}
+                country={country}
+                offset={offset}
+                limit={limit}
+              />
+            </Suspense>
+          </div>
+        }
+        detail={
+          <Suspense fallback={null}>
+            <EmployeeProfilePane />
+          </Suspense>
+        }
+      />
     </div>
   );
 }
@@ -88,45 +95,9 @@ async function EmployeeData({
   const total = data?.total || 0;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 min-w-0 overflow-x-hidden">
       <EmployeesTable employees={employees} />
       <Pagination total={total} />
-    </div>
-  );
-}
-
-const SKELETON_HEADERS = ["h1", "h2", "h3", "h4", "h5", "h6"];
-const SKELETON_ROWS = ["r1", "r2", "r3", "r4", "r5"];
-const SKELETON_COLS = ["c1", "c2", "c3", "c4", "c5", "c6"];
-
-function TableSkeleton() {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="rounded-md border">
-        <div className="border-b p-4">
-          <div className="flex gap-4">
-            {SKELETON_HEADERS.map((key) => (
-              <Skeleton key={key} className="h-6 w-full" />
-            ))}
-          </div>
-        </div>
-        <div>
-          {SKELETON_ROWS.map((rowKey) => (
-            <div key={rowKey} className="flex gap-4 border-b p-4 last:border-0">
-              {SKELETON_COLS.map((colKey) => (
-                <Skeleton key={`${rowKey}-${colKey}`} className="h-6 w-full" />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex items-center justify-between px-2">
-        <Skeleton className="h-4 w-[100px]" />
-        <div className="flex gap-2">
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-8" />
-        </div>
-      </div>
     </div>
   );
 }
