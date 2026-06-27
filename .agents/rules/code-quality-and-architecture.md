@@ -42,3 +42,11 @@ The test: Every changed line should trace directly to the user's request.
 - **Docstrings:** Module, class, or function-level docstrings that describe purpose, inputs, and outputs.
 - **The "Why":** Explanations for complex business logic, mathematical formulas, or non-obvious workarounds for bugs.
 - **Actionable Notes:** Explicit `TODO`, `FIXME`, or `NOTE` comments for temporary or pending work.
+
+## 4. Strict Type Safety and Linting
+
+**No escape hatches for types or linters.**
+
+- Never use `as any`, `@ts-ignore`, or linter suppressions (like `// biome-ignore`) as a workaround for difficult type constraints, especially when writing test mocks.
+- Instead of using `any` to mock complex objects or API responses, properly satisfy the structural typing using utility types (e.g., `as unknown as ReturnType<typeof functionName>` or `Awaited<ReturnType<typeof functionName>>`).
+- Find the root cause of the type or lint issue and refactor properly rather than suppressing it.
