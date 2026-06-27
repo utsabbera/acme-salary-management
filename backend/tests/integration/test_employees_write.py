@@ -99,3 +99,62 @@ class TestEmployeeDelete:
 
         delete_again_resp = await client.delete(f"/employees/{emp_id}")
         assert delete_again_resp.status_code == 404
+
+
+class TestSalaryAdjustment:
+    async def test_add_salary_adjustment(self, client: AsyncClient) -> None:
+        payload = {
+            "first_name": "Salary",
+            "last_name": "Test",
+            "email": "salary.test@example.com",
+            "department": "Engineering",
+            "country": "US",
+        }
+        create_resp = await client.post("/employees", json=payload)
+        emp_id = create_resp.json()["id"]
+
+        salary_payload = {
+            "base_salary_minor_units": 10000000,
+            "currency": "USD",
+            "valid_from": "2024-01-01",
+        }
+
+        salary_resp = await client.post(f"/employees/{emp_id}/salaries", json=salary_payload)
+        assert salary_resp.status_code == 201, salary_resp.text
+
+        data = salary_resp.json()
+        assert data["current_salary"] is not None
+        assert data["current_salary"]["base_salary_minor_units"] == 10000000
+        assert data["current_salary"]["salary_usd_minor_units"] == 10000000
+        assert len(data["salary_history"]) == 1
+
+        # Test validation on valid_from
+        invalid_salary_payload = {
+            "base_salary_minor_units": 11000000,
+            "currency": "USD",
+            "valid_from": "2023-12-31",  # Before existing
+        }
+        invalid_resp = await client.post(
+            f"/employees/{emp_id}/salaries", json=invalid_salary_payload
+        )
+        assert invalid_resp.status_code == 400
+        assert "after current salary valid_from" in invalid_resp.json()["detail"]
+
+        # Add another salary adjustment
+        new_salary_payload = {
+            "base_salary_minor_units": 12000000,
+            "currency": "USD",
+            "valid_from": "2024-06-01",
+        }
+        new_resp = await client.post(f"/employees/{emp_id}/salaries", json=new_salary_payload)
+        assert new_resp.status_code == 201
+
+        new_data = new_resp.json()
+        assert new_data["current_salary"]["base_salary_minor_units"] == 12000000
+        assert len(new_data["salary_history"]) == 2
+        # Verify the old salary is closed out
+        history = new_data["salary_history"]
+        active = next(s for s in history if s["valid_to"] is None)
+        closed = next(s for s in history if s["valid_to"] is not None)
+        assert active["valid_from"] == "2024-06-01"
+        assert closed["valid_to"] == "2024-05-31"

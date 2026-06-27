@@ -8,6 +8,7 @@ from app.schemas.employee import (
     EmployeeRead,
     EmployeeUpdate,
     PaginatedResponse,
+    SalaryCreate,
 )
 from app.services.employee import EmployeeService
 
@@ -68,3 +69,13 @@ async def delete_employee(
 ) -> None:
     service = EmployeeService(EmployeeRepository(db))
     await service.delete_employee(employee_id)
+
+
+@router.post("/{employee_id}/salaries", response_model=EmployeeDetailRead, status_code=201)
+async def add_salary_adjustment(
+    employee_id: int,
+    data: SalaryCreate,
+    db: DbDep,
+) -> EmployeeDetailRead:
+    service = EmployeeService(EmployeeRepository(db))
+    return await service.add_salary_adjustment(employee_id, data)

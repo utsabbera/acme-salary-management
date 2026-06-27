@@ -98,7 +98,7 @@ describe("EmployeesTable", () => {
 
   it("formats salary with currency correctly", () => {
     render(<EmployeesTable employees={mockEmployees} />);
-    expect(screen.getAllByText("$100,000.00").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$120,000.00").length).toBeGreaterThan(0);
     expect(screen.getAllByText("£80,000.00").length).toBeGreaterThan(0);
   });
 

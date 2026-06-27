@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, GetEmployeeEmployeesEmployeeIdGetData, GetEmployeeEmployeesEmployeeIdGetErrors, GetEmployeeEmployeesEmployeeIdGetResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
+import type { AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostData, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses, CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, GetEmployeeEmployeesEmployeeIdGetData, GetEmployeeEmployeesEmployeeIdGetErrors, GetEmployeeEmployeesEmployeeIdGetResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -55,6 +55,18 @@ export const getEmployeeEmployeesEmployeeIdGet = <ThrowOnError extends boolean =
  */
 export const updateEmployeeEmployeesEmployeeIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateEmployeeEmployeesEmployeeIdPatchData, ThrowOnError>): RequestResult<UpdateEmployeeEmployeesEmployeeIdPatchResponses, UpdateEmployeeEmployeesEmployeeIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateEmployeeEmployeesEmployeeIdPatchResponses, UpdateEmployeeEmployeesEmployeeIdPatchErrors, ThrowOnError>({
     url: '/employees/{employee_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add Salary Adjustment
+ */
+export const addSalaryAdjustmentEmployeesEmployeeIdSalariesPost = <ThrowOnError extends boolean = false>(options: Options<AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostData, ThrowOnError>): RequestResult<AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors, ThrowOnError> => (options.client ?? client).post<AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors, ThrowOnError>({
+    url: '/employees/{employee_id}/salaries',
     ...options,
     headers: {
         'Content-Type': 'application/json',

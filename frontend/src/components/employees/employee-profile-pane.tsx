@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
+import { UpdateSalaryDialog } from "./update-salary-dialog";
 
 type EmployeeData = Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>["data"];
 
@@ -90,7 +91,7 @@ export function EmployeeProfilePane() {
   const [employee, setEmployee] = React.useState<EmployeeData | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  React.useEffect(() => {
+  const fetchEmployee = React.useCallback(() => {
     if (employeeIdParam) {
       setIsLoading(true);
       const employeeId = parseInt(employeeIdParam, 10);
@@ -105,6 +106,10 @@ export function EmployeeProfilePane() {
       setEmployee(null);
     }
   }, [employeeIdParam]);
+
+  React.useEffect(() => {
+    fetchEmployee();
+  }, [fetchEmployee]);
 
   if (!employeeIdParam) {
     return null;
@@ -208,10 +213,20 @@ export function EmployeeProfilePane() {
 
               {/* Timeline Section */}
               <Card className="shadow-none border-muted/60 bg-transparent">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
                     Compensation History
                   </CardTitle>
+                  <UpdateSalaryDialog
+                    employeeId={employee.id}
+                    currentSalary={employee.current_salary}
+                    onSuccess={fetchEmployee}
+                    trigger={
+                      <Button variant="outline" size="sm">
+                        Adjust
+                      </Button>
+                    }
+                  />
                 </CardHeader>
                 <CardContent>
                   {employee.salary_history && employee.salary_history.length > 0 ? (

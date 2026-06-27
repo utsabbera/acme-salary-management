@@ -13,8 +13,8 @@ class SalaryBase(BaseModel):
     other_allowance_minor_units: int | None = None
     currency: str
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def salary_minor_units(self) -> int:
         return (
             self.base_salary_minor_units
@@ -22,6 +22,10 @@ class SalaryBase(BaseModel):
             + (self.equity_minor_units or 0)
             + (self.other_allowance_minor_units or 0)
         )
+
+
+class SalaryCreate(SalaryBase):
+    valid_from: date
 
 
 class CurrentSalary(SalaryBase):

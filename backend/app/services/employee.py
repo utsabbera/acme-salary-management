@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from fastapi import HTTPException
 
 from app.models.employee import Employee
+from app.models.salary import Salary
 from app.repositories.employee import EmployeeRepository
 from app.schemas.employee import (
     CurrentSalary,
@@ -9,8 +12,10 @@ from app.schemas.employee import (
     EmployeeRead,
     EmployeeUpdate,
     PaginatedResponse,
+    SalaryCreate,
     SalaryHistoryItem,
 )
+from app.services.currency import convert_to_usd
 
 
 class EmployeeService:
@@ -148,3 +153,39 @@ class EmployeeService:
             ),
         )
         return PaginatedResponse.build(items=items, total=total, offset=offset, limit=limit)
+
+    async def add_salary_adjustment(
+        self, employee_id: int, data: SalaryCreate
+    ) -> EmployeeDetailRead:
+        employee = await self._repo.get_by_id_with_salaries(employee_id)
+        if not employee:
+            raise HTTPException(status_code=404, detail="Not Found")
+
+        active_salary = next((s for s in employee.salaries if s.valid_to is None), None)
+        if active_salary:
+            if data.valid_from <= active_salary.valid_from:
+                raise HTTPException(
+                    status_code=400,
+                    detail="New salary valid_from must be after current salary valid_from",
+                )
+            active_salary.valid_to = data.valid_from - timedelta(days=1)
+
+        usd_minor_units, exchange_rate_id = await convert_to_usd(
+            data.salary_minor_units, data.currency, self._repo._session
+        )
+
+        new_salary = Salary(
+            employee_id=employee_id,
+            base_salary_minor_units=data.base_salary_minor_units,
+            housing_allowance_minor_units=data.housing_allowance_minor_units,
+            equity_minor_units=data.equity_minor_units,
+            other_allowance_minor_units=data.other_allowance_minor_units,
+            currency=data.currency,
+            salary_usd_minor_units=usd_minor_units,
+            exchange_rate_id=exchange_rate_id,
+            valid_from=data.valid_from,
+        )
+        employee.salaries.append(new_salary)
+        await self._repo.commit()
+
+        return await self.get_employee(employee_id)

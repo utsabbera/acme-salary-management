@@ -219,6 +219,36 @@ export type PaginatedResponseEmployeeRead = {
 };
 
 /**
+ * SalaryCreate
+ */
+export type SalaryCreate = {
+    /**
+     * Base Salary Minor Units
+     */
+    base_salary_minor_units: number;
+    /**
+     * Housing Allowance Minor Units
+     */
+    housing_allowance_minor_units?: number | null;
+    /**
+     * Equity Minor Units
+     */
+    equity_minor_units?: number | null;
+    /**
+     * Other Allowance Minor Units
+     */
+    other_allowance_minor_units?: number | null;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Valid From
+     */
+    valid_from: string;
+};
+
+/**
  * SalaryHistoryItem
  */
 export type SalaryHistoryItem = {
@@ -650,3 +680,33 @@ export type UpdateEmployeeEmployeesEmployeeIdPatchResponses = {
 };
 
 export type UpdateEmployeeEmployeesEmployeeIdPatchResponse = UpdateEmployeeEmployeesEmployeeIdPatchResponses[keyof UpdateEmployeeEmployeesEmployeeIdPatchResponses];
+
+export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostData = {
+    body: SalaryCreate;
+    path: {
+        /**
+         * Employee Id
+         */
+        employee_id: number;
+    };
+    query?: never;
+    url: '/employees/{employee_id}/salaries';
+};
+
+export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostError = AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors[keyof AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors];
+
+export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: EmployeeDetailRead;
+};
+
+export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponse = AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses[keyof AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses];
