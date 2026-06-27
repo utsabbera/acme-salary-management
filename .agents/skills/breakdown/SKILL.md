@@ -31,15 +31,13 @@ Present the proposed breakdown. For each slice show title and blockers. Ask if t
 
 Blockers first, so you can reference real issue numbers in "Blocked by".
 
-```
-gh issue create --title "[Area] Short imperative title" --label "feature" --body "..."
+```bash
+gh issue create --title "[Area] Short imperative title" --label "feature" --parent <epic-issue-number> --body "..."
 ```
 
 Infer label from: `feature`, `chore`, `bug`, `docs`.
 
 <issue-template>
-
-**Epic:** #<epic-issue-number>
 
 ## What to build
 
