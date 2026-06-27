@@ -3,27 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DeleteEmployeeDialog } from "@/components/employees/delete-employee-dialog";
 import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
+import { SalaryBreakdown } from "@/components/employees/salary-breakdown";
 import { UpdateSalaryDialog } from "@/components/employees/update-salary-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
 import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
-
-function formatCurrency(minorUnits: number, currencyCode: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currencyCode,
-  }).format(minorUnits / 100);
-}
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+import { formatCurrency } from "@/lib/utils/currency";
+import { formatDate } from "@/lib/utils/date";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -49,7 +37,7 @@ export default async function EmployeePage({ params }: PageProps) {
     const employee = response.data;
 
     return (
-      <div className="container mx-auto py-10 px-6 max-w-4xl">
+      <div className="container mx-auto py-10 px-6 max-w-6xl">
         <div className="mb-8 flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -71,7 +59,9 @@ export default async function EmployeePage({ params }: PageProps) {
           {/* Personal Info Section */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle>Details</CardTitle>
+              <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+                Details
+              </CardTitle>
               <EditEmployeeDialog
                 employee={employee as unknown as EmployeeRead}
                 trigger={
@@ -98,18 +88,19 @@ export default async function EmployeePage({ params }: PageProps) {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <BanknoteIcon className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-start space-x-4">
+                <BanknoteIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">Current Salary</p>
-                  <p className="text-sm text-muted-foreground font-medium">
+                  <p className="text-sm font-medium leading-none text-foreground">CTC</p>
+                  <p className="text-2xl font-bold tracking-tight text-foreground">
                     {employee.current_salary
                       ? formatCurrency(
                           employee.current_salary.salary_minor_units,
                           employee.current_salary.currency,
                         )
-                      : "No active salary"}
+                      : "N/A"}
                   </p>
+                  {employee.current_salary && <SalaryBreakdown item={employee.current_salary} />}
                 </div>
               </div>
             </CardContent>
@@ -118,7 +109,9 @@ export default async function EmployeePage({ params }: PageProps) {
           {/* Timeline Section */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle>Salary History</CardTitle>
+              <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+                Compensation History
+              </CardTitle>
               <UpdateSalaryDialog
                 employeeId={employee.id}
                 currentSalary={employee.current_salary}
@@ -151,7 +144,7 @@ export default async function EmployeePage({ params }: PageProps) {
                             </div>
                           )}
                         </div>
-                        <div className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <div className="text-sm font-medium text-muted-foreground flex items-center gap-2 mb-4">
                           <CalendarIcon className="w-4 h-4" />
                           <time dateTime={historyItem.valid_from}>
                             {formatDate(historyItem.valid_from)}
@@ -165,6 +158,7 @@ export default async function EmployeePage({ params }: PageProps) {
                             </>
                           )}
                         </div>
+                        <SalaryBreakdown item={historyItem} />
                       </div>
                     </div>
                   ))}
