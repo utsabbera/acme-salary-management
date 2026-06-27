@@ -18,7 +18,7 @@ class EmployeeService:
             raise HTTPException(status_code=409, detail="Email already registered")
 
         try:
-            salary_usd = await convert_to_usd(
+            salary_usd, rate_id = await convert_to_usd(
                 data.salary_minor_units,
                 data.currency,
                 self._repo._session,
@@ -39,6 +39,7 @@ class EmployeeService:
                     salary_minor_units=data.salary_minor_units,
                     currency=data.currency,
                     salary_usd_minor_units=salary_usd,
+                    exchange_rate_id=rate_id,
                     valid_from=valid_from,
                     valid_to=None,
                 )

@@ -36,7 +36,7 @@ DEPARTMENTS = ["Engineering", "Sales", "HR", "Finance", "Marketing", "Operations
 COUNTRIES = list(MOCK_FX_RATES.keys())
 
 
-def generate_salaries(employee: Employee) -> list[Salary]:
+def generate_salaries(employee: Employee, rates_dict: dict[str, int]) -> list[Salary]:
     num_records = random.randint(1, 5)
     salaries = []
 
@@ -47,6 +47,7 @@ def generate_salaries(employee: Employee) -> list[Salary]:
     base_salary_usd = Decimal(random.randint(40_000, 150_000))
     currency = employee.country
     rate = MOCK_FX_RATES[currency]
+    rate_id = rates_dict[currency]
 
     current_salary_local = base_salary_usd / rate
 
@@ -69,6 +70,7 @@ def generate_salaries(employee: Employee) -> list[Salary]:
                 salary_minor_units=salary_minor_units,
                 currency=currency,
                 salary_usd_minor_units=salary_usd_minor_units,
+                exchange_rate_id=rate_id,
                 valid_from=current_date,
                 valid_to=valid_to,
             )
@@ -92,26 +94,6 @@ async def main(num_employees: int, verbose: bool = False) -> None:
             engine.sync_engine.echo = False
     logger.info(f"Starting seed script for {num_employees} employees...")
 
-    employees_to_insert = []
-    total_salaries = 0
-
-    for _ in range(num_employees):
-        currency = random.choice(COUNTRIES)
-        employee = Employee(
-            first_name=fake.first_name(),
-            last_name=fake.last_name(),
-            email=fake.unique.email(),
-            department=random.choice(DEPARTMENTS),
-            country=currency,
-        )
-        employee.salaries = generate_salaries(employee)
-        total_salaries += len(employee.salaries)
-        employees_to_insert.append(employee)
-
-    logger.info(
-        f"Generated {len(employees_to_insert)} employees and {total_salaries} salary records."
-    )
-
     async with async_session_factory() as session:
         logger.info("Clearing existing data...")
         await session.execute(delete(Salary))
@@ -131,6 +113,28 @@ async def main(num_employees: int, verbose: bool = False) -> None:
             )
         session.add_all(rates)
         await session.flush()
+
+        rates_dict = {r.currency: r.id for r in rates}
+
+        logger.info("Generating employee data...")
+        employees_to_insert = []
+        total_salaries = 0
+        for _ in range(num_employees):
+            currency = random.choice(COUNTRIES)
+            employee = Employee(
+                first_name=fake.first_name(),
+                last_name=fake.last_name(),
+                email=fake.unique.email(),
+                department=random.choice(DEPARTMENTS),
+                country=currency,
+            )
+            employee.salaries = generate_salaries(employee, rates_dict)
+            total_salaries += len(employee.salaries)
+            employees_to_insert.append(employee)
+
+        logger.info(
+            f"Generated {len(employees_to_insert)} employees and {total_salaries} salary records."
+        )
 
         logger.info("Inserting employees and their salaries...")
         # Insert in chunks to avoid memory issues

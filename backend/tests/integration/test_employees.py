@@ -80,6 +80,7 @@ async def seeded_client(client: AsyncClient, db_session: AsyncSession) -> AsyncC
 
         salary = Salary(
             employee_id=emp.id,
+            exchange_rate_id=1,
             salary_minor_units=data["salary_minor_units"],
             currency=data["currency"],
             salary_usd_minor_units=data["salary_usd_minor_units"],
@@ -309,6 +310,7 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=inactive.id,
+                exchange_rate_id=1,
                 salary_minor_units=9500000,
                 currency="USD",
                 salary_usd_minor_units=9500000,
@@ -341,6 +343,7 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
+                exchange_rate_id=1,
                 salary_minor_units=7000000,
                 currency="USD",
                 salary_usd_minor_units=7000000,
@@ -372,6 +375,7 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
+                exchange_rate_id=1,
                 salary_minor_units=8000000,
                 currency="USD",
                 salary_usd_minor_units=8000000,
@@ -382,6 +386,7 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
+                exchange_rate_id=1,
                 salary_minor_units=11000000,
                 currency="USD",
                 salary_usd_minor_units=11000000,

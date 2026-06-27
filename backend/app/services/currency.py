@@ -4,10 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.exchange_rate import ExchangeRate
 
 
-async def convert_to_usd(amount_minor_units: int, currency: str, session: AsyncSession) -> int:
+async def convert_to_usd(
+    amount_minor_units: int, currency: str, session: AsyncSession
+) -> tuple[int, int]:
     """
     Convert a given amount in a specific currency to USD minor units.
-    Returns the usd_amount_minor_units.
+    Returns (usd_amount_minor_units, exchange_rate_id).
     Raises ValueError if the currency is not supported.
     """
     stmt = select(ExchangeRate).where(
@@ -19,4 +21,4 @@ async def convert_to_usd(amount_minor_units: int, currency: str, session: AsyncS
     if not rate_record:
         raise ValueError(f"Unsupported currency: {currency}")
 
-    return int(amount_minor_units * rate_record.rate)
+    return int(amount_minor_units * rate_record.rate), rate_record.id
