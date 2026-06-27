@@ -57,3 +57,15 @@ class PaginatedResponse[T](BaseModel):
             offset=offset,
             limit=limit,
         )
+
+
+class SalaryHistoryItem(BaseModel):
+    salary_minor_units: int
+    currency: str
+    salary_usd_minor_units: int
+    valid_from: date
+    valid_to: date | None
+
+
+class EmployeeDetailRead(EmployeeRead):
+    salary_history: list[SalaryHistoryItem]

@@ -450,3 +450,48 @@ class TestEmployeeBusinessRules:
             "updated_at",
         }
         assert required_fields.issubset(item.keys())
+
+
+class TestEmployeeDetail:
+    async def test_get_employee_detail_success(
+        self, seeded_client: AsyncClient, db_session: AsyncSession
+    ) -> None:
+        from sqlalchemy import select
+
+        result = await db_session.execute(
+            select(Employee).where(Employee.email == "alice@example.com")
+        )
+        employee = result.scalar_one()
+
+        db_session.add(
+            Salary(
+                employee_id=employee.id,
+                exchange_rate_id=1,
+                salary_minor_units=10000000,
+                currency="USD",
+                salary_usd_minor_units=10000000,
+                valid_from=date(2021, 1, 1),
+                valid_to=date(2023, 1, 1),
+            )
+        )
+        await db_session.flush()
+
+        r = await seeded_client.get(f"/employees/{employee.id}")
+        assert r.status_code == 200
+
+        body = r.json()
+        assert body["id"] == employee.id
+        assert body["first_name"] == "Alice"
+        assert body["current_salary"]["salary_minor_units"] == 12000000
+
+        history = body["salary_history"]
+        assert len(history) == 2
+
+        assert history[0]["salary_minor_units"] == 12000000
+        assert history[0]["valid_from"] == "2023-01-01"
+        assert history[1]["salary_minor_units"] == 10000000
+        assert history[1]["valid_from"] == "2021-01-01"
+
+    async def test_get_employee_detail_not_found(self, seeded_client: AsyncClient) -> None:
+        r = await seeded_client.get("/employees/99999")
+        assert r.status_code == 404

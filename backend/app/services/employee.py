@@ -3,16 +3,60 @@ from fastapi import HTTPException
 from app.models.employee import Employee
 from app.repositories.employee import EmployeeRepository
 from app.schemas.employee import (
+    CurrentSalary,
     EmployeeCreate,
+    EmployeeDetailRead,
     EmployeeRead,
     EmployeeUpdate,
     PaginatedResponse,
+    SalaryHistoryItem,
 )
 
 
 class EmployeeService:
     def __init__(self, repo: EmployeeRepository) -> None:
         self._repo = repo
+
+    async def get_employee(self, employee_id: int) -> EmployeeDetailRead:
+        employee = await self._repo.get_by_id_with_salaries(employee_id)
+        if not employee:
+            raise HTTPException(status_code=404, detail="Not Found")
+
+        history = sorted(employee.salaries, key=lambda s: s.valid_from, reverse=True)
+
+        salary_history = [
+            SalaryHistoryItem(
+                salary_minor_units=s.salary_minor_units,
+                currency=s.currency,
+                salary_usd_minor_units=s.salary_usd_minor_units,
+                valid_from=s.valid_from,
+                valid_to=s.valid_to,
+            )
+            for s in history
+        ]
+
+        current_salary = None
+        active_salary = next((s for s in history if s.valid_to is None), None)
+        if active_salary:
+            current_salary = CurrentSalary(
+                salary_minor_units=active_salary.salary_minor_units,
+                currency=active_salary.currency,
+                salary_usd_minor_units=active_salary.salary_usd_minor_units,
+                valid_from=active_salary.valid_from,
+            )
+
+        return EmployeeDetailRead(
+            id=employee.id,
+            first_name=employee.first_name,
+            last_name=employee.last_name,
+            email=employee.email,
+            department=employee.department,
+            country=employee.country,
+            current_salary=current_salary,
+            created_at=employee.created_at,
+            updated_at=employee.updated_at,
+            salary_history=salary_history,
+        )
 
     async def create_employee(self, data: EmployeeCreate) -> EmployeeRead:
         if await self._repo.get_by_email(data.email):

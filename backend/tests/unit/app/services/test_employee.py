@@ -47,3 +47,68 @@ class TestEmployeeService:
         assert isinstance(item, EmployeeRead)
         assert item.first_name == "Test"
         assert item.email == "test@example.com"
+
+    @pytest.mark.asyncio
+    async def test_get_employee_success(self) -> None:
+        mock_repo = AsyncMock()
+
+        from datetime import date, datetime
+
+        from app.models.employee import Employee
+        from app.models.salary import Salary
+
+        employee = Employee(
+            id=1,
+            first_name="Jane",
+            last_name="Doe",
+            email="jane@example.com",
+            department="Engineering",
+            country="US",
+            created_at=datetime(2023, 1, 1),
+            updated_at=datetime(2023, 1, 1),
+        )
+
+        salary1 = Salary(
+            salary_minor_units=9000000,
+            currency="USD",
+            salary_usd_minor_units=9000000,
+            valid_from=date(2022, 1, 1),
+            valid_to=date(2023, 1, 1),
+        )
+
+        salary2 = Salary(
+            salary_minor_units=10000000,
+            currency="USD",
+            salary_usd_minor_units=10000000,
+            valid_from=date(2023, 1, 2),
+            valid_to=None,
+        )
+        employee.salaries = [salary1, salary2]
+
+        mock_repo.get_by_id_with_salaries.return_value = employee
+
+        service = EmployeeService(repo=mock_repo)
+        result = await service.get_employee(1)
+
+        mock_repo.get_by_id_with_salaries.assert_awaited_once_with(1)
+
+        assert result.id == 1
+        assert result.current_salary is not None
+        assert result.current_salary.salary_minor_units == 10000000
+
+        assert len(result.salary_history) == 2
+        assert result.salary_history[0].salary_minor_units == 10000000
+        assert result.salary_history[1].salary_minor_units == 9000000
+
+    @pytest.mark.asyncio
+    async def test_get_employee_not_found(self) -> None:
+        from fastapi import HTTPException
+
+        mock_repo = AsyncMock()
+        mock_repo.get_by_id_with_salaries.return_value = None
+
+        service = EmployeeService(repo=mock_repo)
+        with pytest.raises(HTTPException) as exc:
+            await service.get_employee(999)
+
+        assert exc.value.status_code == 404
