@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
@@ -17,18 +19,26 @@ import { deleteEmployeeEmployeesEmployeeIdDelete } from "@/lib/generated";
 
 interface DeleteEmployeeDialogProps {
   employee: EmployeeRead;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  trigger?: React.ReactElement;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onSuccess?: () => void;
+  redirectTo?: string;
 }
 
 export function DeleteEmployeeDialog({
   employee,
-  open,
-  onOpenChange,
+  trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
   onSuccess,
+  redirectTo,
 }: DeleteEmployeeDialogProps) {
+  const [internalOpen, setInternalOpen] = React.useState(false);
   const router = useRouter();
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setInternalOpen;
 
   const handleDelete = async () => {
     try {
@@ -42,16 +52,22 @@ export function DeleteEmployeeDialog({
         return;
       }
 
-      onOpenChange(false);
+      setOpen(false);
       onSuccess?.();
-      router.refresh();
+
+      if (redirectTo) {
+        router.push(redirectTo as never);
+      } else {
+        router.refresh();
+      }
     } catch (err) {
       console.error("Error deleting employee:", err);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>

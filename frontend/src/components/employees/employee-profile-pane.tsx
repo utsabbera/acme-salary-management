@@ -15,7 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
+import type { EmployeeRead } from "@/lib/generated";
 import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
+import { DeleteEmployeeDialog } from "./delete-employee-dialog";
+import { EditEmployeeDialog } from "./edit-employee-dialog";
 import { UpdateSalaryDialog } from "./update-salary-dialog";
 
 type EmployeeData = Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>["data"];
@@ -169,10 +172,19 @@ export function EmployeeProfilePane() {
             <div className="grid gap-6">
               {/* Personal Info Section */}
               <Card className="shadow-none border-muted/60 bg-transparent">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
                     Details
                   </CardTitle>
+                  <EditEmployeeDialog
+                    employee={employee as unknown as EmployeeRead}
+                    onSuccess={fetchEmployee}
+                    trigger={
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
+                    }
+                  />
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center space-x-4">
@@ -275,6 +287,34 @@ export function EmployeeProfilePane() {
                   ) : (
                     <p className="text-sm text-muted-foreground">No salary history available.</p>
                   )}
+                </CardContent>
+              </Card>
+
+              {/* Danger Zone Section */}
+              <Card className="shadow-none border-red-500/20 bg-red-50/50 dark:bg-red-950/10 mt-8">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium uppercase tracking-widest text-red-600 dark:text-red-400">
+                    Danger Zone
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none text-foreground">
+                      Delete Employee
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Permanently remove this employee from the system.
+                    </p>
+                  </div>
+                  <DeleteEmployeeDialog
+                    employee={employee as unknown as EmployeeRead}
+                    onSuccess={handleClose}
+                    trigger={
+                      <Button variant="destructive" size="sm">
+                        Delete Employee
+                      </Button>
+                    }
+                  />
                 </CardContent>
               </Card>
             </div>

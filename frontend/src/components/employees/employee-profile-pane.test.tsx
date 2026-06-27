@@ -218,4 +218,62 @@ describe("EmployeeProfilePane", () => {
     expect(screen.getByText("$60,000.00")).toBeInTheDocument();
     expect(screen.getByText("$10,000.00")).toBeInTheDocument();
   });
+
+  it("renders the Edit Employee button in the Details section", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=1") as unknown as ReadonlyURLSearchParams,
+    );
+
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      data: {
+        id: 1,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john@example.com",
+        department: "Engineering",
+        country: "US",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+        current_salary: null,
+        salary_history: [],
+      },
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    render(<EmployeeProfilePane />);
+
+    await waitFor(() => {
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
+  });
+
+  it("renders the Delete Employee button in the Danger Zone section", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=1") as unknown as ReadonlyURLSearchParams,
+    );
+
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      data: {
+        id: 1,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john@example.com",
+        department: "Engineering",
+        country: "US",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+        current_salary: null,
+        salary_history: [],
+      },
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    render(<EmployeeProfilePane />);
+
+    await waitFor(() => {
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole("button", { name: "Delete Employee" })).toBeInTheDocument();
+  });
 });
