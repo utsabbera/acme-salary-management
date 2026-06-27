@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import {
   Dialog,
@@ -9,7 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
+import { updateEmployeeEmployeesEmployeeIdPatch } from "@/lib/generated";
 import { EmployeeForm, type EmployeeFormData } from "./employee-form";
 
 interface EditEmployeeDialogProps {
@@ -32,14 +35,35 @@ export function EditEmployeeDialog({
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setInternalOpen;
 
-  const handleSubmit = (data: EmployeeFormData) => {
-    // In the real app, this will call the API
-    console.log("Update employee", data);
-    setOpen(false);
-    onSuccess?.();
+  const router = useRouter();
+
+  const handleSubmit = async (data: EmployeeFormData) => {
+    try {
+      const { error } = await updateEmployeeEmployeesEmployeeIdPatch({
+        client: apiClient,
+        path: { employee_id: employee.id },
+        body: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          department: data.department,
+          country: data.country,
+        },
+      });
+
+      if (error) {
+        console.error("Failed to update employee:", error);
+        return;
+      }
+
+      setOpen(false);
+      onSuccess?.();
+      router.refresh();
+    } catch (err) {
+      console.error("Error updating employee:", err);
+    }
   };
 
-  // Convert employee to form data matching the schema
   const defaultValues: Partial<EmployeeFormData> = {
     first_name: employee.first_name,
     last_name: employee.last_name,

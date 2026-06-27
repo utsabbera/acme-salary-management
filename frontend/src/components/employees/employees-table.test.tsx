@@ -1,8 +1,29 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
-import { afterEach, describe, expect, it } from "vitest";
+import { useRouter } from "next/navigation";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  deleteEmployeeEmployeesEmployeeIdDelete,
+  updateEmployeeEmployeesEmployeeIdPatch,
+} from "@/lib/generated";
 import { EmployeesTable } from "./employees-table";
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+}));
+
+vi.mock("@/lib/api", () => ({
+  apiClient: {},
+}));
+
+vi.mock("@/lib/generated", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/generated")>();
+  return {
+    ...actual,
+    updateEmployeeEmployeesEmployeeIdPatch: vi.fn(),
+    deleteEmployeeEmployeesEmployeeIdDelete: vi.fn(),
+  };
+});
 
 const mockEmployees = [
   {
@@ -36,8 +57,17 @@ const mockEmployees = [
 ];
 
 describe("EmployeesTable", () => {
+  const mockRefresh = vi.fn();
+
+  beforeEach(() => {
+    vi.mocked(useRouter).mockReturnValue({
+      refresh: mockRefresh,
+    } as unknown as ReturnType<typeof useRouter>);
+  });
+
   afterEach(() => {
     cleanup();
+    vi.clearAllMocks();
   });
 
   it("renders empty state when no employees", () => {
@@ -102,5 +132,69 @@ describe("EmployeesTable", () => {
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText(/are you absolutely sure/i)).toBeInTheDocument();
+  });
+  it("calls update API and refreshes router when Edit form is submitted", async () => {
+    const user = userEvent.setup();
+    vi.mocked(updateEmployeeEmployeesEmployeeIdPatch).mockResolvedValue({
+      data: { id: 1 },
+    } as unknown as Awaited<ReturnType<typeof updateEmployeeEmployeesEmployeeIdPatch>>);
+
+    render(<EmployeesTable employees={mockEmployees} />);
+
+    const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
+    await user.click(actionButtons[0] as HTMLElement);
+
+    const editOption = await screen.findByRole("menuitem", { name: /edit/i });
+    await user.click(editOption);
+
+    // Edit the first name
+    const firstNameInput = screen.getByLabelText(/first name/i);
+    await user.clear(firstNameInput);
+    await user.type(firstNameInput, "Johnny");
+
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(updateEmployeeEmployeesEmployeeIdPatch).toHaveBeenCalledWith({
+        client: expect.any(Object),
+        path: { employee_id: 1 },
+        body: {
+          first_name: "Johnny",
+          last_name: "Doe",
+          email: "john@example.com",
+          department: "Engineering",
+          country: "USA",
+        },
+      });
+    });
+
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it("calls delete API and refreshes router when Delete is confirmed", async () => {
+    const user = userEvent.setup();
+    vi.mocked(deleteEmployeeEmployeesEmployeeIdDelete).mockResolvedValue({
+      data: { status: "ok" },
+    } as unknown as Awaited<ReturnType<typeof deleteEmployeeEmployeesEmployeeIdDelete>>);
+
+    render(<EmployeesTable employees={mockEmployees} />);
+
+    const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
+    await user.click(actionButtons[0] as HTMLElement);
+
+    const deleteOption = await screen.findByRole("menuitem", { name: /delete/i });
+    await user.click(deleteOption);
+
+    const confirmButton = screen.getByRole("button", { name: /delete/i });
+    await user.click(confirmButton);
+
+    await waitFor(() => {
+      expect(deleteEmployeeEmployeesEmployeeIdDelete).toHaveBeenCalledWith({
+        client: expect.any(Object),
+        path: { employee_id: 1 },
+      });
+    });
+
+    expect(mockRefresh).toHaveBeenCalled();
   });
 });

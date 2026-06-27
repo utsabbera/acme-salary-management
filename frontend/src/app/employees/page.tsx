@@ -1,8 +1,10 @@
 import { Suspense } from "react";
+import { CreateEmployeeDialog } from "@/components/employees/create-employee-dialog";
 import { EmployeesTable } from "@/components/employees/employees-table";
 import { Filters } from "@/components/employees/filters";
 import { Pagination } from "@/components/employees/pagination";
 import { SearchInput } from "@/components/employees/search-input";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import { listEmployeesEmployeesGet } from "@/lib/generated";
@@ -24,6 +26,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
     <div className="flex flex-col gap-6 p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
+        <CreateEmployeeDialog trigger={<Button>Add Employee</Button>} />
       </div>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

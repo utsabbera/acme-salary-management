@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import {
   Dialog,
@@ -9,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { apiClient } from "@/lib/api";
+import { createEmployeeEmployeesPost } from "@/lib/generated";
 import { EmployeeForm, type EmployeeFormData } from "./employee-form";
 
 interface CreateEmployeeDialogProps {
@@ -18,12 +21,35 @@ interface CreateEmployeeDialogProps {
 
 export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialogProps) {
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (data: EmployeeFormData) => {
-    // In the real app, this will call the API
-    console.log("Create employee", data);
-    setOpen(false);
-    onSuccess?.();
+  const handleSubmit = async (data: EmployeeFormData) => {
+    try {
+      const { error } = await createEmployeeEmployeesPost({
+        client: apiClient,
+        body: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          department: data.department,
+          country: data.country,
+          salary: Number(data.salary),
+          currency: data.currency,
+          valid_from: data.valid_from,
+        },
+      });
+
+      if (error) {
+        console.error("Failed to create employee:", error);
+        return;
+      }
+
+      setOpen(false);
+      onSuccess?.();
+      router.refresh();
+    } catch (err) {
+      console.error("Error creating employee:", err);
+    }
   };
 
   return (

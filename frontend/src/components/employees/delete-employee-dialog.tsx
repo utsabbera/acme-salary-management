@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
+import { deleteEmployeeEmployeesEmployeeIdDelete } from "@/lib/generated";
 
 interface DeleteEmployeeDialogProps {
   employee: EmployeeRead;
@@ -25,11 +28,26 @@ export function DeleteEmployeeDialog({
   onOpenChange,
   onSuccess,
 }: DeleteEmployeeDialogProps) {
-  const handleDelete = () => {
-    // In a real app, this will call the API
-    console.log("Delete employee", employee.id);
-    onOpenChange(false);
-    onSuccess?.();
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    try {
+      const { error } = await deleteEmployeeEmployeesEmployeeIdDelete({
+        client: apiClient,
+        path: { employee_id: employee.id },
+      });
+
+      if (error) {
+        console.error("Failed to delete employee:", error);
+        return;
+      }
+
+      onOpenChange(false);
+      onSuccess?.();
+      router.refresh();
+    } catch (err) {
+      console.error("Error deleting employee:", err);
+    }
   };
 
   return (
