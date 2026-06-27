@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import {
   addSalaryAdjustmentEmployeesEmployeeIdSalariesPost,
   type CurrentSalary,
 } from "@/lib/generated";
+import { getErrorMessage } from "@/lib/utils";
 
 const salarySchema = z.object({
   valid_from: z.string().min(1, "Valid from date is required"),
@@ -97,7 +99,7 @@ export function UpdateSalaryDialog({
       });
 
       if (error) {
-        console.error("Failed to add salary adjustment:", error);
+        toast.error(`Could not update salary. ${getErrorMessage(error)}`);
         return;
       }
 
@@ -105,7 +107,7 @@ export function UpdateSalaryDialog({
       onSuccess?.();
       router.refresh();
     } catch (err) {
-      console.error("Error adding salary adjustment:", err);
+      toast.error(`Could not update salary. ${getErrorMessage(err)}`);
     }
   };
 

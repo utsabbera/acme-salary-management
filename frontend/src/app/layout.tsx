@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { Sidebar } from "@/components/layout/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex flex-col flex-1">
             <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">{children}</main>
           </div>
+          <Toaster />
         </div>
       </body>
     </html>

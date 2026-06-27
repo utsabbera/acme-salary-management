@@ -11,12 +11,14 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
 import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
+import { getErrorMessage } from "@/lib/utils";
 import { DeleteEmployeeDialog } from "./delete-employee-dialog";
 import { EditEmployeeDialog } from "./edit-employee-dialog";
 import { UpdateSalaryDialog } from "./update-salary-dialog";
@@ -43,8 +45,14 @@ export function EmployeeProfilePane() {
         client: apiClient,
         path: { employee_id: employeeId },
       })
-        .then((response) => setEmployee(response.data))
-        .catch(console.error)
+        .then((response) => {
+          if (response.error) {
+            toast.error(`Could not load employee details. ${getErrorMessage(response.error)}`);
+          } else {
+            setEmployee(response.data);
+          }
+        })
+        .catch((err) => toast.error(`Could not load employee details. ${getErrorMessage(err)}`))
         .finally(() => setIsLoading(false));
     } else {
       setEmployee(null);

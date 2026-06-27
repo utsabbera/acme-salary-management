@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import {
 import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
 import { updateEmployeeEmployeesEmployeeIdPatch } from "@/lib/generated";
+import { getErrorMessage } from "@/lib/utils";
 import { EmployeeForm, type EmployeeFormData } from "./employee-form";
 
 interface EditEmployeeDialogProps {
@@ -52,7 +54,7 @@ export function EditEmployeeDialog({
       });
 
       if (error) {
-        console.error("Failed to update employee:", error);
+        toast.error(`Could not update employee. ${getErrorMessage(error)}`);
         return;
       }
 
@@ -60,7 +62,7 @@ export function EditEmployeeDialog({
       onSuccess?.();
       router.refresh();
     } catch (err) {
-      console.error("Error updating employee:", err);
+      toast.error(`Could not update employee. ${getErrorMessage(err)}`);
     }
   };
 

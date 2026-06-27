@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +17,7 @@ import {
 import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
 import { deleteEmployeeEmployeesEmployeeIdDelete } from "@/lib/generated";
+import { getErrorMessage } from "@/lib/utils";
 
 interface DeleteEmployeeDialogProps {
   employee: EmployeeRead;
@@ -48,7 +50,7 @@ export function DeleteEmployeeDialog({
       });
 
       if (error) {
-        console.error("Failed to delete employee:", error);
+        toast.error(`Could not delete employee. ${getErrorMessage(error)}`);
         return;
       }
 
@@ -61,7 +63,7 @@ export function DeleteEmployeeDialog({
         router.refresh();
       }
     } catch (err) {
-      console.error("Error deleting employee:", err);
+      toast.error(`Could not delete employee. ${getErrorMessage(err)}`);
     }
   };
 

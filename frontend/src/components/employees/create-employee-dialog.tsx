@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { apiClient } from "@/lib/api";
 import { createEmployeeEmployeesPost } from "@/lib/generated";
+import { getErrorMessage } from "@/lib/utils";
 import { EmployeeForm, type EmployeeFormData } from "./employee-form";
 
 interface CreateEmployeeDialogProps {
@@ -37,7 +39,7 @@ export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialo
       });
 
       if (error) {
-        console.error("Failed to create employee:", error);
+        toast.error(`Could not create employee. ${getErrorMessage(error)}`);
         return;
       }
 
@@ -45,7 +47,7 @@ export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialo
       onSuccess?.();
       router.refresh();
     } catch (err) {
-      console.error("Error creating employee:", err);
+      toast.error(`Could not create employee. ${getErrorMessage(err)}`);
     }
   };
 
