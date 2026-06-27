@@ -68,7 +68,7 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
   );
 }
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function EmployeeRow({
   employee,
@@ -78,14 +78,21 @@ function EmployeeRow({
   formatCurrency: (v: number, c: string) => string;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleRowClick = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("employeeId", employee.id.toString());
+    router.push(`?${params.toString()}` as never);
+  };
 
   return (
     <>
       <TableRow
         className="cursor-pointer hover:bg-muted/50 transition-colors"
-        onClick={() => router.push(`/employees/${employee.id.toString()}` as never)}
+        onClick={handleRowClick}
       >
         <TableCell className="font-medium">
           {employee.first_name} {employee.last_name}

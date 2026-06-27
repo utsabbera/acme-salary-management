@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { CreateEmployeeDialog } from "@/components/employees/create-employee-dialog";
+import { EmployeeProfileSheet } from "@/components/employees/employee-profile-sheet";
 import { EmployeesTable } from "@/components/employees/employees-table";
 import { Filters } from "@/components/employees/filters";
 import { Pagination } from "@/components/employees/pagination";
@@ -42,6 +43,10 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
           offset={offset}
           limit={limit}
         />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <EmployeeProfileSheet />
       </Suspense>
     </div>
   );

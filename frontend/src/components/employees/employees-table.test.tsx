@@ -1,6 +1,6 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRouter } from "next/navigation";
+import { type ReadonlyURLSearchParams, useRouter, useSearchParams } from "next/navigation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   deleteEmployeeEmployeesEmployeeIdDelete,
@@ -10,6 +10,7 @@ import { EmployeesTable } from "./employees-table";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 vi.mock("@/lib/api", () => ({
@@ -67,6 +68,9 @@ describe("EmployeesTable", () => {
     vi.mocked(useRouter).mockReturnValue({
       refresh: mockRefresh,
     } as unknown as ReturnType<typeof useRouter>);
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams() as unknown as ReadonlyURLSearchParams,
+    );
   });
 
   afterEach(() => {
@@ -217,6 +221,6 @@ describe("EmployeesTable", () => {
 
     await user.click(row);
 
-    expect(mockPush).toHaveBeenCalledWith("/employees/1");
+    expect(mockPush).toHaveBeenCalledWith("?employeeId=1");
   });
 });
