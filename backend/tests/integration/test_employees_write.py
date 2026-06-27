@@ -12,7 +12,7 @@ class TestEmployeeCreation:
             "email": "john.doe@example.com",
             "department": "Engineering",
             "country": "US",
-            "salary": "120000.00",
+            "salary_minor_units": 12000000,
             "currency": "USD",
             "valid_from": "2023-01-01",
         }
@@ -23,8 +23,8 @@ class TestEmployeeCreation:
         assert data["first_name"] == "John"
         assert data["last_name"] == "Doe"
         assert data["email"] == "john.doe@example.com"
-        assert data["salary"] == "120000.00"
-        assert data["salary_usd"] == "120000.00"
+        assert data["salary_minor_units"] == 12000000
+        assert data["salary_usd_minor_units"] == 12000000
         assert "id" in data
 
     async def test_create_employee_duplicate_email(self, client: AsyncClient) -> None:
@@ -34,7 +34,7 @@ class TestEmployeeCreation:
             "email": "jane.doe@example.com",
             "department": "Engineering",
             "country": "US",
-            "salary": "120000.00",
+            "salary_minor_units": 12000000,
             "currency": "USD",
             "valid_from": "2023-01-01",
         }
@@ -52,7 +52,7 @@ class TestEmployeeCreation:
             "email": "invalid.currency@example.com",
             "department": "Engineering",
             "country": "US",
-            "salary": "120000.00",
+            "salary_minor_units": 12000000,
             "currency": "XYZ",  # Unsupported
             "valid_from": "2023-01-01",
         }
@@ -76,7 +76,7 @@ class TestEmployeeCreation:
         ]
         assert "last_name" in missing_fields
         assert "email" in missing_fields
-        assert "salary" in missing_fields
+        assert "salary_minor_units" in missing_fields
 
 
 class TestEmployeeUpdate:
@@ -87,7 +87,7 @@ class TestEmployeeUpdate:
             "email": "bob.smith@example.com",
             "department": "Sales",
             "country": "US",
-            "salary": "90000.00",
+            "salary_minor_units": 9000000,
             "currency": "USD",
         }
         create_resp = await client.post("/employees", json=payload)
@@ -101,7 +101,7 @@ class TestEmployeeUpdate:
         assert data["first_name"] == "Robert"
         assert data["last_name"] == "Smith"  # Unchanged
         assert data["department"] == "Marketing"
-        assert float(data["salary"]) == 90000.0  # Unchanged
+        assert data["salary_minor_units"] == 9000000  # Unchanged
 
 
 class TestEmployeeDelete:
@@ -112,7 +112,7 @@ class TestEmployeeDelete:
             "email": "charlie.brown@example.com",
             "department": "Engineering",
             "country": "US",
-            "salary": "75000.00",
+            "salary_minor_units": 7500000,
             "currency": "USD",
         }
         create_resp = await client.post("/employees", json=payload)

@@ -81,7 +81,7 @@ describe("CreateEmployeeDialog", () => {
           email: "john.doe@example.com",
           department: "Engineering",
           country: "USA",
-          salary: 100000,
+          salary_minor_units: 10000000,
           currency: "USD",
           valid_from: "2024-01-01",
         },

@@ -1,5 +1,4 @@
 from datetime import date, datetime
-from decimal import Decimal
 from typing import TypeVar
 
 from pydantic import BaseModel
@@ -14,9 +13,9 @@ class EmployeeRead(BaseModel):
     email: str
     department: str
     country: str
-    salary: Decimal
+    salary_minor_units: int
     currency: str
-    salary_usd: Decimal
+    salary_usd_minor_units: int
     valid_from: date
     created_at: datetime
     updated_at: datetime
@@ -30,7 +29,7 @@ class EmployeeCreate(BaseModel):
     email: str
     department: str
     country: str
-    salary: Decimal
+    salary_minor_units: int
     currency: str
     valid_from: date | None = None
 

@@ -29,9 +29,9 @@ export type EmployeeCreate = {
      */
     country: string;
     /**
-     * Salary
+     * Salary Minor Units
      */
-    salary: number | string;
+    salary_minor_units: number;
     /**
      * Currency
      */
@@ -71,17 +71,17 @@ export type EmployeeRead = {
      */
     country: string;
     /**
-     * Salary
+     * Salary Minor Units
      */
-    salary: string;
+    salary_minor_units: number;
     /**
      * Currency
      */
     currency: string;
     /**
-     * Salary Usd
+     * Salary Usd Minor Units
      */
-    salary_usd: string;
+    salary_usd_minor_units: number;
     /**
      * Valid From
      */

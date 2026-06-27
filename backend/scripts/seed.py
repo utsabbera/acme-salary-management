@@ -60,13 +60,15 @@ def generate_salaries(employee: Employee) -> list[Salary]:
 
         valid_to = next_date if not is_last else None
 
-        salary_usd = current_salary_local * rate
+        salary_minor_units = int(current_salary_local * 100)
+        salary_usd_minor_units = int(current_salary_local * rate * 100)
 
         salaries.append(
             Salary(
-                salary=round(current_salary_local, 2),
+                employee_id=employee.id,
+                salary_minor_units=salary_minor_units,
                 currency=currency,
-                salary_usd=round(salary_usd, 2),
+                salary_usd_minor_units=salary_usd_minor_units,
                 valid_from=current_date,
                 valid_to=valid_to,
             )

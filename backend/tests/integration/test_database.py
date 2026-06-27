@@ -24,17 +24,17 @@ class TestDatabaseBehaviors:
 
         old_salary = Salary(
             employee_id=employee.id,
-            salary=100000,
+            salary_minor_units=10000000,
             currency="USD",
-            salary_usd=100000,
+            salary_usd_minor_units=10000000,
             valid_from=date(2020, 1, 1),
             valid_to=date(2022, 1, 1),
         )
         new_salary = Salary(
             employee_id=employee.id,
-            salary=120000,
+            salary_minor_units=12000000,
             currency="USD",
-            salary_usd=120000,
+            salary_usd_minor_units=12000000,
             valid_from=date(2022, 1, 1),
             valid_to=None,
         )
@@ -46,7 +46,7 @@ class TestDatabaseBehaviors:
         )
         active_record = result.mappings().one()
 
-        assert active_record["salary"] == 120000
+        assert active_record["salary_minor_units"] == 12000000
         assert "valid_to" not in active_record
 
     async def test_soft_deletes(self, db_session: AsyncSession) -> None:
@@ -63,9 +63,9 @@ class TestDatabaseBehaviors:
 
         salary = Salary(
             employee_id=employee.id,
-            salary=100000,
+            salary_minor_units=10000000,
             currency="USD",
-            salary_usd=100000,
+            salary_usd_minor_units=10000000,
             valid_from=date(2020, 1, 1),
             valid_to=None,
         )
@@ -91,9 +91,9 @@ class TestDatabaseBehaviors:
 
         salary = Salary(
             employee_id=employee.id,
-            salary=80000,
+            salary_minor_units=8000000,
             currency="USD",
-            salary_usd=80000,
+            salary_usd_minor_units=8000000,
             valid_from=date(2020, 1, 1),
             valid_to=None,
         )

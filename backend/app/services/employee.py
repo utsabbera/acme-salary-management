@@ -18,7 +18,11 @@ class EmployeeService:
             raise HTTPException(status_code=409, detail="Email already registered")
 
         try:
-            salary_usd = await convert_to_usd(data.salary, data.currency, self._repo._session)
+            salary_usd = await convert_to_usd(
+                data.salary_minor_units,
+                data.currency,
+                self._repo._session,
+            )
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e)) from e
 
@@ -32,10 +36,11 @@ class EmployeeService:
             country=data.country,
             salaries=[
                 Salary(
-                    salary=data.salary,
+                    salary_minor_units=data.salary_minor_units,
                     currency=data.currency,
-                    salary_usd=salary_usd,
+                    salary_usd_minor_units=salary_usd,
                     valid_from=valid_from,
+                    valid_to=None,
                 )
             ],
         )
@@ -49,9 +54,9 @@ class EmployeeService:
             email=created.email,
             department=created.department,
             country=created.country,
-            salary=data.salary,
+            salary_minor_units=data.salary_minor_units,
             currency=data.currency,
-            salary_usd=salary_usd,
+            salary_usd_minor_units=salary_usd,
             valid_from=valid_from,
             created_at=created.created_at,
             updated_at=created.updated_at,

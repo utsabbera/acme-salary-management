@@ -1,15 +1,13 @@
-from decimal import Decimal
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.exchange_rate import ExchangeRate
 
 
-async def convert_to_usd(amount: Decimal, currency: str, session: AsyncSession) -> Decimal:
+async def convert_to_usd(amount_minor_units: int, currency: str, session: AsyncSession) -> int:
     """
-    Convert a given amount in a specific currency to USD.
-    Returns the usd_amount.
+    Convert a given amount in a specific currency to USD minor units.
+    Returns the usd_amount_minor_units.
     Raises ValueError if the currency is not supported.
     """
     stmt = select(ExchangeRate).where(
@@ -21,4 +19,4 @@ async def convert_to_usd(amount: Decimal, currency: str, session: AsyncSession) 
     if not rate_record:
         raise ValueError(f"Unsupported currency: {currency}")
 
-    return (amount * Decimal(str(rate_record.rate))).quantize(Decimal("0.01"))
+    return int(amount_minor_units * rate_record.rate)

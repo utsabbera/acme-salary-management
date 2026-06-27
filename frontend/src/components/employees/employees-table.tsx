@@ -34,7 +34,7 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
     );
   }
 
-  const formatCurrency = (value: string, currency: string) => {
+  const formatCurrency = (value: number, currency: string) => {
     try {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -74,7 +74,7 @@ function EmployeeRow({
   formatCurrency,
 }: {
   employee: EmployeeRead;
-  formatCurrency: (v: string, c: string) => string;
+  formatCurrency: (v: number, c: string) => string;
 }) {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
@@ -89,9 +89,11 @@ function EmployeeRow({
         <TableCell>{employee.department}</TableCell>
         <TableCell>{employee.country}</TableCell>
         <TableCell className="text-right">
-          {formatCurrency(employee.salary, employee.currency)}
+          {formatCurrency(employee.salary_minor_units / 100, employee.currency)}
         </TableCell>
-        <TableCell className="text-right">{formatCurrency(employee.salary_usd, "USD")}</TableCell>
+        <TableCell className="text-right">
+          {formatCurrency(employee.salary_usd_minor_units / 100, "USD")}
+        </TableCell>
         <TableCell className="text-right">
           <DropdownMenu>
             <DropdownMenuTrigger

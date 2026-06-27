@@ -1,11 +1,10 @@
 from datetime import date
-from decimal import Decimal
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.employee import Employee
 
-from sqlalchemy import Date, ForeignKey, Index, Numeric, String
+from sqlalchemy import Date, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -19,9 +18,9 @@ class Salary(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
 
-    salary: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    salary_minor_units: Mapped[int] = mapped_column(Integer)
     currency: Mapped[str] = mapped_column(String(3))
-    salary_usd: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    salary_usd_minor_units: Mapped[int] = mapped_column(Integer)
 
     valid_from: Mapped[date] = mapped_column(Date)
     valid_to: Mapped[date | None] = mapped_column(Date, nullable=True)

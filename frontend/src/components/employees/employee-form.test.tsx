@@ -47,7 +47,7 @@ describe("EmployeeForm", () => {
       email: "john.doe@example.com",
       department: "Engineering",
       country: "USA",
-      salary: 100000,
+      salary_minor_units: 10000000,
       currency: "USD",
     };
     render(<EmployeeForm onSubmit={onSubmit} mode="edit" defaultValues={defaultValues} />);

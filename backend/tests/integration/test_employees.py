@@ -1,5 +1,4 @@
 from datetime import date
-from decimal import Decimal
 
 import pytest
 from httpx import AsyncClient
@@ -18,8 +17,8 @@ EMPLOYEES = [
         "email": "alice@example.com",
         "department": "Engineering",
         "country": "US",
-        "salary": Decimal("120000"),
-        "salary_usd": Decimal("120000"),
+        "salary_minor_units": 12000000,
+        "salary_usd_minor_units": 12000000,
         "currency": "USD",
     },
     {
@@ -28,8 +27,8 @@ EMPLOYEES = [
         "email": "bob@example.com",
         "department": "Engineering",
         "country": "UK",
-        "salary": Decimal("95000"),
-        "salary_usd": Decimal("119000"),
+        "salary_minor_units": 9500000,
+        "salary_usd_minor_units": 11900000,
         "currency": "GBP",
     },
     {
@@ -38,8 +37,8 @@ EMPLOYEES = [
         "email": "carol@example.com",
         "department": "HR",
         "country": "US",
-        "salary": Decimal("80000"),
-        "salary_usd": Decimal("80000"),
+        "salary_minor_units": 8000000,
+        "salary_usd_minor_units": 8000000,
         "currency": "USD",
     },
     {
@@ -48,8 +47,8 @@ EMPLOYEES = [
         "email": "david@example.com",
         "department": "Marketing",
         "country": "US",
-        "salary": Decimal("90000"),
-        "salary_usd": Decimal("90000"),
+        "salary_minor_units": 9000000,
+        "salary_usd_minor_units": 9000000,
         "currency": "USD",
     },
     {
@@ -58,8 +57,8 @@ EMPLOYEES = [
         "email": "eve@example.com",
         "department": "HR",
         "country": "UK",
-        "salary": Decimal("75000"),
-        "salary_usd": Decimal("94000"),
+        "salary_minor_units": 7500000,
+        "salary_usd_minor_units": 9400000,
         "currency": "GBP",
     },
 ]
@@ -81,9 +80,9 @@ async def seeded_client(client: AsyncClient, db_session: AsyncSession) -> AsyncC
 
         salary = Salary(
             employee_id=emp.id,
-            salary=data["salary"],
+            salary_minor_units=data["salary_minor_units"],
             currency=data["currency"],
-            salary_usd=data["salary_usd"],
+            salary_usd_minor_units=data["salary_usd_minor_units"],
             valid_from=date(2023, 1, 1),
             valid_to=None,
         )
@@ -310,9 +309,9 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=inactive.id,
-                salary=Decimal("50000"),
+                salary_minor_units=9500000,
                 currency="USD",
-                salary_usd=Decimal("50000"),
+                salary_usd_minor_units=9500000,
                 valid_from=date(2023, 1, 1),
                 valid_to=None,
             )
@@ -342,9 +341,9 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
-                salary=Decimal("70000"),
+                salary_minor_units=7000000,
                 currency="USD",
-                salary_usd=Decimal("70000"),
+                salary_usd_minor_units=7000000,
                 valid_from=date(2020, 1, 1),
                 valid_to=date(2022, 12, 31),  # closed salary — not active
             )
@@ -373,9 +372,9 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
-                salary=Decimal("80000"),
+                salary_minor_units=8000000,
                 currency="USD",
-                salary_usd=Decimal("80000"),
+                salary_usd_minor_units=8000000,
                 valid_from=date(2021, 1, 1),
                 valid_to=date(2023, 1, 1),  # old salary
             )
@@ -383,9 +382,9 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
-                salary=Decimal("110000"),
+                salary_minor_units=11000000,
                 currency="USD",
-                salary_usd=Decimal("110000"),
+                salary_usd_minor_units=11000000,
                 valid_from=date(2023, 1, 1),
                 valid_to=None,  # current salary
             )
@@ -396,7 +395,7 @@ class TestEmployeeBusinessRules:
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
-        assert float(body["items"][0]["salary_usd"]) == 110000.0
+        assert body["items"][0]["salary_usd_minor_units"] == 11000000
 
     async def test_empty_database(self, client: AsyncClient) -> None:
         """When no employees exist the response is well-formed with zero counts."""
@@ -413,8 +412,8 @@ class TestEmployeeBusinessRules:
         r = await seeded_client.get("/employees?search=bob@example.com")
         assert r.status_code == 200
         item = r.json()["items"][0]
-        assert float(item["salary"]) == 95000.0
-        assert float(item["salary_usd"]) == 119000.0
+        assert item["salary_minor_units"] == 9500000
+        assert item["salary_usd_minor_units"] == 11900000
         assert item["currency"] == "GBP"
 
     async def test_employee_field_values(self, seeded_client: AsyncClient) -> None:
@@ -440,9 +439,9 @@ class TestEmployeeBusinessRules:
             "email",
             "department",
             "country",
-            "salary",
+            "salary_minor_units",
             "currency",
-            "salary_usd",
+            "salary_usd_minor_units",
             "valid_from",
             "created_at",
             "updated_at",
