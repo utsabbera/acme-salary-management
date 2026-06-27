@@ -2,7 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.core.config import settings
+from app.core.exceptions import http_exception_handler, validation_exception_handler
 from app.core.logger import setup_logging
 from app.middlewares.logging import logging_middleware
 from app.routers.api import api_router
@@ -25,6 +29,9 @@ def create_app() -> FastAPI:
     )
 
     app.add_middleware(BaseHTTPMiddleware, dispatch=logging_middleware)
+    
+    app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     app.include_router(api_router)
 

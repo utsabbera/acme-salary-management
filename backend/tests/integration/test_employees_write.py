@@ -36,7 +36,7 @@ class TestEmployeeCreation:
 
         resp2 = await client.post("/employees", json=payload)
         assert resp2.status_code == 409
-        assert resp2.json()["detail"] == "Email already registered"
+        assert resp2.json()["error"]["message"] == "Email already registered"
 
     async def test_create_employee_missing_fields(self, client: AsyncClient) -> None:
         payload = {
@@ -46,12 +46,8 @@ class TestEmployeeCreation:
         response = await client.post("/employees", json=payload)
         assert response.status_code == 422
 
-        detail = response.json()["detail"]
-        missing_fields = [
-            error["loc"][-1]
-            for error in detail
-            if error["type"] in ("value_error.missing", "missing")
-        ]
+        details = response.json()["error"]["details"]
+        missing_fields = [error["field"] for error in details]
         assert "last_name" in missing_fields
         assert "email" in missing_fields
 
@@ -138,7 +134,7 @@ class TestSalaryAdjustment:
             f"/employees/{emp_id}/salaries", json=invalid_salary_payload
         )
         assert invalid_resp.status_code == 400
-        assert "after current salary valid_from" in invalid_resp.json()["detail"]
+        assert "after current salary valid_from" in invalid_resp.json()["error"]["message"]
 
         # Add another salary adjustment
         new_salary_payload = {
