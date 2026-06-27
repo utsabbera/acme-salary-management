@@ -6,9 +6,10 @@ description: Turn the current conversation into a PRD and file it as a GitHub Ep
 Take the current conversation and produce a PRD. Do NOT interview the user — synthesize what you already know.
 
 1. Explore the repo briefly to understand the current state relevant to this feature.
-2. Update the central `docs/requirements.md` file by appending ONLY the high-level User Stories for this new feature. Keep it high-level (the "North Star").
-3. Create a GitHub Epic issue using the `gh` CLI containing the detailed PRD using the template below:
-   `gh issue create --title "[Epic] <Feature Name>" --label "epic" --body "..."`
+2. Create a GitHub Epic issue using the `gh` CLI containing the detailed PRD using the template below:
+   `gh issue create --title "<Feature Name>" --label "epic" --body "..."`
+   Format the title to contain only the feature name, relying exclusively on labels for categorization.
+3. Write User Stories exclusively inside the GitHub Epic body to maintain a single source of truth.
 
 <prd-template>
 
