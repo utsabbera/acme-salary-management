@@ -88,11 +88,14 @@ class EmployeeRepository:
 
     def _map_row(self, row_dict: dict[str, Any]) -> EmployeeRead:
         current_salary = None
-        salary_minor_units = row_dict.get("salary_minor_units")
+        base_salary_minor_units = row_dict.get("base_salary_minor_units")
 
-        if salary_minor_units is not None:
+        if base_salary_minor_units is not None:
             current_salary = CurrentSalary(
-                salary_minor_units=salary_minor_units,
+                base_salary_minor_units=base_salary_minor_units,
+                housing_allowance_minor_units=row_dict.get("housing_allowance_minor_units"),
+                equity_minor_units=row_dict.get("equity_minor_units"),
+                other_allowance_minor_units=row_dict.get("other_allowance_minor_units"),
                 currency=row_dict["currency"],
                 salary_usd_minor_units=row_dict["salary_usd_minor_units"],
                 valid_from=row_dict["valid_from"],

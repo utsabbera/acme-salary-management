@@ -81,7 +81,7 @@ async def seeded_client(client: AsyncClient, db_session: AsyncSession) -> AsyncC
         salary = Salary(
             employee_id=emp.id,
             exchange_rate_id=1,
-            salary_minor_units=data["salary_minor_units"],
+            base_salary_minor_units=data["salary_minor_units"],
             currency=data["currency"],
             salary_usd_minor_units=data["salary_usd_minor_units"],
             valid_from=date(2023, 1, 1),
@@ -311,7 +311,7 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=inactive.id,
                 exchange_rate_id=1,
-                salary_minor_units=9500000,
+                base_salary_minor_units=9500000,
                 currency="USD",
                 salary_usd_minor_units=9500000,
                 valid_from=date(2023, 1, 1),
@@ -344,7 +344,7 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=emp.id,
                 exchange_rate_id=1,
-                salary_minor_units=7000000,
+                base_salary_minor_units=7000000,
                 currency="USD",
                 salary_usd_minor_units=7000000,
                 valid_from=date(2020, 1, 1),
@@ -377,7 +377,7 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=emp.id,
                 exchange_rate_id=1,
-                salary_minor_units=8000000,
+                base_salary_minor_units=8000000,
                 currency="USD",
                 salary_usd_minor_units=8000000,
                 valid_from=date(2021, 1, 1),
@@ -388,7 +388,7 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=emp.id,
                 exchange_rate_id=1,
-                salary_minor_units=11000000,
+                base_salary_minor_units=11000000,
                 currency="USD",
                 salary_usd_minor_units=11000000,
                 valid_from=date(2023, 1, 1),
@@ -467,7 +467,7 @@ class TestEmployeeDetail:
             Salary(
                 employee_id=employee.id,
                 exchange_rate_id=1,
-                salary_minor_units=10000000,
+                base_salary_minor_units=10000000,
                 currency="USD",
                 salary_usd_minor_units=10000000,
                 valid_from=date(2021, 1, 1),

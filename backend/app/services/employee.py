@@ -22,11 +22,14 @@ class EmployeeService:
         if not employee:
             raise HTTPException(status_code=404, detail="Not Found")
 
-        history = sorted(employee.salaries, key=lambda s: s.valid_from, reverse=True)
+        history = sorted(employee.salaries, key=lambda s: (s.valid_from, s.id), reverse=True)
 
         salary_history = [
             SalaryHistoryItem(
-                salary_minor_units=s.salary_minor_units,
+                base_salary_minor_units=s.base_salary_minor_units,
+                housing_allowance_minor_units=s.housing_allowance_minor_units,
+                equity_minor_units=s.equity_minor_units,
+                other_allowance_minor_units=s.other_allowance_minor_units,
                 currency=s.currency,
                 salary_usd_minor_units=s.salary_usd_minor_units,
                 valid_from=s.valid_from,
@@ -39,7 +42,10 @@ class EmployeeService:
         active_salary = next((s for s in history if s.valid_to is None), None)
         if active_salary:
             current_salary = CurrentSalary(
-                salary_minor_units=active_salary.salary_minor_units,
+                base_salary_minor_units=active_salary.base_salary_minor_units,
+                housing_allowance_minor_units=active_salary.housing_allowance_minor_units,
+                equity_minor_units=active_salary.equity_minor_units,
+                other_allowance_minor_units=active_salary.other_allowance_minor_units,
                 currency=active_salary.currency,
                 salary_usd_minor_units=active_salary.salary_usd_minor_units,
                 valid_from=active_salary.valid_from,

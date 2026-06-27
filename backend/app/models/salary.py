@@ -19,7 +19,11 @@ class Salary(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
 
-    salary_minor_units: Mapped[int] = mapped_column(Integer)
+    base_salary_minor_units: Mapped[int] = mapped_column(Integer)
+    housing_allowance_minor_units: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    equity_minor_units: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    other_allowance_minor_units: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
     currency: Mapped[str] = mapped_column(String(3))
     salary_usd_minor_units: Mapped[int] = mapped_column(Integer)
 

@@ -35,9 +35,10 @@ const mockEmployees = [
     department: "Engineering",
     country: "USA",
     current_salary: {
-      salary_minor_units: 10000000,
+      salary_minor_units: 12000000,
+      base_salary_minor_units: 12000000,
       currency: "USD",
-      salary_usd_minor_units: 10000000,
+      salary_usd_minor_units: 12000000,
       valid_from: "2023-01-01",
     },
     created_at: "2023-01-01T00:00:00Z",
@@ -52,6 +53,7 @@ const mockEmployees = [
     country: "UK",
     current_salary: {
       salary_minor_units: 8000000,
+      base_salary_minor_units: 8000000,
       currency: "GBP",
       salary_usd_minor_units: 10000000,
       valid_from: "2023-02-01",

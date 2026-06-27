@@ -19,7 +19,7 @@ class TestEmployeeDetailRead:
         from app.schemas.employee import EmployeeDetailRead, SalaryHistoryItem
 
         history_item = SalaryHistoryItem(
-            salary_minor_units=100000,
+            base_salary_minor_units=100000,
             currency="USD",
             salary_usd_minor_units=100000,
             valid_from=date(2023, 1, 1),

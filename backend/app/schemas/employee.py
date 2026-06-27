@@ -1,14 +1,30 @@
 from datetime import date, datetime
 from typing import TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 
 T = TypeVar("T")
 
 
-class CurrentSalary(BaseModel):
-    salary_minor_units: int
+class SalaryBase(BaseModel):
+    base_salary_minor_units: int
+    housing_allowance_minor_units: int | None = None
+    equity_minor_units: int | None = None
+    other_allowance_minor_units: int | None = None
     currency: str
+
+    @property
+    @computed_field
+    def salary_minor_units(self) -> int:
+        return (
+            self.base_salary_minor_units
+            + (self.housing_allowance_minor_units or 0)
+            + (self.equity_minor_units or 0)
+            + (self.other_allowance_minor_units or 0)
+        )
+
+
+class CurrentSalary(SalaryBase):
     salary_usd_minor_units: int
     valid_from: date
 
@@ -59,9 +75,7 @@ class PaginatedResponse[T](BaseModel):
         )
 
 
-class SalaryHistoryItem(BaseModel):
-    salary_minor_units: int
-    currency: str
+class SalaryHistoryItem(SalaryBase):
     salary_usd_minor_units: int
     valid_from: date
     valid_to: date | None

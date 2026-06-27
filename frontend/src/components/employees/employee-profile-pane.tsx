@@ -34,6 +34,54 @@ function formatDate(dateString: string) {
   });
 }
 
+function SalaryBreakdown({
+  item,
+}: {
+  item: {
+    base_salary_minor_units: number;
+    housing_allowance_minor_units?: number | null;
+    equity_minor_units?: number | null;
+    other_allowance_minor_units?: number | null;
+    currency: string;
+  };
+}) {
+  if (!item) return null;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 mt-4 text-sm border-t pt-4">
+      <div className="flex justify-between">
+        <span className="text-muted-foreground">Base Salary</span>
+        <span className="font-medium text-foreground">
+          {formatCurrency(item.base_salary_minor_units, item.currency)}
+        </span>
+      </div>
+      {item.housing_allowance_minor_units ? (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Housing</span>
+          <span className="font-medium text-foreground">
+            {formatCurrency(item.housing_allowance_minor_units, item.currency)}
+          </span>
+        </div>
+      ) : null}
+      {item.equity_minor_units ? (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Equity</span>
+          <span className="font-medium text-foreground">
+            {formatCurrency(item.equity_minor_units, item.currency)}
+          </span>
+        </div>
+      ) : null}
+      {item.other_allowance_minor_units ? (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Other</span>
+          <span className="font-medium text-foreground">
+            {formatCurrency(item.other_allowance_minor_units, item.currency)}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function EmployeeProfilePane() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -138,20 +186,21 @@ export function EmployeeProfilePane() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
-                    <BanknoteIcon className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-start space-x-4">
+                    <BanknoteIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none text-foreground">
-                        Current Salary
-                      </p>
-                      <p className="text-sm text-muted-foreground font-medium">
+                      <p className="text-sm font-medium leading-none text-foreground">CTC</p>
+                      <p className="text-2xl font-bold tracking-tight text-foreground">
                         {employee.current_salary
                           ? formatCurrency(
                               employee.current_salary.salary_minor_units,
                               employee.current_salary.currency,
                             )
-                          : "No active salary"}
+                          : "N/A"}
                       </p>
+                      {employee.current_salary && (
+                        <SalaryBreakdown item={employee.current_salary} />
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -161,7 +210,7 @@ export function EmployeeProfilePane() {
               <Card className="shadow-none border-muted/60 bg-transparent">
                 <CardHeader>
                   <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-                    Salary History
+                    Compensation History
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -189,7 +238,7 @@ export function EmployeeProfilePane() {
                                 </div>
                               )}
                             </div>
-                            <div className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                            <div className="text-sm font-medium text-muted-foreground flex items-center gap-2 mb-4">
                               <CalendarIcon className="w-4 h-4" />
                               <time dateTime={historyItem.valid_from}>
                                 {formatDate(historyItem.valid_from)}
@@ -203,6 +252,7 @@ export function EmployeeProfilePane() {
                                 </>
                               )}
                             </div>
+                            <SalaryBreakdown item={historyItem} />
                           </div>
                         </div>
                       ))}

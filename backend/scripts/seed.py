@@ -61,13 +61,22 @@ def generate_salaries(employee: Employee, rates_dict: dict[str, int]) -> list[Sa
 
         valid_to = next_date if not is_last else None
 
-        salary_minor_units = int(current_salary_local * 100)
+        total_salary_minor_units = int(current_salary_local * 100)
         salary_usd_minor_units = int(current_salary_local * rate * 100)
+
+        # Split into components: 70% base, 15% housing, 10% equity, 5% other
+        base = int(total_salary_minor_units * 0.70)
+        housing = int(total_salary_minor_units * 0.15)
+        equity = int(total_salary_minor_units * 0.10)
+        other = total_salary_minor_units - base - housing - equity
 
         salaries.append(
             Salary(
                 employee_id=employee.id,
-                salary_minor_units=salary_minor_units,
+                base_salary_minor_units=base,
+                housing_allowance_minor_units=housing,
+                equity_minor_units=equity,
+                other_allowance_minor_units=other,
                 currency=currency,
                 salary_usd_minor_units=salary_usd_minor_units,
                 exchange_rate_id=rate_id,

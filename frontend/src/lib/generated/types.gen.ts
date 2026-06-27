@@ -9,9 +9,21 @@ export type ClientOptions = {
  */
 export type CurrentSalary = {
     /**
-     * Salary Minor Units
+     * Base Salary Minor Units
      */
-    salary_minor_units: number;
+    base_salary_minor_units: number;
+    /**
+     * Housing Allowance Minor Units
+     */
+    housing_allowance_minor_units?: number | null;
+    /**
+     * Equity Minor Units
+     */
+    equity_minor_units?: number | null;
+    /**
+     * Other Allowance Minor Units
+     */
+    other_allowance_minor_units?: number | null;
     /**
      * Currency
      */
@@ -24,6 +36,10 @@ export type CurrentSalary = {
      * Valid From
      */
     valid_from: string;
+    /**
+     * Salary Minor Units
+     */
+    readonly salary_minor_units: number;
 };
 
 /**
@@ -207,9 +223,21 @@ export type PaginatedResponseEmployeeRead = {
  */
 export type SalaryHistoryItem = {
     /**
-     * Salary Minor Units
+     * Base Salary Minor Units
      */
-    salary_minor_units: number;
+    base_salary_minor_units: number;
+    /**
+     * Housing Allowance Minor Units
+     */
+    housing_allowance_minor_units?: number | null;
+    /**
+     * Equity Minor Units
+     */
+    equity_minor_units?: number | null;
+    /**
+     * Other Allowance Minor Units
+     */
+    other_allowance_minor_units?: number | null;
     /**
      * Currency
      */
@@ -226,6 +254,10 @@ export type SalaryHistoryItem = {
      * Valid To
      */
     valid_to: string | null;
+    /**
+     * Salary Minor Units
+     */
+    readonly salary_minor_units: number;
 };
 
 /**
@@ -254,6 +286,182 @@ export type ValidationError = {
     ctx?: {
         [key: string]: unknown;
     };
+};
+
+/**
+ * CurrentSalary
+ */
+export type CurrentSalaryWritable = {
+    /**
+     * Base Salary Minor Units
+     */
+    base_salary_minor_units: number;
+    /**
+     * Housing Allowance Minor Units
+     */
+    housing_allowance_minor_units?: number | null;
+    /**
+     * Equity Minor Units
+     */
+    equity_minor_units?: number | null;
+    /**
+     * Other Allowance Minor Units
+     */
+    other_allowance_minor_units?: number | null;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Salary Usd Minor Units
+     */
+    salary_usd_minor_units: number;
+    /**
+     * Valid From
+     */
+    valid_from: string;
+};
+
+/**
+ * EmployeeDetailRead
+ */
+export type EmployeeDetailReadWritable = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * First Name
+     */
+    first_name: string;
+    /**
+     * Last Name
+     */
+    last_name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Country
+     */
+    country: string;
+    current_salary?: CurrentSalaryWritable | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Salary History
+     */
+    salary_history: Array<SalaryHistoryItemWritable>;
+};
+
+/**
+ * EmployeeRead
+ */
+export type EmployeeReadWritable = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * First Name
+     */
+    first_name: string;
+    /**
+     * Last Name
+     */
+    last_name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Country
+     */
+    country: string;
+    current_salary?: CurrentSalaryWritable | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * PaginatedResponse[EmployeeRead]
+ */
+export type PaginatedResponseEmployeeReadWritable = {
+    /**
+     * Items
+     */
+    items: Array<EmployeeReadWritable>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Offset
+     */
+    offset: number;
+    /**
+     * Limit
+     */
+    limit: number;
+};
+
+/**
+ * SalaryHistoryItem
+ */
+export type SalaryHistoryItemWritable = {
+    /**
+     * Base Salary Minor Units
+     */
+    base_salary_minor_units: number;
+    /**
+     * Housing Allowance Minor Units
+     */
+    housing_allowance_minor_units?: number | null;
+    /**
+     * Equity Minor Units
+     */
+    equity_minor_units?: number | null;
+    /**
+     * Other Allowance Minor Units
+     */
+    other_allowance_minor_units?: number | null;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Salary Usd Minor Units
+     */
+    salary_usd_minor_units: number;
+    /**
+     * Valid From
+     */
+    valid_from: string;
+    /**
+     * Valid To
+     */
+    valid_to: string | null;
 };
 
 export type HealthCheckHealthGetData = {

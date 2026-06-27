@@ -54,7 +54,7 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
             <TableHead>Email</TableHead>
             <TableHead>Department</TableHead>
             <TableHead>Country</TableHead>
-            <TableHead className="text-right">Salary</TableHead>
+            <TableHead className="text-right">CTC</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
