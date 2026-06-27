@@ -13,8 +13,7 @@ Categorize findings into two buckets:
 
 - **Project context** — decisions, constraints, or goals not captured elsewhere → write or update an ADR in `docs/decisions/` or PRD in `docs/requirements.md`
 - **GitHub state** — issues resolved in this session → close or comment; follow-ups discovered → create new issues
-
-*(Note: To persist behavioral rules or skill improvements, do NOT use this wrap skill. Instead, advise the user to use the `/learn` slash command.)*
+- **Agent rules and skills** — Remind the user to run the `/learn` slash command if there are new patterns, behavioral rules, or skill improvements to persist. The `wrap` skill handles project context and GitHub, while `/learn` handles agent capabilities.
 
 ### 2. Propose changes
 

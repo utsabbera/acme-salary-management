@@ -22,13 +22,11 @@ RIGHT: test1 → impl1 → test2 → impl2 → test3 → impl3
 
 ### 1. Plan
 
-If `$ARGUMENTS` contains a GitHub issue number or URL, fetch acceptance criteria with `gh issue view <N>`.
+First, parse the `implementation_plan.md` (created by the `plan` skill) alongside any scope defined in `$ARGUMENTS` (e.g., "Phase 1"). If no plan exists, fetch acceptance criteria from GitHub using `gh issue view <N>`.
 
-If no argument is given, run `gh issue list --state open` and present unblocked issues. Ask the user which to work on.
+Instead of just listing behaviors in chat, **create a `task.md` artifact** to track the behaviors to test.
 
-- Confirm the public interface changes needed
-- List the behaviors to test (not implementation steps)
-- Get user approval on the plan
+**Crucial**: Halt execution and get user approval on the `task.md` artifact before writing the first test.
 
 ### 2. Tracer Bullet
 
@@ -39,6 +37,7 @@ Write ONE test that confirms ONE thing end-to-end. Run it — confirm it fails. 
 For each remaining behavior:
 - Write next test → confirm it fails
 - Write minimal code to pass → confirm it passes
+- Mark the corresponding item as `[x]` in `task.md` to track progress
 - One test at a time, no speculative features
 
 ### 4. Refactor
@@ -50,7 +49,8 @@ After all tests pass:
 
 ### 5. Close
 
-Run the full test suite. If an issue number was provided, offer: `gh issue close <N>`
+Run the full test suite. Upon completion, create a `walkthrough.md` artifact summarizing the work done.
+If an issue number was provided, offer: `gh issue close <N>`
 
 ## Checklist Per Cycle
 
