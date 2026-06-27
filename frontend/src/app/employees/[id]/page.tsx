@@ -21,8 +21,13 @@ function formatDate(dateString: string) {
   });
 }
 
-export default async function EmployeePage({ params }: { params: { id: string } }) {
-  const employeeId = parseInt(params.id, 10);
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function EmployeePage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const employeeId = parseInt(resolvedParams.id, 10);
   if (Number.isNaN(employeeId)) {
     notFound();
   }
@@ -40,7 +45,7 @@ export default async function EmployeePage({ params }: { params: { id: string } 
     const employee = response.data;
 
     return (
-      <div className="container py-10 max-w-4xl">
+      <div className="container mx-auto py-10 px-6 max-w-4xl">
         <div className="mb-8 flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -105,16 +110,16 @@ export default async function EmployeePage({ params }: { params: { id: string } 
             </CardHeader>
             <CardContent>
               {employee.salary_history && employee.salary_history.length > 0 ? (
-                <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                <div className="space-y-6 relative before:absolute before:inset-y-0 before:left-5 before:-translate-x-1/2 before:w-px before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
                   {employee.salary_history.map((historyItem, idx) => (
                     <div
                       key={historyItem.valid_from}
-                      className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
+                      className="relative flex items-start gap-6 group is-active"
                     >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-background bg-muted text-muted-foreground shadow-sm shrink-0 z-10">
                         <CalendarIcon className="h-4 w-4" />
                       </div>
-                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-card p-4 rounded-lg border shadow-sm transition-all hover:shadow-md">
+                      <div className="flex-1 bg-card p-4 rounded-xl border shadow-sm transition-all hover:shadow-md">
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-bold text-2xl tracking-tight text-foreground">
                             {formatCurrency(historyItem.salary_minor_units, historyItem.currency)}

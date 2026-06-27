@@ -53,7 +53,7 @@ describe("EmployeePage", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    const Page = await EmployeePage({ params: { id: "1" } });
+    const Page = await EmployeePage({ params: Promise.resolve({ id: "1" }) });
     render(Page);
 
     await waitFor(() => {
