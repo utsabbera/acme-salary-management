@@ -55,7 +55,6 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
             <TableHead>Department</TableHead>
             <TableHead>Country</TableHead>
             <TableHead className="text-right">Salary</TableHead>
-            <TableHead className="text-right">USD Equivalent</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -94,11 +93,6 @@ function EmployeeRow({
                 employee.current_salary.salary_minor_units / 100,
                 employee.current_salary.currency,
               )
-            : "-"}
-        </TableCell>
-        <TableCell className="text-right">
-          {employee.current_salary
-            ? formatCurrency(employee.current_salary.salary_usd_minor_units / 100, "USD")
             : "-"}
         </TableCell>
         <TableCell className="text-right">
