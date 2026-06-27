@@ -6,6 +6,13 @@ from pydantic import BaseModel
 T = TypeVar("T")
 
 
+class CurrentSalary(BaseModel):
+    salary_minor_units: int
+    currency: str
+    salary_usd_minor_units: int
+    valid_from: date
+
+
 class EmployeeRead(BaseModel):
     id: int
     first_name: str
@@ -13,10 +20,7 @@ class EmployeeRead(BaseModel):
     email: str
     department: str
     country: str
-    salary_minor_units: int
-    currency: str
-    salary_usd_minor_units: int
-    valid_from: date
+    current_salary: CurrentSalary | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -29,9 +33,6 @@ class EmployeeCreate(BaseModel):
     email: str
     department: str
     country: str
-    salary_minor_units: int
-    currency: str
-    valid_from: date | None = None
 
 
 class EmployeeUpdate(BaseModel):

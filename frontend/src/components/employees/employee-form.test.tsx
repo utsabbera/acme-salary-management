@@ -18,9 +18,6 @@ describe("EmployeeForm", () => {
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/department/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/country/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/salary/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/currency/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/valid from/i)).toBeInTheDocument();
 
     expect(screen.getByRole("button", { name: /create employee/i })).toBeInTheDocument();
   });
@@ -47,8 +44,6 @@ describe("EmployeeForm", () => {
       email: "john.doe@example.com",
       department: "Engineering",
       country: "USA",
-      salary_minor_units: 10000000,
-      currency: "USD",
     };
     render(<EmployeeForm onSubmit={onSubmit} mode="edit" defaultValues={defaultValues} />);
 

@@ -70,8 +70,6 @@ export function EditEmployeeDialog({
     email: employee.email,
     department: employee.department,
     country: employee.country,
-    salary: employee.salary_minor_units / 100,
-    currency: employee.currency,
   };
 
   return (

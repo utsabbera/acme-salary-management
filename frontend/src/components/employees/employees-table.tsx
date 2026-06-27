@@ -89,10 +89,17 @@ function EmployeeRow({
         <TableCell>{employee.department}</TableCell>
         <TableCell>{employee.country}</TableCell>
         <TableCell className="text-right">
-          {formatCurrency(employee.salary_minor_units / 100, employee.currency)}
+          {employee.current_salary
+            ? formatCurrency(
+                employee.current_salary.salary_minor_units / 100,
+                employee.current_salary.currency,
+              )
+            : "-"}
         </TableCell>
         <TableCell className="text-right">
-          {formatCurrency(employee.salary_usd_minor_units / 100, "USD")}
+          {employee.current_salary
+            ? formatCurrency(employee.current_salary.salary_usd_minor_units / 100, "USD")
+            : "-"}
         </TableCell>
         <TableCell className="text-right">
           <DropdownMenu>

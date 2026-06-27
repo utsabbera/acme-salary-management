@@ -13,12 +13,6 @@ const employeeSchema = z.object({
   email: z.string().email("Invalid email address"),
   department: z.string().min(1, "Department is required"),
   country: z.string().min(1, "Country is required"),
-  salary: z
-    .union([z.string(), z.number()])
-    .transform((val) => Number(val))
-    .pipe(z.number().min(0, "Salary must be a positive number")),
-  currency: z.string().min(1, "Currency is required"),
-  valid_from: z.string().optional(),
 });
 
 export type EmployeeFormData = z.infer<typeof employeeSchema>;
@@ -93,42 +87,7 @@ export function EmployeeForm({ onSubmit, mode, defaultValues }: EmployeeFormProp
           )}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="salary">Salary</Label>
-          <Input
-            id="salary"
-            type="number"
-            step="0.01"
-            defaultValue={defaultValues?.salary}
-            {...register("salary")}
-          />
-          {errors.salary && (
-            <span className="text-sm text-destructive">{errors.salary.message}</span>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="currency">Currency</Label>
-          <Input id="currency" defaultValue={defaultValues?.currency} {...register("currency")} />
-          {errors.currency && (
-            <span className="text-sm text-destructive">{errors.currency.message}</span>
-          )}
-        </div>
-      </div>
-      {mode === "create" && (
-        <div className="space-y-2">
-          <Label htmlFor="valid_from">Valid From</Label>
-          <Input
-            id="valid_from"
-            type="date"
-            defaultValue={defaultValues?.valid_from}
-            {...register("valid_from")}
-          />
-          {errors.valid_from && (
-            <span className="text-sm text-destructive">{errors.valid_from.message}</span>
-          )}
-        </div>
-      )}
+
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit">{mode === "create" ? "Create Employee" : "Save Changes"}</Button>
       </div>

@@ -1,12 +1,15 @@
-from datetime import date
 
 from fastapi import HTTPException
 
 from app.models.employee import Employee
-from app.models.salary import Salary
 from app.repositories.employee import EmployeeRepository
-from app.schemas.employee import EmployeeCreate, EmployeeRead, EmployeeUpdate, PaginatedResponse
-from app.services.currency import convert_to_usd
+from app.schemas.employee import (
+    CurrentSalary,
+    EmployeeCreate,
+    EmployeeRead,
+    EmployeeUpdate,
+    PaginatedResponse,
+)
 
 
 class EmployeeService:
@@ -17,33 +20,12 @@ class EmployeeService:
         if await self._repo.get_by_email(data.email):
             raise HTTPException(status_code=409, detail="Email already registered")
 
-        try:
-            salary_usd, rate_id = await convert_to_usd(
-                data.salary_minor_units,
-                data.currency,
-                self._repo._session,
-            )
-        except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e)) from e
-
-        valid_from = data.valid_from or date.today()
-
         employee = Employee(
             first_name=data.first_name,
             last_name=data.last_name,
             email=data.email,
             department=data.department,
             country=data.country,
-            salaries=[
-                Salary(
-                    salary_minor_units=data.salary_minor_units,
-                    currency=data.currency,
-                    salary_usd_minor_units=salary_usd,
-                    exchange_rate_id=rate_id,
-                    valid_from=valid_from,
-                    valid_to=None,
-                )
-            ],
         )
 
         created = await self._repo.create(employee)
@@ -55,10 +37,7 @@ class EmployeeService:
             email=created.email,
             department=created.department,
             country=created.country,
-            salary_minor_units=data.salary_minor_units,
-            currency=data.currency,
-            salary_usd_minor_units=salary_usd,
-            valid_from=valid_from,
+            current_salary=None,
             created_at=created.created_at,
             updated_at=created.updated_at,
         )
@@ -88,7 +67,7 @@ class EmployeeService:
         if not active_emp:
             raise HTTPException(status_code=404, detail="Not Found")
 
-        return EmployeeRead.model_validate(dict(active_emp))
+        return self._map_row(dict(active_emp))
 
     async def delete_employee(self, employee_id: int) -> None:
         employee = await self._repo.get_by_id_with_salaries(employee_id)
@@ -120,5 +99,29 @@ class EmployeeService:
                 country=country,
             ),
         )
-        items = [EmployeeRead.model_validate(dict(row)) for row in rows]
+        items = [self._map_row(dict(row)) for row in rows]
         return PaginatedResponse.build(items=items, total=total, offset=offset, limit=limit)
+
+    def _map_row(self, row_dict: dict) -> EmployeeRead:
+        salary_minor_units = row_dict.get("salary_minor_units")
+        if salary_minor_units is not None:
+            current_salary = CurrentSalary(
+                salary_minor_units=salary_minor_units,
+                currency=row_dict["currency"],
+                salary_usd_minor_units=row_dict["salary_usd_minor_units"],
+                valid_from=row_dict["valid_from"],
+            )
+        else:
+            current_salary = None
+
+        return EmployeeRead(
+            id=row_dict["id"],
+            first_name=row_dict["first_name"],
+            last_name=row_dict["last_name"],
+            email=row_dict["email"],
+            department=row_dict["department"],
+            country=row_dict["country"],
+            current_salary=current_salary,
+            created_at=row_dict["created_at"],
+            updated_at=row_dict["updated_at"],
+        )

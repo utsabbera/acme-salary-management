@@ -5,6 +5,28 @@ export type ClientOptions = {
 };
 
 /**
+ * CurrentSalary
+ */
+export type CurrentSalary = {
+    /**
+     * Salary Minor Units
+     */
+    salary_minor_units: number;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Salary Usd Minor Units
+     */
+    salary_usd_minor_units: number;
+    /**
+     * Valid From
+     */
+    valid_from: string;
+};
+
+/**
  * EmployeeCreate
  */
 export type EmployeeCreate = {
@@ -28,18 +50,6 @@ export type EmployeeCreate = {
      * Country
      */
     country: string;
-    /**
-     * Salary Minor Units
-     */
-    salary_minor_units: number;
-    /**
-     * Currency
-     */
-    currency: string;
-    /**
-     * Valid From
-     */
-    valid_from?: string | null;
 };
 
 /**
@@ -70,22 +80,7 @@ export type EmployeeRead = {
      * Country
      */
     country: string;
-    /**
-     * Salary Minor Units
-     */
-    salary_minor_units: number;
-    /**
-     * Currency
-     */
-    currency: string;
-    /**
-     * Salary Usd Minor Units
-     */
-    salary_usd_minor_units: number;
-    /**
-     * Valid From
-     */
-    valid_from: string;
+    current_salary?: CurrentSalary | null;
     /**
      * Created At
      */

@@ -325,11 +325,11 @@ class TestEmployeeBusinessRules:
         emails = [i["email"] for i in r.json()["items"]]
         assert "ghost@example.com" not in emails
 
-    async def test_employee_without_active_salary_excluded(
+    async def test_employee_without_active_salary_included(
         self, client: AsyncClient, db_session: AsyncSession
     ) -> None:
-        """An employee whose only salary row has valid_to set must not appear
-        (the active_employees view requires valid_to IS NULL)."""
+        """An employee whose only salary row has valid_to set MUST still appear,
+        but with a null salary (because active_employees view uses LEFT JOIN)."""
         emp = Employee(
             first_name="Past",
             last_name="Employee",
@@ -355,7 +355,8 @@ class TestEmployeeBusinessRules:
 
         r = await client.get("/employees?search=past@example.com")
         assert r.status_code == 200
-        assert r.json()["total"] == 0
+        assert r.json()["total"] == 1
+        assert r.json()["items"][0]["current_salary"] is None
 
     async def test_only_current_salary_returned(
         self, client: AsyncClient, db_session: AsyncSession
@@ -400,7 +401,7 @@ class TestEmployeeBusinessRules:
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
-        assert body["items"][0]["salary_usd_minor_units"] == 11000000
+        assert body["items"][0]["current_salary"]["salary_usd_minor_units"] == 11000000
 
     async def test_empty_database(self, client: AsyncClient) -> None:
         """When no employees exist the response is well-formed with zero counts."""
@@ -417,9 +418,9 @@ class TestEmployeeBusinessRules:
         r = await seeded_client.get("/employees?search=bob@example.com")
         assert r.status_code == 200
         item = r.json()["items"][0]
-        assert item["salary_minor_units"] == 9500000
-        assert item["salary_usd_minor_units"] == 11900000
-        assert item["currency"] == "GBP"
+        assert item["current_salary"]["salary_minor_units"] == 9500000
+        assert item["current_salary"]["salary_usd_minor_units"] == 11900000
+        assert item["current_salary"]["currency"] == "GBP"
 
     async def test_employee_field_values(self, seeded_client: AsyncClient) -> None:
         """All identity fields must match the seeded values exactly."""
@@ -431,7 +432,7 @@ class TestEmployeeBusinessRules:
         assert item["email"] == "carol@example.com"
         assert item["department"] == "HR"
         assert item["country"] == "US"
-        assert item["valid_from"] == "2023-01-01"
+        assert item["current_salary"]["valid_from"] == "2023-01-01"
 
     async def test_response_schema(self, seeded_client: AsyncClient) -> None:
         r = await seeded_client.get("/employees?limit=1")
@@ -444,10 +445,7 @@ class TestEmployeeBusinessRules:
             "email",
             "department",
             "country",
-            "salary_minor_units",
-            "currency",
-            "salary_usd_minor_units",
-            "valid_from",
+            "current_salary",
             "created_at",
             "updated_at",
         }

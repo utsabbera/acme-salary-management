@@ -66,9 +66,6 @@ describe("CreateEmployeeDialog", () => {
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
     await user.type(screen.getByLabelText(/department/i), "Engineering");
     await user.type(screen.getByLabelText(/country/i), "USA");
-    await user.type(screen.getByLabelText(/salary/i), "100000");
-    await user.type(screen.getByLabelText(/currency/i), "USD");
-    await user.type(screen.getByLabelText(/valid from/i), "2024-01-01");
 
     await user.click(screen.getByRole("button", { name: /create employee/i }));
 
@@ -81,9 +78,6 @@ describe("CreateEmployeeDialog", () => {
           email: "john.doe@example.com",
           department: "Engineering",
           country: "USA",
-          salary_minor_units: 10000000,
-          currency: "USD",
-          valid_from: "2024-01-01",
         },
       });
     });

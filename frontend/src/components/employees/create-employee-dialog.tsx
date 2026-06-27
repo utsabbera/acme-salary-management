@@ -33,9 +33,6 @@ export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialo
           email: data.email,
           department: data.department,
           country: data.country,
-          salary_minor_units: Math.round(Number(data.salary) * 100),
-          currency: data.currency,
-          valid_from: data.valid_from,
         },
       });
 
