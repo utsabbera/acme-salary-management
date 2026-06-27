@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses } from './types.gen';
+import type { CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -27,3 +27,32 @@ export const healthCheckHealthGet = <ThrowOnError extends boolean = false>(optio
  * List Employees
  */
 export const listEmployeesEmployeesGet = <ThrowOnError extends boolean = false>(options?: Options<ListEmployeesEmployeesGetData, ThrowOnError>): RequestResult<ListEmployeesEmployeesGetResponses, ListEmployeesEmployeesGetErrors, ThrowOnError> => (options?.client ?? client).get<ListEmployeesEmployeesGetResponses, ListEmployeesEmployeesGetErrors, ThrowOnError>({ url: '/employees', ...options });
+
+/**
+ * Create Employee
+ */
+export const createEmployeeEmployeesPost = <ThrowOnError extends boolean = false>(options: Options<CreateEmployeeEmployeesPostData, ThrowOnError>): RequestResult<CreateEmployeeEmployeesPostResponses, CreateEmployeeEmployeesPostErrors, ThrowOnError> => (options.client ?? client).post<CreateEmployeeEmployeesPostResponses, CreateEmployeeEmployeesPostErrors, ThrowOnError>({
+    url: '/employees',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Employee
+ */
+export const deleteEmployeeEmployeesEmployeeIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteEmployeeEmployeesEmployeeIdDeleteData, ThrowOnError>): RequestResult<DeleteEmployeeEmployeesEmployeeIdDeleteResponses, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteEmployeeEmployeesEmployeeIdDeleteResponses, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, ThrowOnError>({ url: '/employees/{employee_id}', ...options });
+
+/**
+ * Update Employee
+ */
+export const updateEmployeeEmployeesEmployeeIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateEmployeeEmployeesEmployeeIdPatchData, ThrowOnError>): RequestResult<UpdateEmployeeEmployeesEmployeeIdPatchResponses, UpdateEmployeeEmployeesEmployeeIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateEmployeeEmployeesEmployeeIdPatchResponses, UpdateEmployeeEmployeesEmployeeIdPatchErrors, ThrowOnError>({
+    url: '/employees/{employee_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});

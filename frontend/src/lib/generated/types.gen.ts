@@ -5,6 +5,44 @@ export type ClientOptions = {
 };
 
 /**
+ * EmployeeCreate
+ */
+export type EmployeeCreate = {
+    /**
+     * First Name
+     */
+    first_name: string;
+    /**
+     * Last Name
+     */
+    last_name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Country
+     */
+    country: string;
+    /**
+     * Salary
+     */
+    salary: number | string;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Valid From
+     */
+    valid_from?: string | null;
+};
+
+/**
  * EmployeeRead
  */
 export type EmployeeRead = {
@@ -56,6 +94,32 @@ export type EmployeeRead = {
      * Updated At
      */
     updated_at: string;
+};
+
+/**
+ * EmployeeUpdate
+ */
+export type EmployeeUpdate = {
+    /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
+    /**
+     * Email
+     */
+    email?: string | null;
+    /**
+     * Department
+     */
+    department?: string | null;
+    /**
+     * Country
+     */
+    country?: string | null;
 };
 
 /**
@@ -199,3 +263,88 @@ export type ListEmployeesEmployeesGetResponses = {
 };
 
 export type ListEmployeesEmployeesGetResponse = ListEmployeesEmployeesGetResponses[keyof ListEmployeesEmployeesGetResponses];
+
+export type CreateEmployeeEmployeesPostData = {
+    body: EmployeeCreate;
+    path?: never;
+    query?: never;
+    url: '/employees';
+};
+
+export type CreateEmployeeEmployeesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateEmployeeEmployeesPostError = CreateEmployeeEmployeesPostErrors[keyof CreateEmployeeEmployeesPostErrors];
+
+export type CreateEmployeeEmployeesPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: EmployeeRead;
+};
+
+export type CreateEmployeeEmployeesPostResponse = CreateEmployeeEmployeesPostResponses[keyof CreateEmployeeEmployeesPostResponses];
+
+export type DeleteEmployeeEmployeesEmployeeIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Employee Id
+         */
+        employee_id: number;
+    };
+    query?: never;
+    url: '/employees/{employee_id}';
+};
+
+export type DeleteEmployeeEmployeesEmployeeIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteEmployeeEmployeesEmployeeIdDeleteError = DeleteEmployeeEmployeesEmployeeIdDeleteErrors[keyof DeleteEmployeeEmployeesEmployeeIdDeleteErrors];
+
+export type DeleteEmployeeEmployeesEmployeeIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteEmployeeEmployeesEmployeeIdDeleteResponse = DeleteEmployeeEmployeesEmployeeIdDeleteResponses[keyof DeleteEmployeeEmployeesEmployeeIdDeleteResponses];
+
+export type UpdateEmployeeEmployeesEmployeeIdPatchData = {
+    body: EmployeeUpdate;
+    path: {
+        /**
+         * Employee Id
+         */
+        employee_id: number;
+    };
+    query?: never;
+    url: '/employees/{employee_id}';
+};
+
+export type UpdateEmployeeEmployeesEmployeeIdPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateEmployeeEmployeesEmployeeIdPatchError = UpdateEmployeeEmployeesEmployeeIdPatchErrors[keyof UpdateEmployeeEmployeesEmployeeIdPatchErrors];
+
+export type UpdateEmployeeEmployeesEmployeeIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: EmployeeRead;
+};
+
+export type UpdateEmployeeEmployeesEmployeeIdPatchResponse = UpdateEmployeeEmployeesEmployeeIdPatchResponses[keyof UpdateEmployeeEmployeesEmployeeIdPatchResponses];
