@@ -10,7 +10,7 @@ from app.schemas.dashboard import (
     CountryTotal,
     DashboardStats,
     DepartmentAverage,
-    EmployeeSalaryPoint,
+    DepartmentSalaryDistribution,
 )
 
 
@@ -118,14 +118,35 @@ class DashboardRepository:
             active_employees.c.department_name.label("department"),
             active_employees.c.salary_usd_minor_units,
         ).where(active_employees.c.salary_usd_minor_units.is_not(None))
+
         result_dist = await self._session.execute(stmt_dist)
 
-        salary_distribution = [
-            EmployeeSalaryPoint(
-                department=row.department, salary_usd_minor_units=int(row.salary_usd_minor_units)
+        from collections import defaultdict
+
+        salaries_by_dept = defaultdict(list)
+        for row in result_dist.all():
+            salaries_by_dept[row.department].append(row.salary_usd_minor_units)
+
+        def get_percentile(sorted_data: list[int], percentile: float) -> int:
+            if not sorted_data:
+                return 0
+            index = percentile * (len(sorted_data) - 1)
+            lower = int(index)
+            upper = lower + 1 if lower < len(sorted_data) - 1 else lower
+            weight = index - lower
+            return int(sorted_data[lower] * (1 - weight) + sorted_data[upper] * weight)
+
+        salary_distribution = []
+        for dept, salaries in salaries_by_dept.items():
+            salaries.sort()
+            salary_distribution.append(
+                DepartmentSalaryDistribution(
+                    department=dept,
+                    p25_salary_usd_minor_units=get_percentile(salaries, 0.25),
+                    p50_salary_usd_minor_units=get_percentile(salaries, 0.50),
+                    p75_salary_usd_minor_units=get_percentile(salaries, 0.75),
+                )
             )
-            for row in result_dist.all()
-        ]
 
         return DashboardStats(
             department_averages=department_averages,

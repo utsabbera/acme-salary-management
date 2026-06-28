@@ -79,27 +79,14 @@ export async function DashboardStats() {
     other: { label: "Other", color: "var(--color-chart-4)" },
   } satisfies ChartConfig;
 
-  const getPercentile = (sortedData: number[], percentile: number) => {
-    const index = (percentile / 100) * (sortedData.length - 1);
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    const weight = index - lower;
-    return (sortedData[lower] ?? 0) * (1 - weight) + (sortedData[upper] ?? 0) * weight;
-  };
-
-  const salariesByDept: Record<string, number[]> = {};
-  (data.salary_distribution || []).forEach((d) => {
-    const arr = salariesByDept[d.department] || [];
-    arr.push(d.salary_usd_minor_units / 100);
-    salariesByDept[d.department] = arr;
-  });
-
-  const chartDistributionData = Object.entries(salariesByDept).map(([dept, salaries]) => {
-    salaries.sort((a, b) => a - b);
+  const chartDistributionData = (data.salary_distribution || []).map((d) => {
     return {
-      department: dept,
-      range: [getPercentile(salaries, 25), getPercentile(salaries, 75)] as [number, number],
-      median: getPercentile(salaries, 50),
+      department: d.department,
+      range: [d.p25_salary_usd_minor_units / 100, d.p75_salary_usd_minor_units / 100] as [
+        number,
+        number,
+      ],
+      median: d.p50_salary_usd_minor_units / 100,
       fill: "var(--color-chart-5)",
     };
   });

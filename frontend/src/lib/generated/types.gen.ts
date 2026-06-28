@@ -124,7 +124,7 @@ export type DashboardStats = {
     /**
      * Salary Distribution
      */
-    salary_distribution: Array<EmployeeSalaryPoint>;
+    salary_distribution: Array<DepartmentSalaryDistribution>;
 };
 
 /**
@@ -153,6 +153,28 @@ export type DepartmentRead = {
      * Name
      */
     name: string;
+};
+
+/**
+ * DepartmentSalaryDistribution
+ */
+export type DepartmentSalaryDistribution = {
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * P25 Salary Usd Minor Units
+     */
+    p25_salary_usd_minor_units: number;
+    /**
+     * P50 Salary Usd Minor Units
+     */
+    p50_salary_usd_minor_units: number;
+    /**
+     * P75 Salary Usd Minor Units
+     */
+    p75_salary_usd_minor_units: number;
 };
 
 /**
@@ -249,20 +271,6 @@ export type EmployeeRead = {
      * Updated At
      */
     updated_at: string;
-};
-
-/**
- * EmployeeSalaryPoint
- */
-export type EmployeeSalaryPoint = {
-    /**
-     * Department
-     */
-    department: string;
-    /**
-     * Salary Usd Minor Units
-     */
-    salary_usd_minor_units: number;
 };
 
 /**

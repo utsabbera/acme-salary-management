@@ -6,12 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.employee import Employee
 from app.models.exchange_rate import ExchangeRate
+from app.models.reference import Country, Currency, Department
 from app.models.salary import Salary
 
 pytestmark = pytest.mark.asyncio
-
-
-from app.models.reference import Country, Currency, Department
 
 
 @pytest.fixture
@@ -226,13 +224,23 @@ class TestDashboardStats:
         # A (Engineering, 12m), B (Engineering, 11m), C (HR, 8m)
         # D is inactive, E is expired, F is expired
 
-        # Expect 3 data points
-        assert len(distribution) == 3
+        # Expect 2 data points (departments: Engineering and HR)
+        assert len(distribution) == 2
 
-        eng_salaries = [
-            d["salary_usd_minor_units"] for d in distribution if d["department"] == "Engineering"
-        ]
-        hr_salaries = [d["salary_usd_minor_units"] for d in distribution if d["department"] == "HR"]
+        # Verify the structure has percentiles
+        dept_names = [d["department"] for d in distribution]
+        assert "Engineering" in dept_names
+        assert "HR" in dept_names
 
-        assert sorted(eng_salaries) == [12000000, 13750000]
-        assert hr_salaries == [8000000]
+        eng_dist = next(d for d in distribution if d["department"] == "Engineering")
+        assert "p25_salary_usd_minor_units" in eng_dist
+        assert "p50_salary_usd_minor_units" in eng_dist
+        assert "p75_salary_usd_minor_units" in eng_dist
+
+        eng_dist = next(d for d in distribution if d["department"] == "Engineering")
+        assert eng_dist["p25_salary_usd_minor_units"] == 12437500
+        assert eng_dist["p50_salary_usd_minor_units"] == 12875000
+        assert eng_dist["p75_salary_usd_minor_units"] == 13312500
+
+        hr_dist = next(d for d in distribution if d["department"] == "HR")
+        assert hr_dist["p50_salary_usd_minor_units"] == 8000000

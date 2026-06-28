@@ -675,7 +675,7 @@
           },
           "salary_distribution": {
             "items": {
-              "$ref": "#/components/schemas/EmployeeSalaryPoint"
+              "$ref": "#/components/schemas/DepartmentSalaryDistribution"
             },
             "type": "array",
             "title": "Salary Distribution"
@@ -725,6 +725,34 @@
           "name"
         ],
         "title": "DepartmentRead"
+      },
+      "DepartmentSalaryDistribution": {
+        "properties": {
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "p25_salary_usd_minor_units": {
+            "type": "integer",
+            "title": "P25 Salary Usd Minor Units"
+          },
+          "p50_salary_usd_minor_units": {
+            "type": "integer",
+            "title": "P50 Salary Usd Minor Units"
+          },
+          "p75_salary_usd_minor_units": {
+            "type": "integer",
+            "title": "P75 Salary Usd Minor Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "department",
+          "p25_salary_usd_minor_units",
+          "p50_salary_usd_minor_units",
+          "p75_salary_usd_minor_units"
+        ],
+        "title": "DepartmentSalaryDistribution"
       },
       "EmployeeCreate": {
         "properties": {
@@ -882,24 +910,6 @@
           "updated_at"
         ],
         "title": "EmployeeRead"
-      },
-      "EmployeeSalaryPoint": {
-        "properties": {
-          "department": {
-            "type": "string",
-            "title": "Department"
-          },
-          "salary_usd_minor_units": {
-            "type": "integer",
-            "title": "Salary Usd Minor Units"
-          }
-        },
-        "type": "object",
-        "required": [
-          "department",
-          "salary_usd_minor_units"
-        ],
-        "title": "EmployeeSalaryPoint"
       },
       "EmployeeUpdate": {
         "properties": {

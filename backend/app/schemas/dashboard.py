@@ -24,9 +24,11 @@ class ComponentTotals(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class EmployeeSalaryPoint(BaseModel):
+class DepartmentSalaryDistribution(BaseModel):
     department: str
-    salary_usd_minor_units: int
+    p25_salary_usd_minor_units: int
+    p50_salary_usd_minor_units: int
+    p75_salary_usd_minor_units: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -35,4 +37,4 @@ class DashboardStats(BaseModel):
     department_averages: list[DepartmentAverage]
     country_totals: list[CountryTotal]
     component_totals: ComponentTotals
-    salary_distribution: list[EmployeeSalaryPoint]
+    salary_distribution: list[DepartmentSalaryDistribution]

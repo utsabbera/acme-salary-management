@@ -323,7 +323,8 @@ sequenceDiagram
         DB-->>DashRepo: component_totals (base, housing, equity, other)
     and
         DashRepo->>View: SELECT department, salary_usd_minor_units per employee
-        View-->>DashRepo: salary_distribution points[]
+        View-->>DashRepo: raw salaries[]
+        DashRepo->>DashRepo: Calculate p25, p50, p75 percentiles
     end
 
     DashRepo-->>API: DashboardStats
