@@ -85,8 +85,10 @@ export function UpdateSalaryDialog({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.input<typeof salarySchema>, unknown, SalaryFormData>({
-    resolver: zodResolver(salarySchema),
+  } = useForm<SalaryFormData>({
+    resolver: zodResolver(
+      salarySchema,
+    ) as unknown as import("react-hook-form").Resolver<SalaryFormData>,
     defaultValues,
   });
 
@@ -151,7 +153,16 @@ export function UpdateSalaryDialog({
                   render={({ field }) => (
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <SelectTrigger id="currency_code" aria-label="Currency">
-                        <SelectValue placeholder="Select currency" />
+                        <SelectValue placeholder="Select currency">
+                          {field.value
+                            ? (() => {
+                                const c = currencies.find(
+                                  (c) => c.code === field.value,
+                                ) as import("@/lib/generated").CurrencyRead;
+                                return `${c.code} – ${c.name}`;
+                              })()
+                            : null}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {currencies.map((c) => (

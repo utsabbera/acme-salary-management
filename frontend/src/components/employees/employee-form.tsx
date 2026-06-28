@@ -45,8 +45,10 @@ export function EmployeeForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.input<typeof employeeSchema>, unknown, EmployeeFormData>({
-    resolver: zodResolver(employeeSchema),
+  } = useForm<EmployeeFormData>({
+    resolver: zodResolver(
+      employeeSchema,
+    ) as unknown as import("react-hook-form").Resolver<EmployeeFormData>,
     defaultValues,
   });
 
@@ -85,7 +87,11 @@ export function EmployeeForm({
                 onValueChange={(v) => field.onChange(Number(v))}
               >
                 <SelectTrigger id="department_id" aria-label="Department">
-                  <SelectValue placeholder="Select department" />
+                  <SelectValue placeholder="Select department">
+                    {field.value
+                      ? departments.find((d) => d.id === Number(field.value))?.name
+                      : null}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {departments.map((dept) => (
@@ -109,7 +115,9 @@ export function EmployeeForm({
             render={({ field }) => (
               <Select value={field.value ?? ""} onValueChange={field.onChange}>
                 <SelectTrigger id="country_code" aria-label="Country">
-                  <SelectValue placeholder="Select country" />
+                  <SelectValue placeholder="Select country">
+                    {field.value ? countries.find((c) => c.code === field.value)?.name : null}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {countries.map((c) => (
