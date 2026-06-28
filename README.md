@@ -38,7 +38,7 @@ make seed                             # seed database with 10,000 employees
 | API Client | hey-api/openapi-ts (auto-generated from OpenAPI spec) |
 | Tests | pytest + pytest-asyncio (backend), Vitest (frontend) |
 
-## Directory Map
+## Project Structure
 
 ```
 backend/      FastAPI app — models, services, repositories, routers
@@ -46,6 +46,13 @@ frontend/     Next.js app — dashboard, employee table, analytics
 docs/         Requirements, architecture, ADRs, AI prompts
 Makefile      Sole orchestrator
 ```
+
+## Documentation
+
+- **[Architecture](docs/architecture.md)**: High-level system design, data models, and API patterns.
+- **[Requirements](docs/requirements.md)**: Product requirements and feature specifications.
+- **[Workflow](docs/workflow.md)**: Standard operating procedures and development lifecycle.
+- **[Architecture Decisions (ADRs)](docs/decisions/)**: Chronological record of significant engineering decisions.
 
 ## Database
 
