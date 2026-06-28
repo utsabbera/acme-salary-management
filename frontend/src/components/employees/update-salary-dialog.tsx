@@ -150,29 +150,27 @@ export function UpdateSalaryDialog({
                 <Controller
                   name="currency_code"
                   control={control}
-                  render={({ field }) => (
-                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                      <SelectTrigger id="currency_code" aria-label="Currency">
-                        <SelectValue placeholder="Select currency">
-                          {field.value
-                            ? (() => {
-                                const c = currencies.find(
-                                  (c) => c.code === field.value,
-                                ) as import("@/lib/generated").CurrencyRead;
-                                return `${c.code} – ${c.name}`;
-                              })()
-                            : null}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {currencies.map((c) => (
-                          <SelectItem key={c.code} value={c.code}>
-                            {c.code} – {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+                  render={({ field }) => {
+                    const selectedCurrency = currencies.find((c) => c.code === field.value);
+                    return (
+                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                        <SelectTrigger id="currency_code" aria-label="Currency">
+                          <SelectValue placeholder="Select currency">
+                            {selectedCurrency
+                              ? `${selectedCurrency.code} – ${selectedCurrency.name}`
+                              : null}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {currencies.map((c) => (
+                            <SelectItem key={c.code} value={c.code}>
+                              {c.code} – {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    );
+                  }}
                 />
                 {errors.currency_code && (
                   <span className="text-sm text-destructive">{errors.currency_code.message}</span>

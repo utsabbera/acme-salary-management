@@ -81,27 +81,28 @@ export function EmployeeForm({
           <Controller
             name="department_id"
             control={control}
-            render={({ field }) => (
-              <Select
-                value={field.value ? String(field.value) : ""}
-                onValueChange={(v) => field.onChange(Number(v))}
-              >
-                <SelectTrigger id="department_id" aria-label="Department">
-                  <SelectValue placeholder="Select department">
-                    {field.value
-                      ? departments.find((d) => d.id === Number(field.value))?.name
-                      : null}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map((dept) => (
-                    <SelectItem key={dept.id} value={String(dept.id)}>
-                      {dept.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            render={({ field }) => {
+              const selectedDepartment = departments.find((d) => d.id === Number(field.value));
+              return (
+                <Select
+                  value={field.value ? String(field.value) : ""}
+                  onValueChange={(v) => field.onChange(Number(v))}
+                >
+                  <SelectTrigger id="department_id" aria-label="Department">
+                    <SelectValue placeholder="Select department">
+                      {selectedDepartment ? selectedDepartment.name : null}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={String(dept.id)}>
+                        {dept.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
           />
           {errors.department_id && (
             <span className="text-sm text-destructive">{errors.department_id.message}</span>
@@ -112,22 +113,25 @@ export function EmployeeForm({
           <Controller
             name="country_code"
             control={control}
-            render={({ field }) => (
-              <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                <SelectTrigger id="country_code" aria-label="Country">
-                  <SelectValue placeholder="Select country">
-                    {field.value ? countries.find((c) => c.code === field.value)?.name : null}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {countries.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            render={({ field }) => {
+              const selectedCountry = countries.find((c) => c.code === field.value);
+              return (
+                <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                  <SelectTrigger id="country_code" aria-label="Country">
+                    <SelectValue placeholder="Select country">
+                      {selectedCountry ? selectedCountry.name : null}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
           />
           {errors.country_code && (
             <span className="text-sm text-destructive">{errors.country_code.message}</span>
