@@ -1,3 +1,10 @@
 import "@testing-library/jest-dom/vitest";
 
 process.env.NEXT_PUBLIC_API_URL = "http://localhost:8000";
+
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+global.ResizeObserver = ResizeObserver;

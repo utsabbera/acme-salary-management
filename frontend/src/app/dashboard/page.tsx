@@ -1,8 +1,20 @@
-export default function DashboardPage() {
+import { Suspense } from "react";
+import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
+import { DashboardStats } from "@/components/dashboard/dashboard-stats";
+
+export default async function DashboardPage() {
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <p className="mt-2 text-gray-600">Welcome to ACME Salary Management.</p>
-    </main>
+    <div className="flex-1 flex flex-col p-8 pt-6 gap-8">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
+        <p className="text-muted-foreground">
+          Real-time compensation and payroll distribution metrics.
+        </p>
+      </div>
+
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardStats />
+      </Suspense>
+    </div>
   );
 }

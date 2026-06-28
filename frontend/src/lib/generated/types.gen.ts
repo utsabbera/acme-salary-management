@@ -5,6 +5,20 @@ export type ClientOptions = {
 };
 
 /**
+ * CountryTotal
+ */
+export type CountryTotal = {
+    /**
+     * Country
+     */
+    country: string;
+    /**
+     * Total Salary Usd Minor Units
+     */
+    total_salary_usd_minor_units: number;
+};
+
+/**
  * CurrentSalary
  */
 export type CurrentSalary = {
@@ -40,6 +54,34 @@ export type CurrentSalary = {
      * Salary Minor Units
      */
     readonly salary_minor_units: number;
+};
+
+/**
+ * DashboardStats
+ */
+export type DashboardStats = {
+    /**
+     * Department Averages
+     */
+    department_averages: Array<DepartmentAverage>;
+    /**
+     * Country Totals
+     */
+    country_totals: Array<CountryTotal>;
+};
+
+/**
+ * DepartmentAverage
+ */
+export type DepartmentAverage = {
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Average Salary Usd Minor Units
+     */
+    average_salary_usd_minor_units: number;
 };
 
 /**
@@ -710,3 +752,19 @@ export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses = {
 };
 
 export type AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponse = AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses[keyof AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses];
+
+export type GetDashboardStatsDashboardStatsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/dashboard/stats';
+};
+
+export type GetDashboardStatsDashboardStatsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: DashboardStats;
+};
+
+export type GetDashboardStatsDashboardStatsGetResponse = GetDashboardStatsDashboardStatsGetResponses[keyof GetDashboardStatsDashboardStatsGetResponses];
