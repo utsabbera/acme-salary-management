@@ -36,3 +36,8 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## 3. Pace and Discussion Phase
 
 **Do Not Rush to Execution:** When the user is clearly in a discussion or ideation phase (e.g., asking conceptual questions, running `/ideate` or `/grill-me`, or debating architecture), strictly stay in discussion mode. Do NOT generate implementation plans, write code, or prompt the user to "Proceed to execution" until the user explicitly signals that the discussion is fully resolved and they are ready to build.
+
+## 4. Context Retrieval (Pre-flight Checklist)
+
+**Always check existing documentation before planning.**
+When starting a new feature, planning an architecture change, or running project commands for the first time, proactively use the `list_dir` and `view_file` tools to check `README.md` and the `docs/` directory for any existing conventions or constraints that might apply to your task. If you're unsure how a subsystem works, check `docs/decisions/` before assuming a default architecture.
