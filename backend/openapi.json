@@ -380,6 +380,34 @@
   },
   "components": {
     "schemas": {
+      "ComponentTotals": {
+        "properties": {
+          "base_salary_usd_minor_units": {
+            "type": "integer",
+            "title": "Base Salary Usd Minor Units"
+          },
+          "housing_allowance_usd_minor_units": {
+            "type": "integer",
+            "title": "Housing Allowance Usd Minor Units"
+          },
+          "equity_usd_minor_units": {
+            "type": "integer",
+            "title": "Equity Usd Minor Units"
+          },
+          "other_allowance_usd_minor_units": {
+            "type": "integer",
+            "title": "Other Allowance Usd Minor Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_salary_usd_minor_units",
+          "housing_allowance_usd_minor_units",
+          "equity_usd_minor_units",
+          "other_allowance_usd_minor_units"
+        ],
+        "title": "ComponentTotals"
+      },
       "CountryTotal": {
         "properties": {
           "country": {
@@ -481,12 +509,24 @@
             },
             "type": "array",
             "title": "Country Totals"
+          },
+          "component_totals": {
+            "$ref": "#/components/schemas/ComponentTotals"
+          },
+          "salary_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/EmployeeSalaryPoint"
+            },
+            "type": "array",
+            "title": "Salary Distribution"
           }
         },
         "type": "object",
         "required": [
           "department_averages",
-          "country_totals"
+          "country_totals",
+          "component_totals",
+          "salary_distribution"
         ],
         "title": "DashboardStats"
       },
@@ -668,6 +708,24 @@
           "updated_at"
         ],
         "title": "EmployeeRead"
+      },
+      "EmployeeSalaryPoint": {
+        "properties": {
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "salary_usd_minor_units": {
+            "type": "integer",
+            "title": "Salary Usd Minor Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "department",
+          "salary_usd_minor_units"
+        ],
+        "title": "EmployeeSalaryPoint"
       },
       "EmployeeUpdate": {
         "properties": {

@@ -22,6 +22,10 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "dept": "Engineering",
             "country": "US",
             "salary_usd": 12000000,
+            "base": 10000000,
+            "housing": 1000000,
+            "equity": 1000000,
+            "other": 0,
             "active": True,
             "valid_to": None,
         },
@@ -32,6 +36,10 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "dept": "Engineering",
             "country": "UK",
             "salary_usd": 11000000,
+            "base": 9000000,
+            "housing": 1000000,
+            "equity": 500000,
+            "other": 500000,
             "active": True,
             "valid_to": None,
         },
@@ -42,6 +50,10 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "dept": "HR",
             "country": "US",
             "salary_usd": 8000000,
+            "base": 8000000,
+            "housing": 0,
+            "equity": 0,
+            "other": 0,
             "active": True,
             "valid_to": None,
         },
@@ -95,7 +107,10 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
         sal = Salary(
             employee_id=emp.id,
             exchange_rate_id=1,
-            base_salary_minor_units=data["salary_usd"],
+            base_salary_minor_units=data.get("base", data["salary_usd"]),
+            housing_allowance_minor_units=data.get("housing", 0),
+            equity_minor_units=data.get("equity", 0),
+            other_allowance_minor_units=data.get("other", 0),
             currency="USD",
             salary_usd_minor_units=data["salary_usd"],
             valid_from=date(2022, 1, 1),
@@ -147,3 +162,51 @@ class TestDashboardStats:
         assert totals["US"] == 20000000
         assert totals["UK"] == 11000000
         assert totals["CA"] == 0
+
+    async def test_get_dashboard_stats_components(
+        self, seeded_dashboard_client: AsyncClient
+    ) -> None:
+        """Verify total spend is correctly broken down by component type."""
+        response = await seeded_dashboard_client.get("/dashboard/stats")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert "component_totals" in data
+        totals = data["component_totals"]
+
+        # Only A, B, C are active and valid.
+        # Base: A(10m) + B(9m) + C(8m) = 27m
+        # Housing: A(1m) + B(1m) = 2m
+        # Equity: A(1m) + B(0.5m) = 1.5m
+        # Other: B(0.5m) = 0.5m
+        assert totals["base_salary_usd_minor_units"] == 27000000
+        assert totals["housing_allowance_usd_minor_units"] == 2000000
+        assert totals["equity_usd_minor_units"] == 1500000
+        assert totals["other_allowance_usd_minor_units"] == 500000
+
+    async def test_get_dashboard_stats_distribution(
+        self, seeded_dashboard_client: AsyncClient
+    ) -> None:
+        """Verify pay distribution returns all active employee salaries by department."""
+        response = await seeded_dashboard_client.get("/dashboard/stats")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert "salary_distribution" in data
+        distribution = data["salary_distribution"]
+
+        # A (Engineering, 12m), B (Engineering, 11m), C (HR, 8m)
+        # D is inactive, E is expired, F is expired
+
+        # Expect 3 data points
+        assert len(distribution) == 3
+
+        eng_salaries = [
+            d["salary_usd_minor_units"] for d in distribution if d["department"] == "Engineering"
+        ]
+        hr_salaries = [d["salary_usd_minor_units"] for d in distribution if d["department"] == "HR"]
+
+        assert sorted(eng_salaries) == [11000000, 12000000]
+        assert hr_salaries == [8000000]
