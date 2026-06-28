@@ -15,7 +15,6 @@ from app.schemas.employee import (
     SalaryCreate,
     SalaryHistoryItem,
 )
-from app.services.currency import convert_to_usd
 
 
 class EmployeeService:
@@ -36,7 +35,6 @@ class EmployeeService:
                 equity_minor_units=s.equity_minor_units,
                 other_allowance_minor_units=s.other_allowance_minor_units,
                 currency=s.currency,
-                salary_usd_minor_units=s.salary_usd_minor_units,
                 valid_from=s.valid_from,
                 valid_to=s.valid_to,
             )
@@ -52,7 +50,6 @@ class EmployeeService:
                 equity_minor_units=active_salary.equity_minor_units,
                 other_allowance_minor_units=active_salary.other_allowance_minor_units,
                 currency=active_salary.currency,
-                salary_usd_minor_units=active_salary.salary_usd_minor_units,
                 valid_from=active_salary.valid_from,
             )
 
@@ -170,10 +167,6 @@ class EmployeeService:
                 )
             active_salary.valid_to = data.valid_from - timedelta(days=1)
 
-        usd_minor_units, exchange_rate_id = await convert_to_usd(
-            data.salary_minor_units, data.currency, self._repo._session
-        )
-
         new_salary = Salary(
             employee_id=employee_id,
             base_salary_minor_units=data.base_salary_minor_units,
@@ -181,8 +174,6 @@ class EmployeeService:
             equity_minor_units=data.equity_minor_units,
             other_allowance_minor_units=data.other_allowance_minor_units,
             currency=data.currency,
-            salary_usd_minor_units=usd_minor_units,
-            exchange_rate_id=exchange_rate_id,
             valid_from=data.valid_from,
         )
         employee.salaries.append(new_salary)

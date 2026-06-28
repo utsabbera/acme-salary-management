@@ -80,10 +80,8 @@ async def seeded_client(client: AsyncClient, db_session: AsyncSession) -> AsyncC
 
         salary = Salary(
             employee_id=emp.id,
-            exchange_rate_id=1,
             base_salary_minor_units=data["salary_minor_units"],
             currency=data["currency"],
-            salary_usd_minor_units=data["salary_usd_minor_units"],
             valid_from=date(2023, 1, 1),
             valid_to=None,
         )
@@ -310,10 +308,8 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=inactive.id,
-                exchange_rate_id=1,
                 base_salary_minor_units=9500000,
                 currency="USD",
-                salary_usd_minor_units=9500000,
                 valid_from=date(2023, 1, 1),
                 valid_to=None,
             )
@@ -343,10 +339,8 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
-                exchange_rate_id=1,
                 base_salary_minor_units=7000000,
                 currency="USD",
-                salary_usd_minor_units=7000000,
                 valid_from=date(2020, 1, 1),
                 valid_to=date(2022, 12, 31),  # closed salary — not active
             )
@@ -376,10 +370,8 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
-                exchange_rate_id=1,
                 base_salary_minor_units=8000000,
                 currency="USD",
-                salary_usd_minor_units=8000000,
                 valid_from=date(2021, 1, 1),
                 valid_to=date(2023, 1, 1),  # old salary
             )
@@ -387,10 +379,8 @@ class TestEmployeeBusinessRules:
         db_session.add(
             Salary(
                 employee_id=emp.id,
-                exchange_rate_id=1,
                 base_salary_minor_units=11000000,
                 currency="USD",
-                salary_usd_minor_units=11000000,
                 valid_from=date(2023, 1, 1),
                 valid_to=None,  # current salary
             )
@@ -401,7 +391,6 @@ class TestEmployeeBusinessRules:
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
-        assert body["items"][0]["current_salary"]["salary_usd_minor_units"] == 11000000
 
     async def test_empty_database(self, client: AsyncClient) -> None:
         """When no employees exist the response is well-formed with zero counts."""
@@ -419,7 +408,6 @@ class TestEmployeeBusinessRules:
         assert r.status_code == 200
         item = r.json()["items"][0]
         assert item["current_salary"]["salary_minor_units"] == 9500000
-        assert item["current_salary"]["salary_usd_minor_units"] == 11900000
         assert item["current_salary"]["currency"] == "GBP"
 
     async def test_employee_field_values(self, seeded_client: AsyncClient) -> None:
@@ -466,10 +454,8 @@ class TestEmployeeDetail:
         db_session.add(
             Salary(
                 employee_id=employee.id,
-                exchange_rate_id=1,
                 base_salary_minor_units=10000000,
                 currency="USD",
-                salary_usd_minor_units=10000000,
                 valid_from=date(2021, 1, 1),
                 valid_to=date(2023, 1, 1),
             )

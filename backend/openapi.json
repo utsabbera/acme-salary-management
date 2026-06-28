@@ -469,10 +469,6 @@
             "type": "string",
             "title": "Currency"
           },
-          "salary_usd_minor_units": {
-            "type": "integer",
-            "title": "Salary Usd Minor Units"
-          },
           "valid_from": {
             "type": "string",
             "format": "date",
@@ -488,7 +484,6 @@
         "required": [
           "base_salary_minor_units",
           "currency",
-          "salary_usd_minor_units",
           "valid_from",
           "salary_minor_units"
         ],
@@ -945,10 +940,6 @@
             "type": "string",
             "title": "Currency"
           },
-          "salary_usd_minor_units": {
-            "type": "integer",
-            "title": "Salary Usd Minor Units"
-          },
           "valid_from": {
             "type": "string",
             "format": "date",
@@ -976,7 +967,6 @@
         "required": [
           "base_salary_minor_units",
           "currency",
-          "salary_usd_minor_units",
           "valid_from",
           "valid_to",
           "salary_minor_units"

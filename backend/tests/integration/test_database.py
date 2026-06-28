@@ -24,19 +24,15 @@ class TestDatabaseBehaviors:
 
         old_salary = Salary(
             employee_id=employee.id,
-            exchange_rate_id=1,
             base_salary_minor_units=10000000,
             currency="USD",
-            salary_usd_minor_units=10000000,
             valid_from=date(2020, 1, 1),
             valid_to=date(2022, 1, 1),
         )
         new_salary = Salary(
             employee_id=employee.id,
-            exchange_rate_id=1,
             base_salary_minor_units=12000000,
             currency="USD",
-            salary_usd_minor_units=12000000,
             valid_from=date(2022, 1, 1),
             valid_to=None,
         )
@@ -65,10 +61,8 @@ class TestDatabaseBehaviors:
 
         salary = Salary(
             employee_id=employee.id,
-            exchange_rate_id=1,
             base_salary_minor_units=10000000,
             currency="USD",
-            salary_usd_minor_units=10000000,
             valid_from=date(2020, 1, 1),
             valid_to=None,
         )
@@ -94,10 +88,8 @@ class TestDatabaseBehaviors:
 
         salary = Salary(
             employee_id=employee.id,
-            exchange_rate_id=1,
             base_salary_minor_units=8000000,
             currency="USD",
-            salary_usd_minor_units=8000000,
             valid_from=date(2020, 1, 1),
             valid_to=None,
         )

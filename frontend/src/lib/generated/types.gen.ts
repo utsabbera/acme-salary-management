@@ -65,10 +65,6 @@ export type CurrentSalary = {
      */
     currency: string;
     /**
-     * Salary Usd Minor Units
-     */
-    salary_usd_minor_units: number;
-    /**
      * Valid From
      */
     valid_from: string;
@@ -356,10 +352,6 @@ export type SalaryHistoryItem = {
      */
     currency: string;
     /**
-     * Salary Usd Minor Units
-     */
-    salary_usd_minor_units: number;
-    /**
      * Valid From
      */
     valid_from: string;
@@ -425,10 +417,6 @@ export type CurrentSalaryWritable = {
      * Currency
      */
     currency: string;
-    /**
-     * Salary Usd Minor Units
-     */
-    salary_usd_minor_units: number;
     /**
      * Valid From
      */
@@ -563,10 +551,6 @@ export type SalaryHistoryItemWritable = {
      * Currency
      */
     currency: string;
-    /**
-     * Salary Usd Minor Units
-     */
-    salary_usd_minor_units: number;
     /**
      * Valid From
      */

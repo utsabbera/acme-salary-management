@@ -97,7 +97,6 @@ class EmployeeRepository:
                 equity_minor_units=row_dict.get("equity_minor_units"),
                 other_allowance_minor_units=row_dict.get("other_allowance_minor_units"),
                 currency=row_dict["currency"],
-                salary_usd_minor_units=row_dict["salary_usd_minor_units"],
                 valid_from=row_dict["valid_from"],
             )
 

@@ -29,7 +29,6 @@ class SalaryCreate(SalaryBase):
 
 
 class CurrentSalary(SalaryBase):
-    salary_usd_minor_units: int
     valid_from: date
 
 
@@ -80,7 +79,6 @@ class PaginatedResponse[T](BaseModel):
 
 
 class SalaryHistoryItem(SalaryBase):
-    salary_usd_minor_units: int
     valid_from: date
     valid_to: date | None
 

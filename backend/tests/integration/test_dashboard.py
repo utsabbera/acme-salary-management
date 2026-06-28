@@ -106,13 +106,11 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
 
         sal = Salary(
             employee_id=emp.id,
-            exchange_rate_id=1,
             base_salary_minor_units=data.get("base", data["salary_usd"]),
             housing_allowance_minor_units=data.get("housing", 0),
             equity_minor_units=data.get("equity", 0),
             other_allowance_minor_units=data.get("other", 0),
             currency="USD",
-            salary_usd_minor_units=data["salary_usd"],
             valid_from=date(2022, 1, 1),
             valid_to=data["valid_to"],
         )

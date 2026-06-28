@@ -47,7 +47,6 @@ def generate_salaries(employee: Employee, rates_dict: dict[str, int]) -> list[Sa
     base_salary_usd = Decimal(random.randint(40_000, 150_000))
     currency = employee.country
     rate = MOCK_FX_RATES[currency]
-    rate_id = rates_dict[currency]
 
     current_salary_local = base_salary_usd / rate
 
@@ -62,7 +61,6 @@ def generate_salaries(employee: Employee, rates_dict: dict[str, int]) -> list[Sa
         valid_to = next_date if not is_last else None
 
         total_salary_minor_units = int(current_salary_local * 100)
-        salary_usd_minor_units = int(current_salary_local * rate * 100)
 
         # Split into components: 70% base, 15% housing, 10% equity, 5% other
         base = int(total_salary_minor_units * 0.70)
@@ -78,8 +76,6 @@ def generate_salaries(employee: Employee, rates_dict: dict[str, int]) -> list[Sa
                 equity_minor_units=equity,
                 other_allowance_minor_units=other,
                 currency=currency,
-                salary_usd_minor_units=salary_usd_minor_units,
-                exchange_rate_id=rate_id,
                 valid_from=current_date,
                 valid_to=valid_to,
             )

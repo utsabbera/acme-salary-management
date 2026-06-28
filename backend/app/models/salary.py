@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.employee import Employee
-    from app.models.exchange_rate import ExchangeRate
 
 from sqlalchemy import BigInteger, Date, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -25,12 +24,8 @@ class Salary(Base):
     other_allowance_minor_units: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
 
     currency: Mapped[str] = mapped_column(String(3))
-    salary_usd_minor_units: Mapped[int] = mapped_column(BigInteger)
-
-    exchange_rate_id: Mapped[int] = mapped_column(ForeignKey("exchange_rates.id"))
 
     valid_from: Mapped[date] = mapped_column(Date)
     valid_to: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     employee: Mapped["Employee"] = relationship("Employee", back_populates="salaries")
-    exchange_rate: Mapped["ExchangeRate"] = relationship("ExchangeRate")

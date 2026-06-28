@@ -121,7 +121,6 @@ class TestSalaryAdjustment:
         data = salary_resp.json()
         assert data["current_salary"] is not None
         assert data["current_salary"]["base_salary_minor_units"] == 10000000
-        assert data["current_salary"]["salary_usd_minor_units"] == 10000000
         assert len(data["salary_history"]) == 1
 
         # Test validation on valid_from

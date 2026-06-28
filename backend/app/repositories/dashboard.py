@@ -58,7 +58,10 @@ class DashboardRepository:
                 ).label("other"),
             )
             .select_from(Salary)
-            .join(ExchangeRate, Salary.exchange_rate_id == ExchangeRate.id)
+            .join(
+                ExchangeRate,
+                (Salary.currency == ExchangeRate.currency) & ExchangeRate.valid_to.is_(None),
+            )
             .join(Employee, Salary.employee_id == Employee.id)
             .where(Employee.is_active, Salary.valid_to.is_(None))
         )

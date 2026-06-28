@@ -71,7 +71,6 @@ class TestEmployeeService:
         salary1 = Salary(
             base_salary_minor_units=9000000,
             currency="USD",
-            salary_usd_minor_units=9000000,
             valid_from=date(2022, 1, 1),
             valid_to=date(2023, 1, 1),
         )
@@ -79,7 +78,6 @@ class TestEmployeeService:
         salary2 = Salary(
             base_salary_minor_units=10000000,
             currency="USD",
-            salary_usd_minor_units=10000000,
             valid_from=date(2023, 1, 2),
             valid_to=None,
         )
