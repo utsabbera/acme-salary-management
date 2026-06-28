@@ -5,6 +5,28 @@ export type ClientOptions = {
 };
 
 /**
+ * ComponentTotals
+ */
+export type ComponentTotals = {
+    /**
+     * Base Salary Usd Minor Units
+     */
+    base_salary_usd_minor_units: number;
+    /**
+     * Housing Allowance Usd Minor Units
+     */
+    housing_allowance_usd_minor_units: number;
+    /**
+     * Equity Usd Minor Units
+     */
+    equity_usd_minor_units: number;
+    /**
+     * Other Allowance Usd Minor Units
+     */
+    other_allowance_usd_minor_units: number;
+};
+
+/**
  * CountryTotal
  */
 export type CountryTotal = {
@@ -68,6 +90,11 @@ export type DashboardStats = {
      * Country Totals
      */
     country_totals: Array<CountryTotal>;
+    component_totals: ComponentTotals;
+    /**
+     * Salary Distribution
+     */
+    salary_distribution: Array<EmployeeSalaryPoint>;
 };
 
 /**
@@ -190,6 +217,20 @@ export type EmployeeRead = {
      * Updated At
      */
     updated_at: string;
+};
+
+/**
+ * EmployeeSalaryPoint
+ */
+export type EmployeeSalaryPoint = {
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Salary Usd Minor Units
+     */
+    salary_usd_minor_units: number;
 };
 
 /**

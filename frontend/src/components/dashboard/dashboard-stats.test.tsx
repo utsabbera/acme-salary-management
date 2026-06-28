@@ -32,6 +32,17 @@ describe("DashboardStats", () => {
           { country: "US", total_salary_usd_minor_units: 50000000 },
           { country: "UK", total_salary_usd_minor_units: 30000000 },
         ],
+        component_totals: {
+          base_salary_usd_minor_units: 70000000,
+          housing_allowance_usd_minor_units: 5000000,
+          equity_usd_minor_units: 4000000,
+          other_allowance_usd_minor_units: 1000000,
+        },
+        salary_distribution: [
+          { department: "Engineering", salary_usd_minor_units: 12050000 },
+          { department: "Engineering", salary_usd_minor_units: 11000000 },
+          { department: "HR", salary_usd_minor_units: 8000000 },
+        ],
       },
     } as unknown as Awaited<ReturnType<typeof getDashboardStatsDashboardStatsGet>>);
 
@@ -46,6 +57,8 @@ describe("DashboardStats", () => {
 
       expect(screen.getByTestId("department-chart")).toBeInTheDocument();
       expect(screen.getByTestId("country-chart")).toBeInTheDocument();
+      expect(screen.getByTestId("component-chart")).toBeInTheDocument();
+      expect(screen.getByTestId("distribution-chart")).toBeInTheDocument();
     });
   });
 
