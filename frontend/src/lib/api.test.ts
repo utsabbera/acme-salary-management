@@ -12,12 +12,16 @@ describe("api client", () => {
     process.env.NEXT_PUBLIC_API_URL = originalEnv;
   });
 
-  it("throws an error if NEXT_PUBLIC_API_URL is missing", async () => {
+  it("warns if NEXT_PUBLIC_API_URL is missing", async () => {
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     delete process.env.NEXT_PUBLIC_API_URL;
 
-    await expect(import("./api")).rejects.toThrow(
+    await import("./api");
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
       "NEXT_PUBLIC_API_URL environment variable is not defined",
     );
+    consoleWarnSpy.mockRestore();
   });
 
   it("exports apiClient if NEXT_PUBLIC_API_URL is defined", async () => {
