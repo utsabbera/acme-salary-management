@@ -59,7 +59,7 @@ Makefile      Sole orchestrator
 
 ## Database
 
-Default: `sqlite+aiosqlite:///./dev.db`
+The application supports both SQLite and PostgreSQL databases.
 
 ## Deployment
 

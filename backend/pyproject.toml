@@ -14,7 +14,6 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.0.51",
     "alembic>=1.18",
     "pydantic-settings>=2.14",
-    "aiosqlite>=0.22.1",
     "asyncpg>=0.30.0",
     "uuid6>=2025.0.1",
     "structlog>=26.1.0",
@@ -29,6 +28,7 @@ dev = [
     "mypy>=2.1",
     "sqlalchemy[mypy]>=2.0",
     "faker>=25.0.0",
+    "aiosqlite>=0.22.1",
 ]
 
 [tool.ruff]
