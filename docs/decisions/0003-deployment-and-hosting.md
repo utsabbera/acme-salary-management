@@ -1,4 +1,4 @@
-# Deployment, Hosting & CI/CD Strategy
+# ADR 0003: Deployment, Hosting & CI/CD Strategy
 
 ## Context
 

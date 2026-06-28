@@ -1,4 +1,4 @@
-# Historical Salary Tracking & Soft Deletes
+# ADR 0002: Historical Salary Tracking & Soft Deletes
 
 ## Context
 

@@ -1,4 +1,4 @@
-# Initial Tech Stack
+# ADR 0001: Initial Tech Stack
 
 ## Context
 

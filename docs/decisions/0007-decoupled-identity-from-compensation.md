@@ -1,4 +1,4 @@
-# Decoupling Identity Creation from Compensation
+# ADR 0007: Decoupling Identity Creation from Compensation
 
 ## Context
 Previously, an Employee could not exist in the system without an initial salary record. The `POST /employees` endpoint required salary information, and the `active_employees` database view relied on an `INNER JOIN` with the `salaries` table. This tightly coupled identity to compensation, breaking real-world HR onboarding workflows (where an employee identity is often created before their compensation package is finalized) and cluttering the API schemas.

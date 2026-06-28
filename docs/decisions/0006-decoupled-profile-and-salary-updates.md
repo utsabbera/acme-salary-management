@@ -1,4 +1,4 @@
-# Decoupling Profile Updates and Salary Adjustments
+# ADR 0006: Decoupling Profile Updates and Salary Adjustments
 
 ## Context
 Initially, the employee update endpoint (`PATCH /employees/{id}`) was responsible for handling both basic profile information updates (like name, email, department, country) and salary adjustments (modifying compensation history). This coupled approach violated the single responsibility principle and introduced complexity in managing two fundamentally different types of changes.

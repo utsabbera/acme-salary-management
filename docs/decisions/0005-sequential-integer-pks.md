@@ -1,4 +1,4 @@
-# Sequential Integer Primary Keys
+# ADR 0005: Sequential Integer Primary Keys
 
 ## Status
 Accepted
