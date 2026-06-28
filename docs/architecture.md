@@ -115,7 +115,6 @@ erDiagram
 
 - **One active salary per employee:** `valid_to = NULL` marks the currently active salary row. Exactly one row per active employee satisfies this condition at any time.
 - **Closing on adjustment:** When a new salary is recorded, the service atomically sets `valid_to = new.valid_from - 1 day` on the previous active row before inserting the new one.
-- **No historical exchange rates:** `exchange_rates` stores only the latest rate per currency. All dashboard USD conversions use today's rate — past snapshots are intentionally not reproducible in exchange for always-current accuracy (ADR 0011).
 - **Minor units everywhere:** All monetary amounts are stored as `BIGINT` integer minor units (e.g. cents) to eliminate floating-point precision bugs.
 
 ---
@@ -126,13 +125,21 @@ erDiagram
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant RSC as RSC<br/>(employees/page.tsx)
-    participant SDK as openapi-ts SDK
-    participant API as FastAPI /employees
-    participant Svc as EmployeeService
-    participant Repo as EmployeeRepository
-    participant View as active_employees view
+    box Browser
+        actor User
+    end
+    box Next.js
+        participant RSC as employees/page.tsx
+        participant SDK as openapi-ts SDK
+    end
+    box FastAPI
+        participant API as Router
+        participant Svc as EmployeeService
+        participant Repo as EmployeeRepository
+    end
+    box PostgreSQL
+        participant View as active_employees view
+    end
 
     User->>RSC: Navigate to /employees?search=alice&department_id=2
     RSC->>SDK: listEmployeesEmployeesGet({ search, department_id, offset, limit })
@@ -161,19 +168,27 @@ This is the most complex write path — it closes the current active salary and 
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Dialog as UpdateSalaryDialog<br/>(Client Component)
-    participant SA as Server Action
-    participant SDK as openapi-ts SDK
-    participant API as FastAPI POST /employees/{id}/salaries
-    participant Svc as EmployeeService
-    participant Repo as EmployeeRepository
-    participant DB as Database
+    box Browser
+        actor User
+        participant Dialog as UpdateSalaryDialog
+    end
+    box Next.js
+        participant SA as Server Action
+        participant SDK as openapi-ts SDK
+    end
+    box FastAPI
+        participant API as Router
+        participant Svc as EmployeeService
+        participant Repo as EmployeeRepository
+    end
+    box PostgreSQL
+        participant DB as Database
+    end
 
     User->>Dialog: Fill form (amount, currency, valid_from) and submit
     Dialog->>SA: addSalaryAdjustmentEmployeesEmployeeIdSalariesPost(...)
     SA->>SDK: POST /employees/{id}/salaries
-    SDK->>API: HTTP POST
+    SDK->>API: HTTP POST /employees/{id}/salaries
 
     API->>Svc: add_salary_adjustment(employee_id, SalaryCreate)
     Svc->>Repo: get_by_id_with_salaries(employee_id)
@@ -215,19 +230,27 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Dialog as AddEmployeeDialog<br/>(Client Component)
-    participant SA as Server Action
-    participant SDK as openapi-ts SDK
-    participant API as FastAPI POST /employees
-    participant Svc as EmployeeService
-    participant Repo as EmployeeRepository
-    participant DB as Database
+    box Browser
+        actor User
+        participant Dialog as AddEmployeeDialog
+    end
+    box Next.js
+        participant SA as Server Action
+        participant SDK as openapi-ts SDK
+    end
+    box FastAPI
+        participant API as Router
+        participant Svc as EmployeeService
+        participant Repo as EmployeeRepository
+    end
+    box PostgreSQL
+        participant DB as Database
+    end
 
     User->>Dialog: Fill form (name, email, department, country) and submit
     Dialog->>SA: createEmployeeEmployeesPost(...)
     SA->>SDK: POST /employees
-    SDK->>API: HTTP POST
+    SDK->>API: HTTP POST /employees
 
     API->>Svc: create_employee(EmployeeCreate)
     Svc->>Repo: get_by_email(email)
@@ -256,7 +279,8 @@ sequenceDiagram
     Repo-->>Svc: EmployeeRead
 
     Svc-->>API: EmployeeRead
-    API-->>SA: 201 EmployeeRead
+    API-->>SDK: 201 EmployeeRead
+    SDK-->>SA: typed response
     SA->>SA: revalidatePath('/employees')
     SA-->>Dialog: success
     Dialog-->>User: Dialog closes, new employee appears in table
@@ -266,13 +290,21 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant RSC as RSC<br/>(dashboard/page.tsx)
-    participant SDK as openapi-ts SDK
-    participant API as FastAPI GET /dashboard/stats
-    participant DashRepo as DashboardRepository
-    participant View as active_employees view
-    participant DB as Database
+    box Browser
+        actor User
+    end
+    box Next.js
+        participant RSC as dashboard/page.tsx
+        participant SDK as openapi-ts SDK
+    end
+    box FastAPI
+        participant API as Router
+        participant DashRepo as DashboardRepository
+    end
+    box PostgreSQL
+        participant View as active_employees view
+        participant DB as Database
+    end
 
     User->>RSC: Navigate to /dashboard
     RSC->>SDK: getDashboardStatsDashboardStatsGet()
@@ -282,7 +314,6 @@ sequenceDiagram
 
     par four aggregation queries
         DashRepo->>View: SELECT department, AVG(salary_usd_minor_units) GROUP BY department
-        Note over View,DB: View JOINs exchange_rates at query time<br/>so salary_usd_minor_units is always current
         View-->>DashRepo: department_averages[]
     and
         DashRepo->>View: SELECT country, SUM(salary_usd_minor_units) GROUP BY country
@@ -305,11 +336,15 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant SA as Server Action
-    participant SDK as openapi-ts SDK
-    participant API as FastAPI
-    participant EH as Exception Handlers<br/>(core/exceptions.py)
-    participant Svc as Service Layer
+    box FastAPI
+        participant Svc as Service Layer
+        participant API as Router
+        participant EH as Exception Handlers
+    end
+    box Next.js
+        participant SDK as openapi-ts SDK
+        participant SA as Server Action
+    end
 
     Svc->>API: raise HTTPException(status_code, detail)
     API->>EH: http_exception_handler(request, exc)
@@ -328,7 +363,7 @@ sequenceDiagram
     end
 
     SDK-->>SA: typed error response (non-2xx)
-    SA-->>SA: Does NOT call revalidatePath (no stale data risk)
+    SA->>SA: Does NOT call revalidatePath (no stale data risk)
     SA-->>SA: Returns error to Client Component
     SA-->>SA: Client Component shows error toast or inline message
 ```
@@ -339,21 +374,21 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    subgraph Vercel["Vercel — Node/Edge Runtime"]
-        subgraph RSC["React Server Components (async, server-only)"]
+    subgraph Nextjs["Next.js"]
+        subgraph RSC["React Server Components"]
             EmpPage["employees/page.tsx\nfetches: employee list + reference data"]
-            EmpDetailPage["employees/id/page.tsx\nfetches: employee detail + reference data in parallel"]
+            EmpDetailPage["employees/[id]/page.tsx\nfetches: employee detail + reference data in parallel"]
             DashPage["dashboard/page.tsx\nfetches: DashboardStats"]
         end
 
-        subgraph CC["Client Components (use client — interactive)"]
+        subgraph CC["Client Components"]
             AddDialog["AddEmployeeDialog\nform + Server Action"]
             EditDialog["EditEmployeeDialog\nform + Server Action"]
             DelDialog["DeleteEmployeeDialog\nconfirm + Server Action"]
             SalaryDialog["UpdateSalaryDialog\nform + Server Action"]
             Filters["Filters / SearchInput\nupdates URL search params"]
             Pagination["Pagination\nupdates URL search params"]
-            Charts["DashboardCharts\nrecharts, client-rendered"]
+            Charts["DashboardCharts\nclient-rendered"]
         end
     end
 
@@ -394,7 +429,7 @@ flowchart TD
     Render <-->|"asyncpg"| Neon["Neon Serverless PostgreSQL"]
 ```
 
-**Key decisions (ADR 0008):**
+**Key decisions ([ADR 0008](decisions/0008-ci-cd-pipeline-design.md)):**
 - A single `deploy.yml` with a `detect-changes` gate keeps frontend and backend CI/CD fully independent.
 - Render is deployed via **Deploy Hook** (not native Git integration) so the CI guard is enforced — Render only deploys after `backend-checks` passes.
 - The frontend uses the **3-step Vercel CLI pattern** (`pull → build → deploy --prebuilt`) to separate build failures from upload failures.
@@ -417,6 +452,6 @@ flowchart TD
 - **Structured error envelope:** All 4xx/5xx responses follow `{ error: { code, message } }`. Validation errors additionally include a `details` array with per-field information.
 
 ### Data Tier
-- **Local currency is the source of truth** (ADR 0011): Salaries are stored in the employee's legal contract currency. USD conversion happens dynamically at read time via the `active_employees` view — never frozen at write time.
+- **Local currency is the source of truth** ([ADR 0011](decisions/0011-local-currency-source-of-truth.md)): Salaries are stored in the employee's legal contract currency. USD conversion happens dynamically at read time via the `active_employees` view — never frozen at write time.
 - **Temporal salary model:** `valid_from` / `valid_to` date ranges on `salaries` provide a full immutable audit trail. The system never overwrites or deletes salary rows.
 - **SQL View for analytics:** The `active_employees` view joins `salaries`, `currencies`, `exchange_rates`, `departments`, and `countries` in one place, exposing a flat projection. Application code never assembles this join itself.
