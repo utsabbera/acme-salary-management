@@ -71,8 +71,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
@@ -95,6 +93,10 @@ jobs:
         working-directory: ./frontend
         run: pnpm vitest run
 
+      - name: Build Next.js
+        working-directory: ./frontend
+        run: pnpm build
+
   deploy-backend:
     name: Deploy backend → Render
     needs: [detect-changes, backend-checks]
@@ -114,8 +116,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
