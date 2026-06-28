@@ -6,7 +6,7 @@ class Settings(BaseSettings):
 
     app_name: str = "ACME Salary Management"
     debug: bool = True
-    database_url: str = "sqlite+aiosqlite:///./dev.db"
+    database_url: str
     cors_origins: list[str] = ["http://localhost:3000"]
 
 
