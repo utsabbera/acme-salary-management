@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
-import type { EmployeeRead } from "@/lib/generated";
+import type { CountryRead, CurrencyRead, DepartmentRead, EmployeeRead } from "@/lib/generated";
 import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
 import { getErrorMessage } from "@/lib/utils";
 import { DeleteEmployeeDialog } from "./delete-employee-dialog";
@@ -29,7 +29,17 @@ import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 import { SalaryBreakdown } from "./salary-breakdown";
 
-export function EmployeeProfilePane() {
+interface EmployeeProfilePaneProps {
+  departments: DepartmentRead[];
+  countries: CountryRead[];
+  currencies: CurrencyRead[];
+}
+
+export function EmployeeProfilePane({
+  departments,
+  countries,
+  currencies,
+}: EmployeeProfilePaneProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const employeeIdParam = searchParams.get("employeeId");
@@ -137,6 +147,8 @@ export function EmployeeProfilePane() {
                   </CardTitle>
                   <EditEmployeeDialog
                     employee={employee as unknown as EmployeeRead}
+                    departments={departments}
+                    countries={countries}
                     onSuccess={fetchEmployee}
                     trigger={
                       <Button variant="outline" size="sm">
@@ -190,6 +202,7 @@ export function EmployeeProfilePane() {
                   </CardTitle>
                   <UpdateSalaryDialog
                     employeeId={employee.id}
+                    currencies={currencies}
                     currentSalary={employee.current_salary}
                     onSuccess={fetchEmployee}
                     trigger={

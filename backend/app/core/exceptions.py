@@ -58,7 +58,10 @@ async def integrity_error_handler(request: Request, exc: IntegrityError) -> JSON
         content={
             "error": {
                 "code": "BAD_REQUEST",
-                "message": "Invalid reference data. Please ensure all references (department, country, currency) exist.",
+                "message": (
+                    "Invalid reference data. Ensure all references"
+                    " (department, country, currency) exist."
+                ),
             }
         },
     )

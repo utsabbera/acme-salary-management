@@ -98,22 +98,22 @@
             "description": "Filter by department ID"
           },
           {
-            "name": "country_id",
+            "name": "country_code",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "type": "integer"
+                  "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Filter by country ID",
-              "title": "Country Id"
+              "description": "Filter by country ISO code",
+              "title": "Country Code"
             },
-            "description": "Filter by country ID"
+            "description": "Filter by country ISO code"
           }
         ],
         "responses": {
@@ -744,9 +744,9 @@
             "type": "integer",
             "title": "Department Id"
           },
-          "country_id": {
-            "type": "integer",
-            "title": "Country Id"
+          "country_code": {
+            "type": "string",
+            "title": "Country Code"
           }
         },
         "type": "object",
@@ -755,7 +755,7 @@
           "last_name",
           "email",
           "department_id",
-          "country_id"
+          "country_code"
         ],
         "title": "EmployeeCreate"
       },
@@ -947,16 +947,16 @@
             ],
             "title": "Department Id"
           },
-          "country_id": {
+          "country_code": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Country Id"
+            "title": "Country Code"
           }
         },
         "type": "object",
@@ -1099,9 +1099,9 @@
             ],
             "title": "Other Allowance Minor Units"
           },
-          "currency_id": {
-            "type": "integer",
-            "title": "Currency Id"
+          "currency_code": {
+            "type": "string",
+            "title": "Currency Code"
           },
           "valid_from": {
             "type": "string",
@@ -1112,7 +1112,7 @@
         "type": "object",
         "required": [
           "base_salary_minor_units",
-          "currency_id",
+          "currency_code",
           "valid_from"
         ],
         "title": "SalaryCreate"

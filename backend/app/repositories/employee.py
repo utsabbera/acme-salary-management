@@ -53,7 +53,7 @@ class EmployeeRepository:
         stmt: Select[Any],
         search: str | None,
         department_id: int | None,
-        country_id: int | None,
+        country_code: str | None,
     ) -> Select[Any]:
         if search:
             stmt = stmt.where(
@@ -66,8 +66,8 @@ class EmployeeRepository:
             )
         if department_id:
             stmt = stmt.where(active_employees.c.department_id == department_id)
-        if country_id:
-            stmt = stmt.where(active_employees.c.country_id == country_id)
+        if country_code:
+            stmt = stmt.where(active_employees.c.country_code == country_code)
         return stmt
 
     async def list_paginated(
@@ -76,10 +76,10 @@ class EmployeeRepository:
         limit: int,
         search: str | None = None,
         department_id: int | None = None,
-        country_id: int | None = None,
+        country_code: str | None = None,
     ) -> list[EmployeeRead]:
         stmt = select(active_employees)
-        stmt = self._apply_filters(stmt, search, department_id, country_id)
+        stmt = self._apply_filters(stmt, search, department_id, country_code)
         stmt = stmt.order_by(active_employees.c.last_name, active_employees.c.first_name)
         stmt = stmt.offset(offset).limit(limit)
 
@@ -90,10 +90,10 @@ class EmployeeRepository:
         self,
         search: str | None = None,
         department_id: int | None = None,
-        country_id: int | None = None,
+        country_code: str | None = None,
     ) -> int:
         stmt = select(func.count()).select_from(active_employees)
-        stmt = self._apply_filters(stmt, search, department_id, country_id)
+        stmt = self._apply_filters(stmt, search, department_id, country_code)
         result = await self._session.execute(stmt)
         return int(result.scalar_one())
 

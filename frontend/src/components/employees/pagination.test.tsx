@@ -32,6 +32,16 @@ describe("Pagination", () => {
     expect(prevButton).toBeDisabled();
   });
 
+  it("uses default offset and limit when no search params are provided", () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    render(<Pagination total={100} />);
+
+    // Page 1 of 5
+    expect(screen.getByText("Page 1 of 5")).toBeInTheDocument();
+    const prevButton = screen.getByRole("button", { name: "Previous page" });
+    expect(prevButton).toBeDisabled();
+  });
+
   it("disables next button on last page", () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=80&limit=20"));
     render(<Pagination total={90} />);

@@ -176,9 +176,9 @@ export type EmployeeCreate = {
      */
     department_id: number;
     /**
-     * Country Id
+     * Country Code
      */
-    country_id: number;
+    country_code: string;
 };
 
 /**
@@ -286,9 +286,9 @@ export type EmployeeUpdate = {
      */
     department_id?: number | null;
     /**
-     * Country Id
+     * Country Code
      */
-    country_id?: number | null;
+    country_code?: string | null;
 };
 
 /**
@@ -386,9 +386,9 @@ export type SalaryCreate = {
      */
     other_allowance_minor_units?: number | null;
     /**
-     * Currency Id
+     * Currency Code
      */
-    currency_id: number;
+    currency_code: string;
     /**
      * Valid From
      */
@@ -653,11 +653,11 @@ export type ListEmployeesEmployeesGetData = {
          */
         department_id?: number | null;
         /**
-         * Country Id
+         * Country Code
          *
-         * Filter by country ID
+         * Filter by country ISO code
          */
-        country_id?: number | null;
+        country_code?: string | null;
     };
     url: '/employees';
 };

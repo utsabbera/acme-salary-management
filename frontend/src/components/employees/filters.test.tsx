@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { CountryRead, DepartmentRead } from "@/lib/generated";
 import { Filters } from "./filters";
 
 const mockReplace = vi.fn();
@@ -50,7 +51,7 @@ vi.mock("@/components/ui/select", () => ({
         type="button"
         data-testid="select-us"
         onClick={() => {
-          onValueChange("1");
+          onValueChange("US");
         }}
       >
         Select US
@@ -63,6 +64,16 @@ vi.mock("@/components/ui/select", () => ({
   SelectValue: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 
+const departments: DepartmentRead[] = [{ id: 1, name: "Engineering" }];
+const countries: CountryRead[] = [
+  {
+    id: 1,
+    code: "US",
+    name: "United States",
+    default_currency: { id: 1, code: "USD", name: "US Dollar" },
+  },
+];
+
 describe("Filters", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -74,7 +85,7 @@ describe("Filters", () => {
 
   it("updates department and resets offset", async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20"));
-    render(<Filters />);
+    render(<Filters departments={departments} countries={countries} />);
 
     // Trigger select for department
     const btn = screen.getAllByTestId("select-engineering")[0] as HTMLElement;
@@ -87,7 +98,7 @@ describe("Filters", () => {
 
   it("removes filter when ALL is selected", async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1"));
-    render(<Filters />);
+    render(<Filters departments={departments} countries={countries} />);
 
     const btn = screen.getAllByTestId("select-all")[0] as HTMLElement;
     fireEvent.click(btn);
@@ -98,8 +109,8 @@ describe("Filters", () => {
   });
 
   it("removes country filter when ALL is selected", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country_id=1"));
-    render(<Filters />);
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country_code=US"));
+    render(<Filters departments={departments} countries={countries} />);
 
     const btn = screen.getAllByTestId("select-all")[1] as HTMLElement;
     fireEvent.click(btn);
@@ -111,27 +122,27 @@ describe("Filters", () => {
 
   it("updates country and resets offset", async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20"));
-    render(<Filters />);
+    render(<Filters departments={departments} countries={countries} />);
 
     const btn = screen.getAllByTestId("select-us")[1] as HTMLElement;
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&country_id=1");
+      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&country_code=US");
     });
   });
 
   it("renders default placeholder text when ALL is selected", () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams(""));
-    render(<Filters />);
+    render(<Filters departments={departments} countries={countries} />);
 
     expect(screen.getAllByText("All Departments")[0]).toBeInTheDocument();
     expect(screen.getAllByText("All Countries")[0]).toBeInTheDocument();
   });
 
   it("renders selected value text", () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1&country_id=1"));
-    render(<Filters />);
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1&country_code=US"));
+    render(<Filters departments={departments} countries={countries} />);
 
     expect(screen.getAllByText("Engineering")[0]).toBeInTheDocument();
     expect(screen.getAllByText("United States")[0]).toBeInTheDocument();

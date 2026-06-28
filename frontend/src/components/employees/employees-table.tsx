@@ -23,9 +23,11 @@ import { EditEmployeeDialog } from "./edit-employee-dialog";
 
 interface EmployeesTableProps {
   employees: EmployeeRead[];
+  departments: import("@/lib/generated").DepartmentRead[];
+  countries: import("@/lib/generated").CountryRead[];
 }
 
-export function EmployeesTable({ employees }: EmployeesTableProps) {
+export function EmployeesTable({ employees, departments, countries }: EmployeesTableProps) {
   if (employees.length === 0) {
     return (
       <div className="flex h-32 items-center justify-center rounded-md border text-muted-foreground">
@@ -60,7 +62,13 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
         </TableHeader>
         <TableBody>
           {employees.map((employee) => (
-            <EmployeeRow key={employee.id} employee={employee} formatCurrency={formatCurrency} />
+            <EmployeeRow
+              key={employee.id}
+              employee={employee}
+              formatCurrency={formatCurrency}
+              departments={departments}
+              countries={countries}
+            />
           ))}
         </TableBody>
       </Table>
@@ -73,9 +81,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 function EmployeeRow({
   employee,
   formatCurrency,
+  departments,
+  countries,
 }: {
   employee: EmployeeRead;
   formatCurrency: (v: number, c: string) => string;
+  departments: import("@/lib/generated").DepartmentRead[];
+  countries: import("@/lib/generated").CountryRead[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -140,6 +152,8 @@ function EmployeeRow({
       </TableRow>
       <EditEmployeeDialog
         employee={employee}
+        departments={departments}
+        countries={countries}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
       />

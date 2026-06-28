@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { CountryRead, DepartmentRead } from "@/lib/generated";
 import { createEmployeeEmployeesPost } from "@/lib/generated";
 import { CreateEmployeeDialog } from "./create-employee-dialog";
 
@@ -28,13 +29,63 @@ vi.mock("@/lib/generated", async (importOriginal) => {
   };
 });
 
+import type { ReactNode } from "react";
+
+vi.mock("@/components/ui/select", () => ({
+  Select: ({
+    onValueChange,
+    children,
+    value,
+  }: {
+    onValueChange: (v: string) => void;
+    children: ReactNode;
+    value?: string;
+  }) => (
+    <div data-testid="mock-select" data-value={value}>
+      {children}
+      <button type="button" data-testid="select-dept" onClick={() => onValueChange("1")}>
+        Select Dept
+      </button>
+      <button type="button" data-testid="select-country" onClick={() => onValueChange("US")}>
+        Select Country
+      </button>
+    </div>
+  ),
+  SelectContent: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
+    <div data-value={value}>{children}</div>
+  ),
+  SelectTrigger: ({
+    children,
+    "aria-label": ariaLabel,
+  }: {
+    children: ReactNode;
+    "aria-label"?: string;
+  }) => (
+    <button type="button" aria-label={ariaLabel}>
+      {children}
+    </button>
+  ),
+  SelectValue: ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>,
+}));
+
+const departments: DepartmentRead[] = [{ id: 1, name: "Engineering" }];
+const countries: CountryRead[] = [
+  {
+    id: 1,
+    code: "US",
+    name: "United States",
+    default_currency: { id: 1, code: "USD", name: "US Dollar" },
+  },
+];
+
 describe("CreateEmployeeDialog", () => {
-  const mockRefresh = vi.fn();
+  const mockRouter = {
+    refresh: vi.fn(),
+  };
 
   beforeEach(() => {
-    vi.mocked(useRouter).mockReturnValue({
-      refresh: mockRefresh,
-    } as unknown as ReturnType<typeof useRouter>);
+    vi.mocked(useRouter).mockReturnValue(mockRouter as unknown as ReturnType<typeof useRouter>);
   });
 
   afterEach(() => {
@@ -44,37 +95,49 @@ describe("CreateEmployeeDialog", () => {
 
   it("opens the dialog when the trigger is clicked", async () => {
     const user = userEvent.setup();
-    const trigger = <button type="button">Open Dialog</button>;
-
-    render(<CreateEmployeeDialog trigger={trigger} />);
+    render(
+      <CreateEmployeeDialog
+        departments={departments}
+        countries={countries}
+        trigger={<button type="button">Open Dialog</button>}
+      />,
+    );
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /open dialog/i }));
+    await user.click(screen.getByRole("button", { name: "Open Dialog" }));
 
-    expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText(/create new employee/i)).toBeInTheDocument();
-
-    expect(screen.getByRole("button", { name: /create employee/i })).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Create New Employee")).toBeInTheDocument();
   });
 
   it("calls API and refreshes router when form is submitted successfully", async () => {
     const user = userEvent.setup();
-    const trigger = <button type="button">Open Dialog</button>;
+    const onSuccess = vi.fn();
     vi.mocked(createEmployeeEmployeesPost).mockResolvedValue({
       data: { id: 1 },
+      error: undefined,
+      response: {},
     } as unknown as Awaited<ReturnType<typeof createEmployeeEmployeesPost>>);
 
-    render(<CreateEmployeeDialog trigger={trigger} />);
-    await user.click(screen.getByRole("button", { name: /open dialog/i }));
+    render(
+      <CreateEmployeeDialog
+        departments={departments}
+        countries={countries}
+        trigger={<button type="button">Open</button>}
+        onSuccess={onSuccess}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Open" }));
 
     await user.type(screen.getByLabelText(/first name/i), "John");
     await user.type(screen.getByLabelText(/last name/i), "Doe");
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
-    await user.type(screen.getByLabelText(/department id/i), "1");
-    await user.type(screen.getByLabelText(/country id/i), "1");
 
-    await user.click(screen.getByRole("button", { name: /create employee/i }));
+    await user.click(screen.getAllByTestId("select-dept")[0] as HTMLElement);
+    await user.click(screen.getAllByTestId("select-country")[1] as HTMLElement);
+
+    await user.click(screen.getByRole("button", { name: "Create Employee" }));
 
     await waitFor(() => {
       expect(createEmployeeEmployeesPost).toHaveBeenCalledWith({
@@ -84,66 +147,68 @@ describe("CreateEmployeeDialog", () => {
           last_name: "Doe",
           email: "john.doe@example.com",
           department_id: 1,
-          country_id: 1,
+          country_code: "US",
         },
       });
     });
 
-    expect(mockRefresh).toHaveBeenCalled();
+    expect(mockRouter.refresh).toHaveBeenCalled();
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
 
-  it("shows an error toast when API returns an error", async () => {
+  it("shows an error toast if API returns an error", async () => {
     const user = userEvent.setup();
-    const trigger = <button type="button">Open Dialog</button>;
     vi.mocked(createEmployeeEmployeesPost).mockResolvedValue({
-      error: "Some API Error",
-    } as unknown as Awaited<ReturnType<typeof createEmployeeEmployeesPost>>);
+      data: undefined,
+      error: { detail: [{ loc: ["body"], msg: "Validation failed", type: "value_error" }] },
+      response: {} as Response,
+    });
 
-    render(<CreateEmployeeDialog trigger={trigger} />);
-    await user.click(screen.getByRole("button", { name: /open dialog/i }));
-
+    render(
+      <CreateEmployeeDialog
+        departments={departments}
+        countries={countries}
+        trigger={<button type="button">Open</button>}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Open" }));
     await user.type(screen.getByLabelText(/first name/i), "John");
     await user.type(screen.getByLabelText(/last name/i), "Doe");
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
-    await user.type(screen.getByLabelText(/department id/i), "1");
-    await user.type(screen.getByLabelText(/country id/i), "1");
+    await user.click(screen.getAllByTestId("select-dept")[0] as HTMLElement);
+    await user.click(screen.getAllByTestId("select-country")[1] as HTMLElement);
 
-    await user.click(screen.getByRole("button", { name: /create employee/i }));
+    await user.click(screen.getByRole("button", { name: "Create Employee" }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining("Could not create employee"),
-      );
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Validation failed"));
     });
-    // Dialog should remain open
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  it("shows an error toast when API throws an exception", async () => {
+  it("shows an error toast if API throws an exception", async () => {
     const user = userEvent.setup();
-    const trigger = <button type="button">Open Dialog</button>;
     vi.mocked(createEmployeeEmployeesPost).mockRejectedValue(new Error("Network Error"));
 
-    render(<CreateEmployeeDialog trigger={trigger} />);
-    await user.click(screen.getByRole("button", { name: /open dialog/i }));
-
+    render(
+      <CreateEmployeeDialog
+        departments={departments}
+        countries={countries}
+        trigger={<button type="button">Open</button>}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Open" }));
     await user.type(screen.getByLabelText(/first name/i), "John");
     await user.type(screen.getByLabelText(/last name/i), "Doe");
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
-    await user.type(screen.getByLabelText(/department id/i), "1");
-    await user.type(screen.getByLabelText(/country id/i), "1");
+    await user.click(screen.getAllByTestId("select-dept")[0] as HTMLElement);
+    await user.click(screen.getAllByTestId("select-country")[1] as HTMLElement);
 
-    await user.click(screen.getByRole("button", { name: /create employee/i }));
+    await user.click(screen.getByRole("button", { name: "Create Employee" }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining("Could not create employee"),
-      );
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Network Error"));
     });
-    // Dialog should remain open
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 });

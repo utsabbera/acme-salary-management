@@ -22,7 +22,7 @@ async def list_employees(
     limit: int = Query(20, ge=1, le=100, description="Max items to return (max 100)"),
     search: str | None = Query(None, description="Search by name or email"),
     department_id: int | None = Query(None, description="Filter by department ID"),
-    country_id: int | None = Query(None, description="Filter by country ID"),
+    country_code: str | None = Query(None, description="Filter by country ISO code"),
 ) -> PaginatedResponse[EmployeeRead]:
     service = EmployeeService(EmployeeRepository(db))
     return await service.list_employees(
@@ -30,7 +30,7 @@ async def list_employees(
         limit=limit,
         search=search,
         department_id=department_id,
-        country_id=country_id,
+        country_code=country_code,
     )
 
 

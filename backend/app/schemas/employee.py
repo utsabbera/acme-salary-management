@@ -31,7 +31,7 @@ class SalaryCreate(BaseModel):
     housing_allowance_minor_units: int | None = None
     equity_minor_units: int | None = None
     other_allowance_minor_units: int | None = None
-    currency_id: int
+    currency_code: str
     valid_from: date
 
 
@@ -58,7 +58,7 @@ class EmployeeCreate(BaseModel):
     last_name: str
     email: str
     department_id: int
-    country_id: int
+    country_code: str
 
 
 class EmployeeUpdate(BaseModel):
@@ -66,7 +66,7 @@ class EmployeeUpdate(BaseModel):
     last_name: str | None = None
     email: str | None = None
     department_id: int | None = None
-    country_id: int | None = None
+    country_code: str | None = None
 
 
 class PaginatedResponse[T](BaseModel):

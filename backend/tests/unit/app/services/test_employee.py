@@ -37,13 +37,13 @@ class TestEmployeeService:
         service = EmployeeService(repo=mock_repo)
 
         result = await service.list_employees(
-            offset=10, limit=10, search="test", department_id=1, country_id=1
+            offset=10, limit=10, search="test", department_id=1, country_code="US"
         )
 
         mock_repo.list_paginated.assert_awaited_once_with(
-            offset=10, limit=10, search="test", department_id=1, country_id=1
+            offset=10, limit=10, search="test", department_id=1, country_code="US"
         )
-        mock_repo.count.assert_awaited_once_with(search="test", department_id=1, country_id=1)
+        mock_repo.count.assert_awaited_once_with(search="test", department_id=1, country_code="US")
 
         assert result.total == 42
         assert result.offset == 10

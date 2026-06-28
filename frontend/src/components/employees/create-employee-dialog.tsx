@@ -17,11 +17,18 @@ import { getErrorMessage } from "@/lib/utils";
 import { EmployeeForm, type EmployeeFormData } from "./employee-form";
 
 interface CreateEmployeeDialogProps {
+  departments: import("@/lib/generated").DepartmentRead[];
+  countries: import("@/lib/generated").CountryRead[];
   trigger?: React.ReactElement;
   onSuccess?: () => void;
 }
 
-export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialogProps) {
+export function CreateEmployeeDialog({
+  departments,
+  countries,
+  trigger,
+  onSuccess,
+}: CreateEmployeeDialogProps) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
@@ -34,7 +41,7 @@ export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialo
           last_name: data.last_name,
           email: data.email,
           department_id: data.department_id,
-          country_id: data.country_id,
+          country_code: data.country_code,
         },
       });
 
@@ -62,7 +69,12 @@ export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialo
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <EmployeeForm onSubmit={handleSubmit} mode="create" />
+          <EmployeeForm
+            onSubmit={handleSubmit}
+            mode="create"
+            departments={departments}
+            countries={countries}
+          />
         </div>
       </DialogContent>
     </Dialog>

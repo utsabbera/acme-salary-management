@@ -1,8 +1,10 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { CurrencyRead } from "@/lib/generated";
 import { addSalaryAdjustmentEmployeesEmployeeIdSalariesPost } from "@/lib/generated";
 import { UpdateSalaryDialog } from "./update-salary-dialog";
 
@@ -27,6 +29,46 @@ vi.mock("@/lib/generated", async (importOriginal) => {
     addSalaryAdjustmentEmployeesEmployeeIdSalariesPost: vi.fn(),
   };
 });
+
+vi.mock("@/components/ui/select", () => ({
+  Select: ({
+    onValueChange,
+    children,
+    value,
+  }: {
+    onValueChange: (v: string) => void;
+    children: ReactNode;
+    value?: string;
+  }) => (
+    <div data-testid="mock-select" data-value={value}>
+      {children}
+      <button type="button" data-testid="select-gbp" onClick={() => onValueChange("GBP")}>
+        Select GBP
+      </button>
+    </div>
+  ),
+  SelectContent: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
+    <div data-value={value}>{children}</div>
+  ),
+  SelectTrigger: ({
+    children,
+    "aria-label": ariaLabel,
+  }: {
+    children: ReactNode;
+    "aria-label"?: string;
+  }) => (
+    <button type="button" aria-label={ariaLabel}>
+      {children}
+    </button>
+  ),
+  SelectValue: ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>,
+}));
+
+const currencies: CurrencyRead[] = [
+  { id: 1, code: "USD", name: "US Dollar" },
+  { id: 2, code: "GBP", name: "British Pound" },
+];
 
 describe("UpdateSalaryDialog", () => {
   const mockRouter = {
@@ -55,6 +97,7 @@ describe("UpdateSalaryDialog", () => {
     render(
       <UpdateSalaryDialog
         employeeId={1}
+        currencies={currencies}
         trigger={<button type="button">Adjust</button>}
         onSuccess={onSuccess}
       />,
@@ -62,10 +105,10 @@ describe("UpdateSalaryDialog", () => {
 
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
-    // Fill out the form
     await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
-    await user.clear(screen.getByLabelText("Currency ID"));
-    await user.type(screen.getByLabelText("Currency ID"), "2");
+
+    // Select GBP via the mock button
+    await user.click(screen.getByTestId("select-gbp"));
 
     await user.clear(screen.getByLabelText("Base Salary"));
     await user.type(screen.getByLabelText("Base Salary"), "1000");
@@ -81,7 +124,7 @@ describe("UpdateSalaryDialog", () => {
         path: { employee_id: 1 },
         body: {
           valid_from: "2024-01-01",
-          currency_id: 2,
+          currency_code: "GBP",
           base_salary_minor_units: 100000,
           housing_allowance_minor_units: 20000,
           equity_minor_units: null,
@@ -94,19 +137,62 @@ describe("UpdateSalaryDialog", () => {
     expect(mockRouter.refresh).toHaveBeenCalled();
   });
 
+  it("submits the form successfully with all optional fields filled", async () => {
+    const user = userEvent.setup();
+    vi.mocked(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).mockResolvedValue({
+      data: {},
+      error: undefined,
+      response: {},
+    } as unknown as Awaited<ReturnType<typeof addSalaryAdjustmentEmployeesEmployeeIdSalariesPost>>);
+
+    render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+    await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
+    await user.click(screen.getByTestId("select-gbp"));
+    await user.type(screen.getByLabelText("Base Salary"), "1000");
+    await user.type(screen.getByLabelText("Housing Allowance"), "200");
+    await user.type(screen.getByLabelText("Equity"), "5000.50");
+    await user.type(screen.getByLabelText("Other Allowance"), "100.75");
+    await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
+
+    await waitFor(() => {
+      expect(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).toHaveBeenCalledWith({
+        client: expect.anything(),
+        path: { employee_id: 1 },
+        body: {
+          valid_from: "2024-01-01",
+          currency_code: "GBP",
+          base_salary_minor_units: 100000,
+          housing_allowance_minor_units: 20000,
+          equity_minor_units: 500050,
+          other_allowance_minor_units: 10075,
+        },
+      });
+    });
+  });
+
   it("shows validation errors for invalid input", async () => {
     const user = userEvent.setup();
-    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
 
     await user.click(screen.getByRole("button", { name: "Adjust" }));
-
-    await user.clear(screen.getByLabelText("Currency ID"));
 
     await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
 
     await waitFor(() => {
       expect(screen.getByText("Valid from date is required")).toBeInTheDocument();
-      expect(screen.getByText("Currency ID is required")).toBeInTheDocument();
     });
 
     expect(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).not.toHaveBeenCalled();
@@ -118,10 +204,17 @@ describe("UpdateSalaryDialog", () => {
       error: "API Error",
     } as unknown as Awaited<ReturnType<typeof addSalaryAdjustmentEmployeesEmployeeIdSalariesPost>>);
 
-    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
     await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
+    await user.click(screen.getByTestId("select-gbp"));
     await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
 
     await waitFor(() => {
@@ -136,10 +229,17 @@ describe("UpdateSalaryDialog", () => {
       new Error("Network Error"),
     );
 
-    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
     await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
+    await user.click(screen.getByTestId("select-gbp"));
     await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
 
     await waitFor(() => {
@@ -150,7 +250,13 @@ describe("UpdateSalaryDialog", () => {
 
   it("closes the dialog when Cancel is clicked", async () => {
     const user = userEvent.setup();
-    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();

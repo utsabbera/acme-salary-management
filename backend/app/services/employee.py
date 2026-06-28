@@ -1,8 +1,10 @@
 from datetime import timedelta
 
 from fastapi import HTTPException
+from sqlalchemy import select
 
 from app.models.employee import Employee
+from app.models.reference import Country, Currency
 from app.models.salary import Salary
 from app.repositories.employee import EmployeeRepository
 from app.schemas.employee import (
@@ -91,12 +93,18 @@ class EmployeeService:
         if await self._repo.get_by_email(data.email):
             raise HTTPException(status_code=409, detail="Email already registered")
 
+        country = await self._repo._session.execute(
+            select(Country).where(Country.code == data.country_code)
+        )
+        country_obj = country.scalar_one_or_none()
+        if not country_obj:
+            raise HTTPException(status_code=404, detail="Country code not found")
         employee = Employee(
             first_name=data.first_name,
             last_name=data.last_name,
             email=data.email,
             department_id=data.department_id,
-            country_id=data.country_id,
+            country_id=country_obj.id,
         )
 
         created = await self._repo.create(employee)
@@ -122,9 +130,18 @@ class EmployeeService:
         ):
             raise HTTPException(status_code=409, detail="Email already registered")
 
-        for field in ["first_name", "last_name", "email", "department_id", "country_id"]:
+        for field in ["first_name", "last_name", "email", "department_id", "country_code"]:
             if field in update_data:
-                setattr(employee, field, update_data[field])
+                if field == "country_code":
+                    country = await self._repo._session.execute(
+                        select(Country).where(Country.code == update_data[field])
+                    )
+                    country_obj = country.scalar_one_or_none()
+                    if not country_obj:
+                        raise HTTPException(status_code=404, detail="Country code not found")
+                    employee.country_id = country_obj.id
+                else:
+                    setattr(employee, field, update_data[field])
 
         await self._repo.commit()
 
@@ -148,7 +165,7 @@ class EmployeeService:
         limit: int,
         search: str | None = None,
         department_id: int | None = None,
-        country_id: int | None = None,
+        country_code: str | None = None,
     ) -> PaginatedResponse[EmployeeRead]:
         items, total = (
             await self._repo.list_paginated(
@@ -156,12 +173,12 @@ class EmployeeService:
                 limit=limit,
                 search=search,
                 department_id=department_id,
-                country_id=country_id,
+                country_code=country_code,
             ),
             await self._repo.count(
                 search=search,
                 department_id=department_id,
-                country_id=country_id,
+                country_code=country_code,
             ),
         )
         return PaginatedResponse.build(items=items, total=total, offset=offset, limit=limit)
@@ -182,13 +199,20 @@ class EmployeeService:
                 )
             active_salary.valid_to = data.valid_from - timedelta(days=1)
 
+        # Resolve ISO currency_code to internal ID
+        currency = await self._repo._session.execute(
+            select(Currency).where(Currency.code == data.currency_code)
+        )
+        currency_obj = currency.scalar_one_or_none()
+        if not currency_obj:
+            raise HTTPException(status_code=404, detail="Currency code not found")
         new_salary = Salary(
             employee_id=employee_id,
             base_salary_minor_units=data.base_salary_minor_units,
             housing_allowance_minor_units=data.housing_allowance_minor_units,
             equity_minor_units=data.equity_minor_units,
             other_allowance_minor_units=data.other_allowance_minor_units,
-            currency_id=data.currency_id,
+            currency_id=currency_obj.id,
             valid_from=data.valid_from,
         )
         employee.salaries.append(new_salary)

@@ -5,6 +5,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.employee import Employee
+from app.models.reference import Country, Currency, Department
 from app.models.salary import Salary
 
 pytestmark = pytest.mark.asyncio
@@ -62,9 +63,6 @@ EMPLOYEES = [
         "currency": "GBP",
     },
 ]
-
-
-from app.models.reference import Country, Currency, Department
 
 
 @pytest.fixture
@@ -207,14 +205,14 @@ class TestEmployeeFilters:
         assert all(item["department"]["name"] == "Engineering" for item in body["items"])
 
     async def test_filter_country(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?country_id=1")
+        r = await seeded_client.get("/employees?country_code=US")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 3
         assert all(item["country"]["code"] == "US" for item in body["items"])
 
     async def test_combined_filters(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?department_id=4&country_id=1")
+        r = await seeded_client.get("/employees?department_id=4&country_code=US")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
@@ -228,7 +226,7 @@ class TestEmployeeFilters:
         assert body["items"][0]["email"] == "alice@example.com"
 
     async def test_three_way_combined_filter_match(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?search=Eve&department_id=4&country_id=2")
+        r = await seeded_client.get("/employees?search=Eve&department_id=4&country_code=UK")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
@@ -236,7 +234,7 @@ class TestEmployeeFilters:
 
     async def test_three_way_combined_filter_no_match(self, seeded_client: AsyncClient) -> None:
         """A valid combination that matches no employee returns empty."""
-        r = await seeded_client.get("/employees?search=Alice&department_id=4&country_id=1")
+        r = await seeded_client.get("/employees?search=Alice&department_id=4&country_code=US")
         assert r.status_code == 200
         assert r.json()["total"] == 0
 
@@ -248,7 +246,7 @@ class TestEmployeeFilters:
         assert body["items"] == []
 
     async def test_filter_nonexistent_country(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?country_id=999")
+        r = await seeded_client.get("/employees?country_code=ZZ")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 0

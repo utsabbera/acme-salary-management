@@ -10,29 +10,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { CountryRead, DepartmentRead } from "@/lib/generated";
 
-const DEPARTMENTS = [
-  { id: "1", name: "Engineering" },
-  { id: "2", name: "Sales" },
-  { id: "3", name: "Marketing" },
-  { id: "4", name: "HR" },
-];
-const COUNTRIES = [
-  { id: "1", name: "United States" },
-  { id: "2", name: "United Kingdom" },
-  { id: "3", name: "Canada" },
-];
+interface FiltersProps {
+  departments: DepartmentRead[];
+  countries: CountryRead[];
+}
 
-export function Filters() {
+export function Filters({ departments, countries }: FiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [departmentId, setDepartmentId] = useState(searchParams.get("department_id") || "ALL");
-  const [countryId, setCountryId] = useState(searchParams.get("country_id") || "ALL");
+  const [countryCode, setCountryCode] = useState(searchParams.get("country_code") || "ALL");
 
   useEffect(() => {
     setDepartmentId(searchParams.get("department_id") || "ALL");
-    setCountryId(searchParams.get("country_id") || "ALL");
+    setCountryCode(searchParams.get("country_code") || "ALL");
   }, [searchParams]);
 
   const handleDepartmentChange = (value: string | null) => {
@@ -48,12 +42,12 @@ export function Filters() {
   };
 
   const handleCountryChange = (value: string | null) => {
-    setCountryId(value || "ALL");
+    setCountryCode(value || "ALL");
     const params = new URLSearchParams(searchParams);
     if (!value || value === "ALL") {
-      params.delete("country_id");
+      params.delete("country_code");
     } else {
-      params.set("country_id", value);
+      params.set("country_code", value);
     }
     params.set("offset", "0");
     router.replace(`${pathname}?${params.toString()}` as Route);
@@ -66,30 +60,30 @@ export function Filters() {
           <SelectValue placeholder="Department">
             {departmentId === "ALL"
               ? "All Departments"
-              : DEPARTMENTS.find((d) => d.id === departmentId)?.name || departmentId}
+              : departments.find((d) => String(d.id) === departmentId)?.name || departmentId}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="ALL">All Departments</SelectItem>
-          {DEPARTMENTS.map((dept) => (
-            <SelectItem key={dept.id} value={dept.id}>
+          {departments.map((dept) => (
+            <SelectItem key={dept.id} value={String(dept.id)}>
               {dept.name}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <Select value={countryId} onValueChange={handleCountryChange}>
+      <Select value={countryCode} onValueChange={handleCountryChange}>
         <SelectTrigger className="w-[180px]" aria-label="Country">
           <SelectValue placeholder="Country">
-            {countryId === "ALL"
+            {countryCode === "ALL"
               ? "All Countries"
-              : COUNTRIES.find((c) => c.id === countryId)?.name || countryId}
+              : countries.find((c) => c.code === countryCode)?.name || countryCode}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="ALL">All Countries</SelectItem>
-          {COUNTRIES.map((c) => (
-            <SelectItem key={c.id} value={c.id}>
+          {countries.map((c) => (
+            <SelectItem key={c.code} value={c.code}>
               {c.name}
             </SelectItem>
           ))}

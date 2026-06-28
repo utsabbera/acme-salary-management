@@ -5,7 +5,7 @@ from app.models.exchange_rate import ExchangeRate
 
 
 class ExchangeRateRepository:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def add_rate(self, currency: str, rate: float) -> ExchangeRate:

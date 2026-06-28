@@ -26,6 +26,21 @@ vi.mock("@/lib/generated", async (importOriginal) => {
   };
 });
 
+const departments: import("@/lib/generated").DepartmentRead[] = [
+  { id: 1, name: "Engineering" },
+  { id: 2, name: "HR" },
+];
+
+const countries: import("@/lib/generated").CountryRead[] = [
+  { id: 1, code: "US", name: "USA", default_currency: { id: 1, code: "USD", name: "US Dollar" } },
+  {
+    id: 2,
+    code: "UK",
+    name: "UK",
+    default_currency: { id: 2, code: "GBP", name: "British Pound" },
+  },
+];
+
 const mockEmployees = [
   {
     id: 1,
@@ -89,12 +104,14 @@ describe("EmployeesTable", () => {
   });
 
   it("renders empty state when no employees", () => {
-    render(<EmployeesTable employees={[]} />);
+    render(<EmployeesTable employees={[]} departments={departments} countries={countries} />);
     expect(screen.getByText("No employees found.")).toBeInTheDocument();
   });
 
   it("renders a list of employees", () => {
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("john@example.com")).toBeInTheDocument();
     expect(screen.getByText("Engineering")).toBeInTheDocument();
@@ -105,7 +122,9 @@ describe("EmployeesTable", () => {
   });
 
   it("formats salary with currency correctly", () => {
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
     expect(screen.getAllByText("$120,000.00").length).toBeGreaterThan(0);
     expect(screen.getAllByText("£80,000.00").length).toBeGreaterThan(0);
   });
@@ -119,13 +138,21 @@ describe("EmployeesTable", () => {
         currency: { id: 999, code: "INVALID", name: "Invalid" },
       },
     } as unknown as import("@/lib/generated").EmployeeRead;
-    render(<EmployeesTable employees={[invalidCurrencyEmployee]} />);
+    render(
+      <EmployeesTable
+        employees={[invalidCurrencyEmployee]}
+        departments={departments}
+        countries={countries}
+      />,
+    );
     expect(screen.getAllByText("INVALID 120000").length).toBeGreaterThan(0);
   });
 
   it("renders an action menu with Edit and Delete options for each employee", async () => {
     const user = userEvent.setup();
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
 
     const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
     expect(actionButtons).toHaveLength(2);
@@ -138,7 +165,9 @@ describe("EmployeesTable", () => {
 
   it("opens an Edit dialog pre-filled with employee data when Edit is clicked", async () => {
     const user = userEvent.setup();
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
 
     const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
     await user.click(actionButtons[0] as HTMLElement);
@@ -153,7 +182,9 @@ describe("EmployeesTable", () => {
 
   it("opens a Delete confirmation dialog when Delete is clicked", async () => {
     const user = userEvent.setup();
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
 
     const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
     await user.click(actionButtons[0] as HTMLElement);
@@ -170,7 +201,9 @@ describe("EmployeesTable", () => {
       data: { id: 1 },
     } as unknown as Awaited<ReturnType<typeof updateEmployeeEmployeesEmployeeIdPatch>>);
 
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
 
     const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
     await user.click(actionButtons[0] as HTMLElement);
@@ -194,7 +227,7 @@ describe("EmployeesTable", () => {
           last_name: "Doe",
           email: "john@example.com",
           department_id: 1,
-          country_id: 1,
+          country_code: "US",
         },
       });
     });
@@ -208,7 +241,9 @@ describe("EmployeesTable", () => {
       data: { status: "ok" },
     } as unknown as Awaited<ReturnType<typeof deleteEmployeeEmployeesEmployeeIdDelete>>);
 
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
 
     const actionButtons = screen.getAllByRole("button", { name: /open menu/i });
     await user.click(actionButtons[0] as HTMLElement);
@@ -237,7 +272,9 @@ describe("EmployeesTable", () => {
       refresh: mockRefresh,
     } as unknown as ReturnType<typeof useRouter>);
 
-    render(<EmployeesTable employees={mockEmployees} />);
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
 
     const row = screen.getByText("John Doe").closest("tr");
     if (!row) throw new Error("Row not found");

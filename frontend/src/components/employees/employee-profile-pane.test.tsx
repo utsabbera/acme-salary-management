@@ -41,7 +41,9 @@ describe("EmployeeProfilePane", () => {
       new URLSearchParams() as unknown as ReadonlyURLSearchParams,
     );
 
-    const { container } = render(<EmployeeProfilePane />);
+    const { container } = render(
+      <EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />,
+    );
 
     // Should return null and render nothing
     expect(container.firstChild).toBeNull();
@@ -67,7 +69,7 @@ describe("EmployeeProfilePane", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("John Doe")).toBeInTheDocument();
@@ -114,7 +116,7 @@ describe("EmployeeProfilePane", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("Jane Smith")).toBeInTheDocument();
@@ -165,7 +167,7 @@ describe("EmployeeProfilePane", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("Alice Bob")).toBeInTheDocument();
@@ -210,7 +212,7 @@ describe("EmployeeProfilePane", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("Timeline Tester")).toBeInTheDocument();
@@ -243,7 +245,7 @@ describe("EmployeeProfilePane", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("John Doe")).toBeInTheDocument();
@@ -272,7 +274,7 @@ describe("EmployeeProfilePane", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("John Doe")).toBeInTheDocument();
@@ -290,7 +292,7 @@ describe("EmployeeProfilePane", () => {
       error: "API Error",
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
@@ -306,7 +308,7 @@ describe("EmployeeProfilePane", () => {
 
     vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockRejectedValue(new Error("Network Error"));
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
@@ -325,7 +327,7 @@ describe("EmployeeProfilePane", () => {
       data: undefined,
     } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
 
-    render(<EmployeeProfilePane />);
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
 
     await waitFor(() => {
       expect(screen.getByText("Employee not found")).toBeInTheDocument();

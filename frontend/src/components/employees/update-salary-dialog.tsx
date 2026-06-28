@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { apiClient } from "@/lib/api";
 import {
   addSalaryAdjustmentEmployeesEmployeeIdSalariesPost,
+  type CurrencyRead,
   type CurrentSalary,
 } from "@/lib/generated";
 import { getErrorMessage } from "@/lib/utils";
@@ -30,13 +38,14 @@ const salarySchema = z.object({
   housing_allowance: z.coerce.number().min(0).optional(),
   equity: z.coerce.number().min(0).optional(),
   other_allowance: z.coerce.number().min(0).optional(),
-  currency_id: z.coerce.number().min(1, "Currency ID is required"),
+  currency_code: z.string().min(1, "Currency is required"),
 });
 
 export type SalaryFormData = z.infer<typeof salarySchema>;
 
 interface UpdateSalaryDialogProps {
   employeeId: number;
+  currencies: CurrencyRead[];
   currentSalary?: CurrentSalary | null;
   trigger?: React.ReactElement;
   onSuccess?: () => void;
@@ -44,6 +53,7 @@ interface UpdateSalaryDialogProps {
 
 export function UpdateSalaryDialog({
   employeeId,
+  currencies,
   currentSalary,
   trigger,
   onSuccess,
@@ -53,7 +63,7 @@ export function UpdateSalaryDialog({
 
   const defaultValues: Partial<SalaryFormData> = currentSalary
     ? {
-        currency_id: currentSalary.currency.id,
+        currency_code: currentSalary.currency.code,
         base_salary: currentSalary.base_salary_minor_units / 100,
         housing_allowance: currentSalary.housing_allowance_minor_units
           ? currentSalary.housing_allowance_minor_units / 100
@@ -66,15 +76,16 @@ export function UpdateSalaryDialog({
           : undefined,
       }
     : {
-        currency_id: 1,
+        currency_code: "USD",
         base_salary: 0,
       };
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.input<typeof salarySchema>>({
+  } = useForm<z.input<typeof salarySchema>, unknown, SalaryFormData>({
     resolver: zodResolver(salarySchema),
     defaultValues,
   });
@@ -86,7 +97,7 @@ export function UpdateSalaryDialog({
         path: { employee_id: employeeId },
         body: {
           valid_from: data.valid_from,
-          currency_id: data.currency_id,
+          currency_code: data.currency_code,
           base_salary_minor_units: Math.round(data.base_salary * 100),
           housing_allowance_minor_units: data.housing_allowance
             ? Math.round(data.housing_allowance * 100)
@@ -123,10 +134,7 @@ export function UpdateSalaryDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <form
-            onSubmit={handleSubmit((data) => onSubmit(data as SalaryFormData))}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="valid_from">Valid From Date</Label>
@@ -136,10 +144,27 @@ export function UpdateSalaryDialog({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="currency_id">Currency ID</Label>
-                <Input id="currency_id" type="number" {...register("currency_id")} />
-                {errors.currency_id && (
-                  <span className="text-sm text-destructive">{errors.currency_id.message}</span>
+                <Label htmlFor="currency_code">Currency</Label>
+                <Controller
+                  name="currency_code"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                      <SelectTrigger id="currency_code" aria-label="Currency">
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((c) => (
+                          <SelectItem key={c.code} value={c.code}>
+                            {c.code} – {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.currency_code && (
+                  <span className="text-sm text-destructive">{errors.currency_code.message}</span>
                 )}
               </div>
             </div>

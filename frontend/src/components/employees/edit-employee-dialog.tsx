@@ -19,6 +19,8 @@ import { EmployeeForm, type EmployeeFormData } from "./employee-form";
 
 interface EditEmployeeDialogProps {
   employee: EmployeeRead;
+  departments: import("@/lib/generated").DepartmentRead[];
+  countries: import("@/lib/generated").CountryRead[];
   trigger?: React.ReactElement;
   onSuccess?: () => void;
   open?: boolean;
@@ -27,6 +29,8 @@ interface EditEmployeeDialogProps {
 
 export function EditEmployeeDialog({
   employee,
+  departments,
+  countries,
   trigger,
   onSuccess,
   open: controlledOpen,
@@ -49,7 +53,7 @@ export function EditEmployeeDialog({
           last_name: data.last_name,
           email: data.email,
           department_id: data.department_id,
-          country_id: data.country_id,
+          country_code: data.country_code,
         },
       });
 
@@ -71,7 +75,7 @@ export function EditEmployeeDialog({
     last_name: employee.last_name,
     email: employee.email,
     department_id: employee.department.id,
-    country_id: employee.country.id,
+    country_code: employee.country.code,
   };
 
   return (
@@ -85,7 +89,13 @@ export function EditEmployeeDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <EmployeeForm onSubmit={handleSubmit} mode="edit" defaultValues={defaultValues} />
+          <EmployeeForm
+            onSubmit={handleSubmit}
+            mode="edit"
+            defaultValues={defaultValues}
+            departments={departments}
+            countries={countries}
+          />
         </div>
       </DialogContent>
     </Dialog>

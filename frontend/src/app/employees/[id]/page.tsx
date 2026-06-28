@@ -9,7 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/api";
 import type { EmployeeRead } from "@/lib/generated";
-import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
+import {
+  getCountriesCountriesGet,
+  getCurrenciesCurrenciesGet,
+  getDepartmentsDepartmentsGet,
+  getEmployeeEmployeesEmployeeIdGet,
+} from "@/lib/generated";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 
@@ -39,16 +44,24 @@ export default async function EmployeePage({ params }: PageProps) {
   }
 
   try {
-    const response = await getEmployeeEmployeesEmployeeIdGet({
-      client: apiClient,
-      path: { employee_id: employeeId },
-    });
+    const [employeeRes, departmentsRes, countriesRes, currenciesRes] = await Promise.all([
+      getEmployeeEmployeesEmployeeIdGet({
+        client: apiClient,
+        path: { employee_id: employeeId },
+      }),
+      getDepartmentsDepartmentsGet({ client: apiClient }),
+      getCountriesCountriesGet({ client: apiClient }),
+      getCurrenciesCurrenciesGet({ client: apiClient }),
+    ]);
 
-    if (!response.data) {
+    if (!employeeRes.data) {
       notFound();
     }
 
-    const employee = response.data;
+    const employee = employeeRes.data;
+    const departments = departmentsRes.data ?? [];
+    const countries = countriesRes.data ?? [];
+    const currencies = currenciesRes.data ?? [];
 
     return (
       <div className="container mx-auto py-10 px-6 max-w-6xl">
@@ -78,6 +91,8 @@ export default async function EmployeePage({ params }: PageProps) {
               </CardTitle>
               <EditEmployeeDialog
                 employee={employee as unknown as EmployeeRead}
+                departments={departments}
+                countries={countries}
                 trigger={
                   <Button variant="outline" size="sm">
                     Edit
@@ -128,6 +143,7 @@ export default async function EmployeePage({ params }: PageProps) {
               </CardTitle>
               <UpdateSalaryDialog
                 employeeId={employee.id}
+                currencies={currencies}
                 currentSalary={employee.current_salary}
                 trigger={
                   <Button variant="outline" size="sm">

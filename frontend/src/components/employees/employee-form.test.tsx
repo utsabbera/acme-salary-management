@@ -1,7 +1,69 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { CountryRead, DepartmentRead } from "@/lib/generated";
 import { EmployeeForm } from "./employee-form";
+
+vi.mock("@/components/ui/select", () => ({
+  Select: ({
+    onValueChange,
+    children,
+    value,
+  }: {
+    onValueChange: (v: string) => void;
+    children: ReactNode;
+    value?: string;
+  }) => (
+    <div data-testid="mock-select" data-value={value}>
+      {children}
+      <button type="button" onClick={() => onValueChange("1")}>
+        Select Dept 1
+      </button>
+      <button type="button" onClick={() => onValueChange("US")}>
+        Select US
+      </button>
+    </div>
+  ),
+  SelectContent: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
+    <div data-value={value}>{children}</div>
+  ),
+  SelectTrigger: ({
+    children,
+    "aria-label": ariaLabel,
+  }: {
+    children: ReactNode;
+    "aria-label"?: string;
+  }) => (
+    <button type="button" aria-label={ariaLabel}>
+      {children}
+    </button>
+  ),
+  SelectValue: ({ placeholder }: { placeholder?: string; children?: ReactNode }) => (
+    <span>{placeholder}</span>
+  ),
+}));
+
+const departments: DepartmentRead[] = [
+  { id: 1, name: "Engineering" },
+  { id: 2, name: "HR" },
+];
+
+const countries: CountryRead[] = [
+  {
+    id: 1,
+    code: "US",
+    name: "United States",
+    default_currency: { id: 1, code: "USD", name: "US Dollar" },
+  },
+  {
+    id: 2,
+    code: "GB",
+    name: "United Kingdom",
+    default_currency: { id: 2, code: "GBP", name: "British Pound" },
+  },
+];
 
 describe("EmployeeForm", () => {
   afterEach(() => {
@@ -11,7 +73,14 @@ describe("EmployeeForm", () => {
 
   it("renders all required fields for creating an employee", () => {
     const onSubmit = vi.fn();
-    render(<EmployeeForm onSubmit={onSubmit} mode="create" />);
+    render(
+      <EmployeeForm
+        onSubmit={onSubmit}
+        mode="create"
+        departments={departments}
+        countries={countries}
+      />,
+    );
 
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
@@ -25,7 +94,14 @@ describe("EmployeeForm", () => {
   it("shows validation errors when submitted empty", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(<EmployeeForm onSubmit={onSubmit} mode="create" />);
+    render(
+      <EmployeeForm
+        onSubmit={onSubmit}
+        mode="create"
+        departments={departments}
+        countries={countries}
+      />,
+    );
 
     const submitButtons = screen.getAllByRole("button", { name: /create employee/i });
     await user.click(submitButtons[0] as HTMLElement);
@@ -36,16 +112,24 @@ describe("EmployeeForm", () => {
     expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
   });
 
-  it("correctly pre-fills data and hides valid_from when in edit mode", async () => {
+  it("correctly pre-fills data when in edit mode", async () => {
     const onSubmit = vi.fn();
     const defaultValues = {
       first_name: "John",
       last_name: "Doe",
       email: "john.doe@example.com",
-      department: "Engineering",
-      country: "USA",
+      department_id: 1,
+      country_code: "US",
     };
-    render(<EmployeeForm onSubmit={onSubmit} mode="edit" defaultValues={defaultValues} />);
+    render(
+      <EmployeeForm
+        onSubmit={onSubmit}
+        mode="edit"
+        defaultValues={defaultValues}
+        departments={departments}
+        countries={countries}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByLabelText(/first name/i)).toHaveValue("John");

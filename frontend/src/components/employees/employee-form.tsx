@@ -1,18 +1,26 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { CountryRead, DepartmentRead } from "@/lib/generated";
 
 const employeeSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  department_id: z.coerce.number().min(1, "Department ID is required"),
-  country_id: z.coerce.number().min(1, "Country ID is required"),
+  department_id: z.coerce.number().min(1, "Department is required"),
+  country_code: z.string().min(1, "Country is required"),
 });
 
 export type EmployeeFormData = z.infer<typeof employeeSchema>;
@@ -21,42 +29,40 @@ interface EmployeeFormProps {
   onSubmit: (data: EmployeeFormData) => void;
   mode: "create" | "edit";
   defaultValues?: Partial<EmployeeFormData>;
+  departments: DepartmentRead[];
+  countries: CountryRead[];
 }
 
-export function EmployeeForm({ onSubmit, mode, defaultValues }: EmployeeFormProps) {
+export function EmployeeForm({
+  onSubmit,
+  mode,
+  defaultValues,
+  departments,
+  countries,
+}: EmployeeFormProps) {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.input<typeof employeeSchema>>({
+  } = useForm<z.input<typeof employeeSchema>, unknown, EmployeeFormData>({
     resolver: zodResolver(employeeSchema),
     defaultValues,
   });
 
   return (
-    <form
-      onSubmit={handleSubmit((data) => onSubmit(data as EmployeeFormData))}
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="first_name">First Name</Label>
-          <Input
-            id="first_name"
-            defaultValue={defaultValues?.first_name}
-            {...register("first_name")}
-          />
+          <Input id="first_name" {...register("first_name")} />
           {errors.first_name && (
             <span className="text-sm text-destructive">{errors.first_name.message}</span>
           )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="last_name">Last Name</Label>
-          <Input
-            id="last_name"
-            defaultValue={defaultValues?.last_name}
-            {...register("last_name")}
-          />
+          <Input id="last_name" {...register("last_name")} />
           {errors.last_name && (
             <span className="text-sm text-destructive">{errors.last_name.message}</span>
           )}
@@ -64,32 +70,59 @@ export function EmployeeForm({ onSubmit, mode, defaultValues }: EmployeeFormProp
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" defaultValue={defaultValues?.email} {...register("email")} />
+        <Input id="email" type="email" {...register("email")} />
         {errors.email && <span className="text-sm text-destructive">{errors.email.message}</span>}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="department_id">Department ID</Label>
-          <Input
-            id="department_id"
-            type="number"
-            defaultValue={defaultValues?.department_id}
-            {...register("department_id")}
+          <Label htmlFor="department_id">Department</Label>
+          <Controller
+            name="department_id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value ? String(field.value) : ""}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger id="department_id" aria-label="Department">
+                  <SelectValue placeholder="Select department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept.id} value={String(dept.id)}>
+                      {dept.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
           {errors.department_id && (
             <span className="text-sm text-destructive">{errors.department_id.message}</span>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="country_id">Country ID</Label>
-          <Input
-            id="country_id"
-            type="number"
-            defaultValue={defaultValues?.country_id}
-            {...register("country_id")}
+          <Label htmlFor="country_code">Country</Label>
+          <Controller
+            name="country_code"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                <SelectTrigger id="country_code" aria-label="Country">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
-          {errors.country_id && (
-            <span className="text-sm text-destructive">{errors.country_id.message}</span>
+          {errors.country_code && (
+            <span className="text-sm text-destructive">{errors.country_code.message}</span>
           )}
         </div>
       </div>
