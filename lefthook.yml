@@ -16,6 +16,12 @@ pre-commit:
     gen-openapi:
       glob: "backend/**/*.py"
       run: make gen-openapi && git add backend/openapi.json
+    typecheck-frontend:
+      glob: "frontend/**/*.{ts,tsx}"
+      run: cd frontend && pnpm tsc --noEmit
+    typecheck-backend:
+      glob: "backend/**/*.py"
+      run: cd backend && uv run mypy app/ scripts/ tests/
 
 commit-msg:
   commands:
@@ -28,10 +34,6 @@ commit-msg:
 pre-push:
   parallel: true
   commands:
-    typecheck-frontend:
-      run: "cd frontend && pnpm tsc --noEmit"
-    mypy:
-      run: "cd backend && uv run mypy app/ scripts/ tests/"
     test-frontend:
       run: "cd frontend && pnpm test:cov"
     test-backend:

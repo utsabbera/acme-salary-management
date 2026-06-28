@@ -22,6 +22,8 @@ gen-client:
 migrate:
 	cd backend && uv run alembic upgrade head
 
+check: lint typecheck test-cov
+
 
 lint:
 	pnpm biome check frontend/src
