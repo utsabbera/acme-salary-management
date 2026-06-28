@@ -13,6 +13,9 @@ dev-backend:
 dev-frontend:
 	cd frontend && pnpm dev
 
+gen-openapi:
+	cd backend && uv run python -c "import json; from main import app; print(json.dumps(app.openapi(), indent=2))" > openapi.json
+
 gen-client:
 	cd frontend && pnpm openapi-ts
 
