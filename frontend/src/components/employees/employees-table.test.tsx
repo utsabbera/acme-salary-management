@@ -32,12 +32,17 @@ const mockEmployees = [
     first_name: "John",
     last_name: "Doe",
     email: "john@example.com",
-    department: "Engineering",
-    country: "USA",
+    department: { id: 1, name: "Engineering" },
+    country: {
+      id: 1,
+      name: "USA",
+      code: "US",
+      default_currency: { id: 1, code: "USD", name: "US Dollar" },
+    },
     current_salary: {
       salary_minor_units: 12000000,
       base_salary_minor_units: 12000000,
-      currency: "USD",
+      currency: { id: 1, code: "USD", name: "US Dollar" },
       valid_from: "2023-01-01",
     },
     created_at: "2023-01-01T00:00:00Z",
@@ -48,12 +53,17 @@ const mockEmployees = [
     first_name: "Jane",
     last_name: "Smith",
     email: "jane@example.com",
-    department: "HR",
-    country: "UK",
+    department: { id: 2, name: "HR" },
+    country: {
+      id: 2,
+      name: "UK",
+      code: "UK",
+      default_currency: { id: 2, code: "GBP", name: "British Pound" },
+    },
     current_salary: {
       salary_minor_units: 8000000,
       base_salary_minor_units: 8000000,
-      currency: "GBP",
+      currency: { id: 2, code: "GBP", name: "British Pound" },
       valid_from: "2023-02-01",
     },
     created_at: "2023-02-01T00:00:00Z",
@@ -106,7 +116,7 @@ describe("EmployeesTable", () => {
       current_salary: {
         // @ts-expect-error test mock
         ...mockEmployees[0].current_salary,
-        currency: "INVALID",
+        currency: { id: 999, code: "INVALID", name: "Invalid" },
       },
     } as unknown as import("@/lib/generated").EmployeeRead;
     render(<EmployeesTable employees={[invalidCurrencyEmployee]} />);
@@ -183,8 +193,8 @@ describe("EmployeesTable", () => {
           first_name: "Johnny",
           last_name: "Doe",
           email: "john@example.com",
-          department: "Engineering",
-          country: "USA",
+          department_id: 1,
+          country_id: 1,
         },
       });
     });

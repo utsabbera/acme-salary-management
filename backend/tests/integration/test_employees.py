@@ -64,16 +64,28 @@ EMPLOYEES = [
 ]
 
 
+from app.models.reference import Country, Currency, Department
+
+
 @pytest.fixture
 async def seeded_client(client: AsyncClient, db_session: AsyncSession) -> AsyncClient:
     """Seed deterministic employees then return the test client."""
+
+    from sqlalchemy import select
+
+    currencies = {c.code: c for c in (await db_session.execute(select(Currency))).scalars().all()}
+    countries = {c.code: c for c in (await db_session.execute(select(Country))).scalars().all()}
+    departments = {
+        d.name: d for d in (await db_session.execute(select(Department))).scalars().all()
+    }
+
     for data in EMPLOYEES:
         emp = Employee(
             first_name=data["first_name"],
             last_name=data["last_name"],
             email=data["email"],
-            department=data["department"],
-            country=data["country"],
+            department_id=departments[str(data["department"])].id,
+            country_id=countries[str(data["country"])].id,
         )
         db_session.add(emp)
         await db_session.flush()
@@ -81,13 +93,14 @@ async def seeded_client(client: AsyncClient, db_session: AsyncSession) -> AsyncC
         salary = Salary(
             employee_id=emp.id,
             base_salary_minor_units=data["salary_minor_units"],
-            currency=data["currency"],
+            currency_id=currencies[str(data["currency"])].id,
             valid_from=date(2023, 1, 1),
             valid_to=None,
         )
         db_session.add(salary)
 
     await db_session.flush()
+
     return client
 
 
@@ -187,35 +200,35 @@ class TestEmployeeSearch:
 
 class TestEmployeeFilters:
     async def test_filter_department(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?department=Engineering")
+        r = await seeded_client.get("/employees?department_id=1")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 2
-        assert all(item["department"] == "Engineering" for item in body["items"])
+        assert all(item["department"]["name"] == "Engineering" for item in body["items"])
 
     async def test_filter_country(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?country=US")
+        r = await seeded_client.get("/employees?country_id=1")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 3
-        assert all(item["country"] == "US" for item in body["items"])
+        assert all(item["country"]["code"] == "US" for item in body["items"])
 
     async def test_combined_filters(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?department=HR&country=US")
+        r = await seeded_client.get("/employees?department_id=4&country_id=1")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
         assert body["items"][0]["first_name"] == "Carol"
 
     async def test_combined_search_and_department(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?search=Alice&department=Engineering")
+        r = await seeded_client.get("/employees?search=Alice&department_id=1")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
         assert body["items"][0]["email"] == "alice@example.com"
 
     async def test_three_way_combined_filter_match(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?search=Eve&department=HR&country=UK")
+        r = await seeded_client.get("/employees?search=Eve&department_id=4&country_id=2")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
@@ -223,19 +236,19 @@ class TestEmployeeFilters:
 
     async def test_three_way_combined_filter_no_match(self, seeded_client: AsyncClient) -> None:
         """A valid combination that matches no employee returns empty."""
-        r = await seeded_client.get("/employees?search=Alice&department=HR&country=US")
+        r = await seeded_client.get("/employees?search=Alice&department_id=4&country_id=1")
         assert r.status_code == 200
         assert r.json()["total"] == 0
 
     async def test_filter_nonexistent_department(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?department=Nonexistent")
+        r = await seeded_client.get("/employees?department_id=999")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 0
         assert body["items"] == []
 
     async def test_filter_nonexistent_country(self, seeded_client: AsyncClient) -> None:
-        r = await seeded_client.get("/employees?country=XX")
+        r = await seeded_client.get("/employees?country_id=999")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 0
@@ -291,15 +304,15 @@ class TestEmployeeOrdering:
 
 class TestEmployeeBusinessRules:
     async def test_inactive_employees_excluded(
-        self, client: AsyncClient, db_session: AsyncSession
+        self, seeded_client: AsyncClient, db_session: AsyncSession
     ) -> None:
         """is_active=False employees must not appear in the list."""
         inactive = Employee(
             first_name="Ghost",
             last_name="User",
             email="ghost@example.com",
-            department="Engineering",
-            country="US",
+            department_id=1,
+            country_id=1,
             is_active=False,
         )
         db_session.add(inactive)
@@ -309,20 +322,20 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=inactive.id,
                 base_salary_minor_units=9500000,
-                currency="USD",
+                currency_id=1,
                 valid_from=date(2023, 1, 1),
                 valid_to=None,
             )
         )
         await db_session.flush()
 
-        r = await client.get("/employees")
+        r = await seeded_client.get("/employees")
         assert r.status_code == 200
         emails = [i["email"] for i in r.json()["items"]]
         assert "ghost@example.com" not in emails
 
     async def test_employee_without_active_salary_included(
-        self, client: AsyncClient, db_session: AsyncSession
+        self, seeded_client: AsyncClient, db_session: AsyncSession
     ) -> None:
         """An employee whose only salary row has valid_to set MUST still appear,
         but with a null salary (because active_employees view uses LEFT JOIN)."""
@@ -330,8 +343,8 @@ class TestEmployeeBusinessRules:
             first_name="Past",
             last_name="Employee",
             email="past@example.com",
-            department="Engineering",
-            country="US",
+            department_id=1,
+            country_id=1,
         )
         db_session.add(emp)
         await db_session.flush()
@@ -340,20 +353,20 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=emp.id,
                 base_salary_minor_units=7000000,
-                currency="USD",
+                currency_id=1,
                 valid_from=date(2020, 1, 1),
                 valid_to=date(2022, 12, 31),  # closed salary — not active
             )
         )
         await db_session.flush()
 
-        r = await client.get("/employees?search=past@example.com")
+        r = await seeded_client.get("/employees?search=past@example.com")
         assert r.status_code == 200
         assert r.json()["total"] == 1
         assert r.json()["items"][0]["current_salary"] is None
 
     async def test_only_current_salary_returned(
-        self, client: AsyncClient, db_session: AsyncSession
+        self, seeded_client: AsyncClient, db_session: AsyncSession
     ) -> None:
         """An employee with both a historical and a current salary row must appear
         exactly once, with the current (valid_to=None) salary values."""
@@ -361,8 +374,8 @@ class TestEmployeeBusinessRules:
             first_name="Promoted",
             last_name="Person",
             email="promoted@example.com",
-            department="Engineering",
-            country="US",
+            department_id=1,
+            country_id=1,
         )
         db_session.add(emp)
         await db_session.flush()
@@ -371,7 +384,7 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=emp.id,
                 base_salary_minor_units=8000000,
-                currency="USD",
+                currency_id=1,
                 valid_from=date(2021, 1, 1),
                 valid_to=date(2023, 1, 1),  # old salary
             )
@@ -380,14 +393,14 @@ class TestEmployeeBusinessRules:
             Salary(
                 employee_id=emp.id,
                 base_salary_minor_units=11000000,
-                currency="USD",
+                currency_id=1,
                 valid_from=date(2023, 1, 1),
                 valid_to=None,  # current salary
             )
         )
         await db_session.flush()
 
-        r = await client.get("/employees?search=promoted@example.com")
+        r = await seeded_client.get("/employees?search=promoted@example.com")
         assert r.status_code == 200
         body = r.json()
         assert body["total"] == 1
@@ -408,7 +421,7 @@ class TestEmployeeBusinessRules:
         assert r.status_code == 200
         item = r.json()["items"][0]
         assert item["current_salary"]["salary_minor_units"] == 9500000
-        assert item["current_salary"]["currency"] == "GBP"
+        assert item["current_salary"]["currency"]["code"] == "GBP"
 
     async def test_employee_field_values(self, seeded_client: AsyncClient) -> None:
         """All identity fields must match the seeded values exactly."""
@@ -418,8 +431,8 @@ class TestEmployeeBusinessRules:
         assert item["first_name"] == "Carol"
         assert item["last_name"] == "Chen"
         assert item["email"] == "carol@example.com"
-        assert item["department"] == "HR"
-        assert item["country"] == "US"
+        assert item["department"]["name"] == "HR"
+        assert item["country"]["code"] == "US"
         assert item["current_salary"]["valid_from"] == "2023-01-01"
 
     async def test_response_schema(self, seeded_client: AsyncClient) -> None:
@@ -455,7 +468,7 @@ class TestEmployeeDetail:
             Salary(
                 employee_id=employee.id,
                 base_salary_minor_units=10000000,
-                currency="USD",
+                currency_id=1,
                 valid_from=date(2021, 1, 1),
                 valid_to=date(2023, 1, 1),
             )

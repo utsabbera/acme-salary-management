@@ -31,7 +31,7 @@ pre-push:
     typecheck-frontend:
       run: "cd frontend && pnpm tsc --noEmit"
     mypy:
-      run: "cd backend && uv run mypy app/"
+      run: "cd backend && uv run mypy app/ scripts/ tests/"
     test-frontend:
       run: "cd frontend && pnpm test:cov"
     test-backend:

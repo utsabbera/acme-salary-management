@@ -5,7 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.employee import Employee, active_employees
+from app.models.reference import Country
+from app.models.salary import Salary
 from app.schemas.employee import CurrentSalary, EmployeeRead
+from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
 
 
 class EmployeeRepository:
@@ -26,7 +29,11 @@ class EmployeeRepository:
     async def get_by_id_with_salaries(self, employee_id: int) -> Employee | None:
         stmt = (
             select(Employee)
-            .options(selectinload(Employee.salaries))
+            .options(
+                selectinload(Employee.salaries).selectinload(Salary.currency),
+                selectinload(Employee.department),
+                selectinload(Employee.country).selectinload(Country.default_currency),
+            )
             .where(Employee.id == employee_id, Employee.is_active.is_(True))
         )
         result = await self._session.execute(stmt)
@@ -42,7 +49,11 @@ class EmployeeRepository:
         await self._session.commit()
 
     def _apply_filters(
-        self, stmt: Select[Any], search: str | None, department: str | None, country: str | None
+        self,
+        stmt: Select[Any],
+        search: str | None,
+        department_id: int | None,
+        country_id: int | None,
     ) -> Select[Any]:
         if search:
             stmt = stmt.where(
@@ -53,10 +64,10 @@ class EmployeeRepository:
                     active_employees.c.email.ilike(f"%{search}%"),
                 )
             )
-        if department:
-            stmt = stmt.where(active_employees.c.department == department)
-        if country:
-            stmt = stmt.where(active_employees.c.country == country)
+        if department_id:
+            stmt = stmt.where(active_employees.c.department_id == department_id)
+        if country_id:
+            stmt = stmt.where(active_employees.c.country_id == country_id)
         return stmt
 
     async def list_paginated(
@@ -64,11 +75,11 @@ class EmployeeRepository:
         offset: int,
         limit: int,
         search: str | None = None,
-        department: str | None = None,
-        country: str | None = None,
+        department_id: int | None = None,
+        country_id: int | None = None,
     ) -> list[EmployeeRead]:
         stmt = select(active_employees)
-        stmt = self._apply_filters(stmt, search, department, country)
+        stmt = self._apply_filters(stmt, search, department_id, country_id)
         stmt = stmt.order_by(active_employees.c.last_name, active_employees.c.first_name)
         stmt = stmt.offset(offset).limit(limit)
 
@@ -78,11 +89,11 @@ class EmployeeRepository:
     async def count(
         self,
         search: str | None = None,
-        department: str | None = None,
-        country: str | None = None,
+        department_id: int | None = None,
+        country_id: int | None = None,
     ) -> int:
         stmt = select(func.count()).select_from(active_employees)
-        stmt = self._apply_filters(stmt, search, department, country)
+        stmt = self._apply_filters(stmt, search, department_id, country_id)
         result = await self._session.execute(stmt)
         return int(result.scalar_one())
 
@@ -96,7 +107,11 @@ class EmployeeRepository:
                 housing_allowance_minor_units=row_dict.get("housing_allowance_minor_units"),
                 equity_minor_units=row_dict.get("equity_minor_units"),
                 other_allowance_minor_units=row_dict.get("other_allowance_minor_units"),
-                currency=row_dict["currency"],
+                currency=CurrencyRead(
+                    id=row_dict["currency_id"],
+                    code=row_dict["currency_code"],
+                    name=row_dict["currency_name"],
+                ),
                 valid_from=row_dict["valid_from"],
             )
 
@@ -105,8 +120,20 @@ class EmployeeRepository:
             first_name=row_dict["first_name"],
             last_name=row_dict["last_name"],
             email=row_dict["email"],
-            department=row_dict["department"],
-            country=row_dict["country"],
+            department=DepartmentRead(
+                id=row_dict["department_id"],
+                name=row_dict["department_name"],
+            ),
+            country=CountryRead(
+                id=row_dict["country_id"],
+                code=row_dict["country_code"],
+                name=row_dict["country_name"],
+                default_currency=CurrencyRead(
+                    id=row_dict["country_default_currency_id"],
+                    code=row_dict["country_default_currency_code"],
+                    name=row_dict["country_default_currency_name"],
+                ),
+            ),
             current_salary=current_salary,
             created_at=row_dict["created_at"],
             updated_at=row_dict["updated_at"],

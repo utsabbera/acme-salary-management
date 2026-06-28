@@ -25,7 +25,7 @@ async def test_http_exception_handler_not_found(mock_request: Request) -> None:
 
     assert response.status_code == 404
 
-    data = json.loads(response.body.decode())
+    data = json.loads(bytes(response.body).decode())
     assert data["error"]["code"] == "NOT_FOUND"
     assert data["error"]["message"] == "Item not found"
 
@@ -37,7 +37,7 @@ async def test_http_exception_handler_conflict(mock_request: Request) -> None:
 
     assert response.status_code == 409
 
-    data = json.loads(response.body.decode())
+    data = json.loads(bytes(response.body).decode())
     assert data["error"]["code"] == "CONFLICT"
     assert data["error"]["message"] == "Item already exists"
 
@@ -49,7 +49,7 @@ async def test_http_exception_handler_unknown(mock_request: Request) -> None:
 
     assert response.status_code == 500
 
-    data = json.loads(response.body.decode())
+    data = json.loads(bytes(response.body).decode())
     assert data["error"]["code"] == "ERROR"
     assert data["error"]["message"] == "Server error"
 
@@ -76,7 +76,7 @@ async def test_validation_exception_handler(mock_request: Request) -> None:
 
     assert response.status_code == 422
 
-    data = json.loads(response.body.decode())
+    data = json.loads(bytes(response.body).decode())
     assert data["error"]["code"] == "VALIDATION_ERROR"
     assert data["error"]["message"] == "Invalid input data"
 

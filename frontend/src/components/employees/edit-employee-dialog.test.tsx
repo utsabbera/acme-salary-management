@@ -34,8 +34,13 @@ const mockEmployee: EmployeeRead = {
   first_name: "John",
   last_name: "Doe",
   email: "john@example.com",
-  department: "Engineering",
-  country: "USA",
+  department: { id: 1, name: "Engineering" },
+  country: {
+    id: 1,
+    name: "USA",
+    code: "US",
+    default_currency: { id: 1, code: "USD", name: "US Dollar" },
+  },
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-01-01T00:00:00Z",
 };

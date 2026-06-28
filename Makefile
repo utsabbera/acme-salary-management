@@ -29,7 +29,7 @@ lint:
 
 typecheck:
 	cd frontend && pnpm tsc --noEmit
-	cd backend && uv run mypy app/
+	cd backend && uv run mypy app/ scripts/ tests/
 
 test:
 	cd frontend && pnpm vitest run

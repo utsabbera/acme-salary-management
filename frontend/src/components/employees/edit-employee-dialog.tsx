@@ -48,8 +48,8 @@ export function EditEmployeeDialog({
           first_name: data.first_name,
           last_name: data.last_name,
           email: data.email,
-          department: data.department,
-          country: data.country,
+          department_id: data.department_id,
+          country_id: data.country_id,
         },
       });
 
@@ -70,8 +70,8 @@ export function EditEmployeeDialog({
     first_name: employee.first_name,
     last_name: employee.last_name,
     email: employee.email,
-    department: employee.department,
-    country: employee.country,
+    department_id: employee.department.id,
+    country_id: employee.country.id,
   };
 
   return (

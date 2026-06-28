@@ -98,13 +98,13 @@ function EmployeeRow({
           {employee.first_name} {employee.last_name}
         </TableCell>
         <TableCell>{employee.email}</TableCell>
-        <TableCell>{employee.department}</TableCell>
-        <TableCell>{employee.country}</TableCell>
+        <TableCell>{employee.department.name}</TableCell>
+        <TableCell>{employee.country.name}</TableCell>
         <TableCell className="text-right">
           {employee.current_salary
             ? formatCurrency(
                 employee.current_salary.salary_minor_units / 100,
-                employee.current_salary.currency,
+                employee.current_salary.currency.code,
               )
             : "-"}
         </TableCell>

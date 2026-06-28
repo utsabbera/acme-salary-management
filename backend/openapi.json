@@ -80,40 +80,40 @@
             "description": "Search by name or email"
           },
           {
-            "name": "department",
+            "name": "department_id",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "integer"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Filter by department",
-              "title": "Department"
+              "description": "Filter by department ID",
+              "title": "Department Id"
             },
-            "description": "Filter by department"
+            "description": "Filter by department ID"
           },
           {
-            "name": "country",
+            "name": "country_id",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "integer"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Filter by country",
-              "title": "Country"
+              "description": "Filter by country ID",
+              "title": "Country Id"
             },
-            "description": "Filter by country"
+            "description": "Filter by country ID"
           }
         ],
         "responses": {
@@ -376,6 +376,122 @@
           }
         }
       }
+    },
+    "/exchange-rates": {
+      "post": {
+        "tags": [
+          "exchange-rates"
+        ],
+        "summary": "Create Exchange Rate",
+        "operationId": "create_exchange_rate_exchange_rates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExchangeRateCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeRateRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/departments": {
+      "get": {
+        "tags": [
+          "reference"
+        ],
+        "summary": "Get Departments",
+        "operationId": "get_departments_departments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentRead"
+                  },
+                  "type": "array",
+                  "title": "Response Get Departments Departments Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/currencies": {
+      "get": {
+        "tags": [
+          "reference"
+        ],
+        "summary": "Get Currencies",
+        "operationId": "get_currencies_currencies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CurrencyRead"
+                  },
+                  "type": "array",
+                  "title": "Response Get Currencies Currencies Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/countries": {
+      "get": {
+        "tags": [
+          "reference"
+        ],
+        "summary": "Get Countries",
+        "operationId": "get_countries_countries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CountryRead"
+                  },
+                  "type": "array",
+                  "title": "Response Get Countries Countries Get"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -408,6 +524,33 @@
         ],
         "title": "ComponentTotals"
       },
+      "CountryRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "default_currency": {
+            "$ref": "#/components/schemas/CurrencyRead"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "default_currency"
+        ],
+        "title": "CountryRead"
+      },
       "CountryTotal": {
         "properties": {
           "country": {
@@ -425,6 +568,29 @@
           "total_salary_usd_minor_units"
         ],
         "title": "CountryTotal"
+      },
+      "CurrencyRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "title": "CurrencyRead"
       },
       "CurrentSalary": {
         "properties": {
@@ -466,8 +632,7 @@
             "title": "Other Allowance Minor Units"
           },
           "currency": {
-            "type": "string",
-            "title": "Currency"
+            "$ref": "#/components/schemas/CurrencyRead"
           },
           "valid_from": {
             "type": "string",
@@ -543,6 +708,24 @@
         ],
         "title": "DepartmentAverage"
       },
+      "DepartmentRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "DepartmentRead"
+      },
       "EmployeeCreate": {
         "properties": {
           "first_name": {
@@ -557,13 +740,13 @@
             "type": "string",
             "title": "Email"
           },
-          "department": {
-            "type": "string",
-            "title": "Department"
+          "department_id": {
+            "type": "integer",
+            "title": "Department Id"
           },
-          "country": {
-            "type": "string",
-            "title": "Country"
+          "country_id": {
+            "type": "integer",
+            "title": "Country Id"
           }
         },
         "type": "object",
@@ -571,8 +754,8 @@
           "first_name",
           "last_name",
           "email",
-          "department",
-          "country"
+          "department_id",
+          "country_id"
         ],
         "title": "EmployeeCreate"
       },
@@ -595,12 +778,10 @@
             "title": "Email"
           },
           "department": {
-            "type": "string",
-            "title": "Department"
+            "$ref": "#/components/schemas/DepartmentRead"
           },
           "country": {
-            "type": "string",
-            "title": "Country"
+            "$ref": "#/components/schemas/CountryRead"
           },
           "current_salary": {
             "anyOf": [
@@ -663,12 +844,10 @@
             "title": "Email"
           },
           "department": {
-            "type": "string",
-            "title": "Department"
+            "$ref": "#/components/schemas/DepartmentRead"
           },
           "country": {
-            "type": "string",
-            "title": "Country"
+            "$ref": "#/components/schemas/CountryRead"
           },
           "current_salary": {
             "anyOf": [
@@ -757,31 +936,72 @@
             ],
             "title": "Email"
           },
-          "department": {
+          "department_id": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Department"
+            "title": "Department Id"
           },
-          "country": {
+          "country_id": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Country"
+            "title": "Country Id"
           }
         },
         "type": "object",
         "title": "EmployeeUpdate"
+      },
+      "ExchangeRateCreate": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "rate": {
+            "type": "number",
+            "title": "Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "rate"
+        ],
+        "title": "ExchangeRateCreate"
+      },
+      "ExchangeRateRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "rate": {
+            "type": "number",
+            "title": "Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "currency",
+          "rate"
+        ],
+        "title": "ExchangeRateRead"
       },
       "HTTPValidationError": {
         "properties": {
@@ -879,9 +1099,9 @@
             ],
             "title": "Other Allowance Minor Units"
           },
-          "currency": {
-            "type": "string",
-            "title": "Currency"
+          "currency_id": {
+            "type": "integer",
+            "title": "Currency Id"
           },
           "valid_from": {
             "type": "string",
@@ -892,7 +1112,7 @@
         "type": "object",
         "required": [
           "base_salary_minor_units",
-          "currency",
+          "currency_id",
           "valid_from"
         ],
         "title": "SalaryCreate"
@@ -937,8 +1157,7 @@
             "title": "Other Allowance Minor Units"
           },
           "currency": {
-            "type": "string",
-            "title": "Currency"
+            "$ref": "#/components/schemas/CurrencyRead"
           },
           "valid_from": {
             "type": "string",

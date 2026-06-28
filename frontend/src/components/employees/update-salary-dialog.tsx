@@ -30,7 +30,7 @@ const salarySchema = z.object({
   housing_allowance: z.coerce.number().min(0).optional(),
   equity: z.coerce.number().min(0).optional(),
   other_allowance: z.coerce.number().min(0).optional(),
-  currency: z.string().min(3, "Currency code must be 3 characters").max(3),
+  currency_id: z.coerce.number().min(1, "Currency ID is required"),
 });
 
 export type SalaryFormData = z.infer<typeof salarySchema>;
@@ -53,7 +53,7 @@ export function UpdateSalaryDialog({
 
   const defaultValues: Partial<SalaryFormData> = currentSalary
     ? {
-        currency: currentSalary.currency,
+        currency_id: currentSalary.currency.id,
         base_salary: currentSalary.base_salary_minor_units / 100,
         housing_allowance: currentSalary.housing_allowance_minor_units
           ? currentSalary.housing_allowance_minor_units / 100
@@ -66,7 +66,7 @@ export function UpdateSalaryDialog({
           : undefined,
       }
     : {
-        currency: "USD",
+        currency_id: 1,
         base_salary: 0,
       };
 
@@ -86,7 +86,7 @@ export function UpdateSalaryDialog({
         path: { employee_id: employeeId },
         body: {
           valid_from: data.valid_from,
-          currency: data.currency,
+          currency_id: data.currency_id,
           base_salary_minor_units: Math.round(data.base_salary * 100),
           housing_allowance_minor_units: data.housing_allowance
             ? Math.round(data.housing_allowance * 100)
@@ -136,10 +136,10 @@ export function UpdateSalaryDialog({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
-                <Input id="currency" {...register("currency")} />
-                {errors.currency && (
-                  <span className="text-sm text-destructive">{errors.currency.message}</span>
+                <Label htmlFor="currency_id">Currency ID</Label>
+                <Input id="currency_id" type="number" {...register("currency_id")} />
+                {errors.currency_id && (
+                  <span className="text-sm text-destructive">{errors.currency_id.message}</span>
                 )}
               </div>
             </div>

@@ -1,8 +1,9 @@
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.employee import Employee, active_employees
 from app.models.exchange_rate import ExchangeRate
+from app.models.reference import Currency
 from app.models.salary import Salary
 from app.schemas.dashboard import (
     ComponentTotals,
@@ -19,9 +20,9 @@ class DashboardRepository:
 
     async def get_stats(self) -> DashboardStats:
         stmt_dept = select(
-            active_employees.c.department,
+            active_employees.c.department_name.label("department"),
             func.round(func.avg(active_employees.c.salary_usd_minor_units)).label("avg_salary"),
-        ).group_by(active_employees.c.department)
+        ).group_by(active_employees.c.department_name)
         result_dept = await self._session.execute(stmt_dept)
 
         department_averages = [
@@ -32,9 +33,9 @@ class DashboardRepository:
         ]
 
         stmt_country = select(
-            active_employees.c.country,
+            active_employees.c.country_name.label("country"),
             func.sum(active_employees.c.salary_usd_minor_units).label("total_salary"),
-        ).group_by(active_employees.c.country)
+        ).group_by(active_employees.c.country_name)
         result_country = await self._session.execute(stmt_country)
 
         country_totals = [
@@ -46,23 +47,59 @@ class DashboardRepository:
 
         stmt_components = (
             select(
-                func.sum(Salary.base_salary_minor_units * ExchangeRate.rate).label("base"),
                 func.sum(
-                    func.coalesce(Salary.housing_allowance_minor_units, 0) * ExchangeRate.rate
+                    case(
+                        (Currency.code == "USD", Salary.base_salary_minor_units),
+                        (
+                            ExchangeRate.rate.is_not(None),
+                            Salary.base_salary_minor_units / ExchangeRate.rate,
+                        ),
+                        else_=None,
+                    )
+                ).label("base"),
+                func.sum(
+                    case(
+                        (
+                            Currency.code == "USD",
+                            func.coalesce(Salary.housing_allowance_minor_units, 0),
+                        ),
+                        (
+                            ExchangeRate.rate.is_not(None),
+                            func.coalesce(Salary.housing_allowance_minor_units, 0)
+                            / ExchangeRate.rate,
+                        ),
+                        else_=None,
+                    )
                 ).label("housing"),
-                func.sum(func.coalesce(Salary.equity_minor_units, 0) * ExchangeRate.rate).label(
-                    "equity"
-                ),
                 func.sum(
-                    func.coalesce(Salary.other_allowance_minor_units, 0) * ExchangeRate.rate
+                    case(
+                        (Currency.code == "USD", func.coalesce(Salary.equity_minor_units, 0)),
+                        (
+                            ExchangeRate.rate.is_not(None),
+                            func.coalesce(Salary.equity_minor_units, 0) / ExchangeRate.rate,
+                        ),
+                        else_=None,
+                    )
+                ).label("equity"),
+                func.sum(
+                    case(
+                        (
+                            Currency.code == "USD",
+                            func.coalesce(Salary.other_allowance_minor_units, 0),
+                        ),
+                        (
+                            ExchangeRate.rate.is_not(None),
+                            func.coalesce(Salary.other_allowance_minor_units, 0)
+                            / ExchangeRate.rate,
+                        ),
+                        else_=None,
+                    )
                 ).label("other"),
             )
             .select_from(Salary)
-            .join(
-                ExchangeRate,
-                (Salary.currency == ExchangeRate.currency) & ExchangeRate.valid_to.is_(None),
-            )
             .join(Employee, Salary.employee_id == Employee.id)
+            .join(Currency, Salary.currency_id == Currency.id)
+            .outerjoin(ExchangeRate, (Currency.code == ExchangeRate.currency))
             .where(Employee.is_active, Salary.valid_to.is_(None))
         )
         result_components = await self._session.execute(stmt_components)
@@ -78,7 +115,7 @@ class DashboardRepository:
         )
 
         stmt_dist = select(
-            active_employees.c.department,
+            active_employees.c.department_name.label("department"),
             active_employees.c.salary_usd_minor_units,
         ).where(active_employees.c.salary_usd_minor_units.is_not(None))
         result_dist = await self._session.execute(stmt_dist)

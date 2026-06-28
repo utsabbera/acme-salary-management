@@ -13,6 +13,20 @@ import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 
+const getTotalMinorUnits = (item: {
+  base_salary_minor_units: number;
+  housing_allowance_minor_units?: number | null;
+  equity_minor_units?: number | null;
+  other_allowance_minor_units?: number | null;
+}) => {
+  return (
+    item.base_salary_minor_units +
+    (item.housing_allowance_minor_units || 0) +
+    (item.equity_minor_units || 0) +
+    (item.other_allowance_minor_units || 0)
+  );
+};
+
 type PageProps = {
   params: Promise<{ id: string }>;
 };
@@ -76,7 +90,7 @@ export default async function EmployeePage({ params }: PageProps) {
                 <BriefcaseIcon className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium leading-none">Department</p>
-                  <p className="text-sm text-muted-foreground">{employee.department}</p>
+                  <p className="text-sm text-muted-foreground">{employee.department.name}</p>
                 </div>
               </div>
 
@@ -84,7 +98,7 @@ export default async function EmployeePage({ params }: PageProps) {
                 <MapPinIcon className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium leading-none">Country</p>
-                  <p className="text-sm text-muted-foreground">{employee.country}</p>
+                  <p className="text-sm text-muted-foreground">{employee.country.name}</p>
                 </div>
               </div>
 
@@ -96,7 +110,7 @@ export default async function EmployeePage({ params }: PageProps) {
                     {employee.current_salary
                       ? formatCurrency(
                           employee.current_salary.salary_minor_units,
-                          employee.current_salary.currency,
+                          employee.current_salary.currency.code,
                         )
                       : "N/A"}
                   </p>
@@ -136,7 +150,10 @@ export default async function EmployeePage({ params }: PageProps) {
                       <div className="flex-1 bg-card p-4 rounded-xl border shadow-sm transition-all hover:shadow-md">
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-bold text-2xl tracking-tight text-foreground">
-                            {formatCurrency(historyItem.salary_minor_units, historyItem.currency)}
+                            {formatCurrency(
+                              getTotalMinorUnits(historyItem),
+                              historyItem.currency.code,
+                            )}
                           </h4>
                           {idx === 0 && !historyItem.valid_to && (
                             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-1 rounded-md">

@@ -17,11 +17,11 @@ class TestEmployeeDetailRead:
         from datetime import date, datetime
 
         from app.schemas.employee import EmployeeDetailRead, SalaryHistoryItem
+        from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
 
         history_item = SalaryHistoryItem(
             base_salary_minor_units=100000,
-            currency="USD",
-            salary_usd_minor_units=100000,
+            currency=CurrencyRead(id=1, code="USD", name="US Dollar"),
             valid_from=date(2023, 1, 1),
             valid_to=date(2023, 12, 31),
         )
@@ -31,8 +31,13 @@ class TestEmployeeDetailRead:
             first_name="Jane",
             last_name="Doe",
             email="jane@example.com",
-            department="Engineering",
-            country="US",
+            department=DepartmentRead(id=1, name="Engineering"),
+            country=CountryRead(
+                id=1,
+                code="US",
+                name="United States",
+                default_currency=CurrencyRead(id=1, code="USD", name="US Dollar"),
+            ),
             current_salary=None,
             created_at=datetime(2023, 1, 1),
             updated_at=datetime(2023, 1, 1),
@@ -40,4 +45,4 @@ class TestEmployeeDetailRead:
         )
 
         assert len(detail.salary_history) == 1
-        assert detail.salary_history[0].currency == "USD"
+        assert detail.salary_history[0].currency.code == "USD"

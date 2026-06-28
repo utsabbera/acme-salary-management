@@ -32,6 +32,16 @@ export function getErrorMessage(
 
     if (apiError?.message) return apiError.message;
     if (typeof errObj.message === "string") return errObj.message;
+
+    // FastAPI 422 HTTPValidationError format
+    const fastApiError = errObj.detail as Array<{ loc?: string[]; msg?: string }> | undefined;
+    if (Array.isArray(fastApiError) && fastApiError.length > 0) {
+      const firstError = fastApiError[0];
+      if (firstError?.loc && firstError.loc.length > 0 && firstError?.msg) {
+        const fieldName = firstError.loc[firstError.loc.length - 1];
+        return `Field '${fieldName}' is invalid: ${firstError.msg}`;
+      }
+    }
   }
 
   return fallback;

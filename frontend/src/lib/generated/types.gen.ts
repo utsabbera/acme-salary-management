@@ -27,6 +27,25 @@ export type ComponentTotals = {
 };
 
 /**
+ * CountryRead
+ */
+export type CountryRead = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    default_currency: CurrencyRead;
+};
+
+/**
  * CountryTotal
  */
 export type CountryTotal = {
@@ -38,6 +57,24 @@ export type CountryTotal = {
      * Total Salary Usd Minor Units
      */
     total_salary_usd_minor_units: number;
+};
+
+/**
+ * CurrencyRead
+ */
+export type CurrencyRead = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
 };
 
 /**
@@ -60,10 +97,7 @@ export type CurrentSalary = {
      * Other Allowance Minor Units
      */
     other_allowance_minor_units?: number | null;
-    /**
-     * Currency
-     */
-    currency: string;
+    currency: CurrencyRead;
     /**
      * Valid From
      */
@@ -108,6 +142,20 @@ export type DepartmentAverage = {
 };
 
 /**
+ * DepartmentRead
+ */
+export type DepartmentRead = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * EmployeeCreate
  */
 export type EmployeeCreate = {
@@ -124,13 +172,13 @@ export type EmployeeCreate = {
      */
     email: string;
     /**
-     * Department
+     * Department Id
      */
-    department: string;
+    department_id: number;
     /**
-     * Country
+     * Country Id
      */
-    country: string;
+    country_id: number;
 };
 
 /**
@@ -153,14 +201,8 @@ export type EmployeeDetailRead = {
      * Email
      */
     email: string;
-    /**
-     * Department
-     */
-    department: string;
-    /**
-     * Country
-     */
-    country: string;
+    department: DepartmentRead;
+    country: CountryRead;
     current_salary?: CurrentSalary | null;
     /**
      * Created At
@@ -196,14 +238,8 @@ export type EmployeeRead = {
      * Email
      */
     email: string;
-    /**
-     * Department
-     */
-    department: string;
-    /**
-     * Country
-     */
-    country: string;
+    department: DepartmentRead;
+    country: CountryRead;
     current_salary?: CurrentSalary | null;
     /**
      * Created At
@@ -246,13 +282,45 @@ export type EmployeeUpdate = {
      */
     email?: string | null;
     /**
-     * Department
+     * Department Id
      */
-    department?: string | null;
+    department_id?: number | null;
     /**
-     * Country
+     * Country Id
      */
-    country?: string | null;
+    country_id?: number | null;
+};
+
+/**
+ * ExchangeRateCreate
+ */
+export type ExchangeRateCreate = {
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Rate
+     */
+    rate: number;
+};
+
+/**
+ * ExchangeRateRead
+ */
+export type ExchangeRateRead = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Rate
+     */
+    rate: number;
 };
 
 /**
@@ -318,9 +386,9 @@ export type SalaryCreate = {
      */
     other_allowance_minor_units?: number | null;
     /**
-     * Currency
+     * Currency Id
      */
-    currency: string;
+    currency_id: number;
     /**
      * Valid From
      */
@@ -347,10 +415,7 @@ export type SalaryHistoryItem = {
      * Other Allowance Minor Units
      */
     other_allowance_minor_units?: number | null;
-    /**
-     * Currency
-     */
-    currency: string;
+    currency: CurrencyRead;
     /**
      * Valid From
      */
@@ -413,10 +478,7 @@ export type CurrentSalaryWritable = {
      * Other Allowance Minor Units
      */
     other_allowance_minor_units?: number | null;
-    /**
-     * Currency
-     */
-    currency: string;
+    currency: CurrencyRead;
     /**
      * Valid From
      */
@@ -443,14 +505,8 @@ export type EmployeeDetailReadWritable = {
      * Email
      */
     email: string;
-    /**
-     * Department
-     */
-    department: string;
-    /**
-     * Country
-     */
-    country: string;
+    department: DepartmentRead;
+    country: CountryRead;
     current_salary?: CurrentSalaryWritable | null;
     /**
      * Created At
@@ -486,14 +542,8 @@ export type EmployeeReadWritable = {
      * Email
      */
     email: string;
-    /**
-     * Department
-     */
-    department: string;
-    /**
-     * Country
-     */
-    country: string;
+    department: DepartmentRead;
+    country: CountryRead;
     current_salary?: CurrentSalaryWritable | null;
     /**
      * Created At
@@ -547,10 +597,7 @@ export type SalaryHistoryItemWritable = {
      * Other Allowance Minor Units
      */
     other_allowance_minor_units?: number | null;
-    /**
-     * Currency
-     */
-    currency: string;
+    currency: CurrencyRead;
     /**
      * Valid From
      */
@@ -600,17 +647,17 @@ export type ListEmployeesEmployeesGetData = {
          */
         search?: string | null;
         /**
-         * Department
+         * Department Id
          *
-         * Filter by department
+         * Filter by department ID
          */
-        department?: string | null;
+        department_id?: number | null;
         /**
-         * Country
+         * Country Id
          *
-         * Filter by country
+         * Filter by country ID
          */
-        country?: string | null;
+        country_id?: number | null;
     };
     url: '/employees';
 };
@@ -793,3 +840,82 @@ export type GetDashboardStatsDashboardStatsGetResponses = {
 };
 
 export type GetDashboardStatsDashboardStatsGetResponse = GetDashboardStatsDashboardStatsGetResponses[keyof GetDashboardStatsDashboardStatsGetResponses];
+
+export type CreateExchangeRateExchangeRatesPostData = {
+    body: ExchangeRateCreate;
+    path?: never;
+    query?: never;
+    url: '/exchange-rates';
+};
+
+export type CreateExchangeRateExchangeRatesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateExchangeRateExchangeRatesPostError = CreateExchangeRateExchangeRatesPostErrors[keyof CreateExchangeRateExchangeRatesPostErrors];
+
+export type CreateExchangeRateExchangeRatesPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: ExchangeRateRead;
+};
+
+export type CreateExchangeRateExchangeRatesPostResponse = CreateExchangeRateExchangeRatesPostResponses[keyof CreateExchangeRateExchangeRatesPostResponses];
+
+export type GetDepartmentsDepartmentsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/departments';
+};
+
+export type GetDepartmentsDepartmentsGetResponses = {
+    /**
+     * Response Get Departments Departments Get
+     *
+     * Successful Response
+     */
+    200: Array<DepartmentRead>;
+};
+
+export type GetDepartmentsDepartmentsGetResponse = GetDepartmentsDepartmentsGetResponses[keyof GetDepartmentsDepartmentsGetResponses];
+
+export type GetCurrenciesCurrenciesGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/currencies';
+};
+
+export type GetCurrenciesCurrenciesGetResponses = {
+    /**
+     * Response Get Currencies Currencies Get
+     *
+     * Successful Response
+     */
+    200: Array<CurrencyRead>;
+};
+
+export type GetCurrenciesCurrenciesGetResponse = GetCurrenciesCurrenciesGetResponses[keyof GetCurrenciesCurrenciesGetResponses];
+
+export type GetCountriesCountriesGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/countries';
+};
+
+export type GetCountriesCountriesGetResponses = {
+    /**
+     * Response Get Countries Countries Get
+     *
+     * Successful Response
+     */
+    200: Array<CountryRead>;
+};
+
+export type GetCountriesCountriesGetResponse = GetCountriesCountriesGetResponses[keyof GetCountriesCountriesGetResponses];

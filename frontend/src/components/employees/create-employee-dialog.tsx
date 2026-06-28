@@ -33,8 +33,8 @@ export function CreateEmployeeDialog({ trigger, onSuccess }: CreateEmployeeDialo
           first_name: data.first_name,
           last_name: data.last_name,
           email: data.email,
-          department: data.department,
-          country: data.country,
+          department_id: data.department_id,
+          country_id: data.country_id,
         },
       });
 

@@ -38,10 +38,27 @@ async def test_engine() -> AsyncGenerator[AsyncEngine]:
 
         await conn.execute(
             text(
-                "INSERT INTO exchange_rates (currency, rate, valid_from) "
-                "VALUES ('USD', 1.0, '2020-01-01')"
+                "INSERT INTO currencies (id, code, name) VALUES "
+                "(1, 'USD', 'US Dollar'), "
+                "(2, 'GBP', 'British Pound'), "
+                "(3, 'CAD', 'Canadian Dollar')"
             )
         )
+        await conn.execute(
+            text(
+                "INSERT INTO countries (id, code, name, default_currency_id) VALUES "
+                "(1, 'US', 'United States', 1), "
+                "(2, 'UK', 'United Kingdom', 2), "
+                "(3, 'CA', 'Canada', 3)"
+            )
+        )
+        await conn.execute(
+            text(
+                "INSERT INTO departments (id, name) VALUES "
+                "(1, 'Engineering'), (2, 'Sales'), (3, 'Marketing'), (4, 'HR')"
+            )
+        )
+        await conn.execute(text("INSERT INTO exchange_rates (currency, rate) VALUES ('USD', 1.0)"))
     yield engine
 
 

@@ -5,9 +5,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import settings
-from app.core.exceptions import http_exception_handler, validation_exception_handler
+from app.core.exceptions import http_exception_handler, validation_exception_handler, integrity_error_handler
 from app.core.logger import setup_logging
 from app.middlewares.logging import logging_middleware
+from sqlalchemy.exc import IntegrityError
 from app.routers.api import api_router
 
 setup_logging()
@@ -31,6 +32,7 @@ def create_app() -> FastAPI:
 
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+    app.add_exception_handler(IntegrityError, integrity_error_handler)
 
     app.include_router(api_router)
 

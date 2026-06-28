@@ -15,6 +15,7 @@ from app.schemas.employee import (
     SalaryCreate,
     SalaryHistoryItem,
 )
+from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
 
 
 class EmployeeService:
@@ -34,7 +35,11 @@ class EmployeeService:
                 housing_allowance_minor_units=s.housing_allowance_minor_units,
                 equity_minor_units=s.equity_minor_units,
                 other_allowance_minor_units=s.other_allowance_minor_units,
-                currency=s.currency,
+                currency=CurrencyRead(
+                    id=s.currency.id,
+                    code=s.currency.code,
+                    name=s.currency.name,
+                ),
                 valid_from=s.valid_from,
                 valid_to=s.valid_to,
             )
@@ -49,7 +54,11 @@ class EmployeeService:
                 housing_allowance_minor_units=active_salary.housing_allowance_minor_units,
                 equity_minor_units=active_salary.equity_minor_units,
                 other_allowance_minor_units=active_salary.other_allowance_minor_units,
-                currency=active_salary.currency,
+                currency=CurrencyRead(
+                    id=active_salary.currency.id,
+                    code=active_salary.currency.code,
+                    name=active_salary.currency.name,
+                ),
                 valid_from=active_salary.valid_from,
             )
 
@@ -58,8 +67,20 @@ class EmployeeService:
             first_name=employee.first_name,
             last_name=employee.last_name,
             email=employee.email,
-            department=employee.department,
-            country=employee.country,
+            department=DepartmentRead(
+                id=employee.department.id,
+                name=employee.department.name,
+            ),
+            country=CountryRead(
+                id=employee.country.id,
+                code=employee.country.code,
+                name=employee.country.name,
+                default_currency=CurrencyRead(
+                    id=employee.country.default_currency.id,
+                    code=employee.country.default_currency.code,
+                    name=employee.country.default_currency.name,
+                ),
+            ),
             current_salary=current_salary,
             created_at=employee.created_at,
             updated_at=employee.updated_at,
@@ -74,23 +95,17 @@ class EmployeeService:
             first_name=data.first_name,
             last_name=data.last_name,
             email=data.email,
-            department=data.department,
-            country=data.country,
+            department_id=data.department_id,
+            country_id=data.country_id,
         )
 
         created = await self._repo.create(employee)
 
-        return EmployeeRead(
-            id=created.id,
-            first_name=created.first_name,
-            last_name=created.last_name,
-            email=created.email,
-            department=created.department,
-            country=created.country,
-            current_salary=None,
-            created_at=created.created_at,
-            updated_at=created.updated_at,
-        )
+        active_emp = await self._repo.get_active_employee(created.id)
+        if not active_emp:
+            raise HTTPException(status_code=500, detail="Failed to retrieve created employee")
+
+        return active_emp
 
     async def update_employee(self, employee_id: int, data: EmployeeUpdate) -> EmployeeRead:
 
@@ -107,7 +122,7 @@ class EmployeeService:
         ):
             raise HTTPException(status_code=409, detail="Email already registered")
 
-        for field in ["first_name", "last_name", "email", "department", "country"]:
+        for field in ["first_name", "last_name", "email", "department_id", "country_id"]:
             if field in update_data:
                 setattr(employee, field, update_data[field])
 
@@ -132,21 +147,21 @@ class EmployeeService:
         offset: int,
         limit: int,
         search: str | None = None,
-        department: str | None = None,
-        country: str | None = None,
+        department_id: int | None = None,
+        country_id: int | None = None,
     ) -> PaginatedResponse[EmployeeRead]:
         items, total = (
             await self._repo.list_paginated(
                 offset=offset,
                 limit=limit,
                 search=search,
-                department=department,
-                country=country,
+                department_id=department_id,
+                country_id=country_id,
             ),
             await self._repo.count(
                 search=search,
-                department=department,
-                country=country,
+                department_id=department_id,
+                country_id=country_id,
             ),
         )
         return PaginatedResponse.build(items=items, total=total, offset=offset, limit=limit)
@@ -173,7 +188,7 @@ class EmployeeService:
             housing_allowance_minor_units=data.housing_allowance_minor_units,
             equity_minor_units=data.equity_minor_units,
             other_allowance_minor_units=data.other_allowance_minor_units,
-            currency=data.currency,
+            currency_id=data.currency_id,
             valid_from=data.valid_from,
         )
         employee.salaries.append(new_salary)

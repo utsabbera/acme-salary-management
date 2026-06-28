@@ -34,20 +34,23 @@ describe("EmployeePage", () => {
         first_name: "John",
         last_name: "Doe",
         email: "john.doe@example.com",
-        department: "Engineering",
-        country: "US",
+        department: { id: 1, name: "Engineering" },
+        country: { id: 1, name: "US", code: "US" },
         created_at: "2023-01-01T00:00:00Z",
         updated_at: "2023-01-01T00:00:00Z",
         current_salary: {
           salary_minor_units: 12000000, // $120,000.00
-          currency: "USD",
+          currency: { code: "USD", name: "US Dollar" },
         },
         salary_history: [
           {
             valid_from: "2023-01-01",
             valid_to: null,
-            salary_minor_units: 12000000,
-            currency: "USD",
+            base_salary_minor_units: 10000000,
+            housing_allowance_minor_units: 2000000,
+            equity_minor_units: null,
+            other_allowance_minor_units: null,
+            currency: { code: "USD", name: "US Dollar" },
           },
         ],
       },
@@ -61,7 +64,7 @@ describe("EmployeePage", () => {
     });
 
     expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
-    expect(screen.getAllByText("$120,000.00").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("$120,000.00").length).toBe(2);
   });
 
   it("calls notFound when the employee ID is invalid", async () => {

@@ -64,8 +64,8 @@ describe("UpdateSalaryDialog", () => {
 
     // Fill out the form
     await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
-    await user.clear(screen.getByLabelText("Currency"));
-    await user.type(screen.getByLabelText("Currency"), "GBP");
+    await user.clear(screen.getByLabelText("Currency ID"));
+    await user.type(screen.getByLabelText("Currency ID"), "2");
 
     await user.clear(screen.getByLabelText("Base Salary"));
     await user.type(screen.getByLabelText("Base Salary"), "1000");
@@ -81,7 +81,7 @@ describe("UpdateSalaryDialog", () => {
         path: { employee_id: 1 },
         body: {
           valid_from: "2024-01-01",
-          currency: "GBP",
+          currency_id: 2,
           base_salary_minor_units: 100000,
           housing_allowance_minor_units: 20000,
           equity_minor_units: null,
@@ -100,13 +100,13 @@ describe("UpdateSalaryDialog", () => {
 
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
-    await user.clear(screen.getByLabelText("Currency"));
+    await user.clear(screen.getByLabelText("Currency ID"));
 
     await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
 
     await waitFor(() => {
       expect(screen.getByText("Valid from date is required")).toBeInTheDocument();
-      expect(screen.getByText("Currency code must be 3 characters")).toBeInTheDocument();
+      expect(screen.getByText("Currency ID is required")).toBeInTheDocument();
     });
 
     expect(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).not.toHaveBeenCalled();

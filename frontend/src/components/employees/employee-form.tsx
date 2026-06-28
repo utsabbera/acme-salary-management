@@ -11,8 +11,8 @@ const employeeSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  department: z.string().min(1, "Department is required"),
-  country: z.string().min(1, "Country is required"),
+  department_id: z.coerce.number().min(1, "Department ID is required"),
+  country_id: z.coerce.number().min(1, "Country ID is required"),
 });
 
 export type EmployeeFormData = z.infer<typeof employeeSchema>;
@@ -69,21 +69,27 @@ export function EmployeeForm({ onSubmit, mode, defaultValues }: EmployeeFormProp
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="department">Department</Label>
+          <Label htmlFor="department_id">Department ID</Label>
           <Input
-            id="department"
-            defaultValue={defaultValues?.department}
-            {...register("department")}
+            id="department_id"
+            type="number"
+            defaultValue={defaultValues?.department_id}
+            {...register("department_id")}
           />
-          {errors.department && (
-            <span className="text-sm text-destructive">{errors.department.message}</span>
+          {errors.department_id && (
+            <span className="text-sm text-destructive">{errors.department_id.message}</span>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="country">Country</Label>
-          <Input id="country" defaultValue={defaultValues?.country} {...register("country")} />
-          {errors.country && (
-            <span className="text-sm text-destructive">{errors.country.message}</span>
+          <Label htmlFor="country_id">Country ID</Label>
+          <Input
+            id="country_id"
+            type="number"
+            defaultValue={defaultValues?.country_id}
+            {...register("country_id")}
+          />
+          {errors.country_id && (
+            <span className="text-sm text-destructive">{errors.country_id.message}</span>
           )}
         </div>
       </div>

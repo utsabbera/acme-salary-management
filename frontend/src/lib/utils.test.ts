@@ -59,4 +59,18 @@ describe("getErrorMessage", () => {
 
     expect(getErrorMessage(errorObj)).toBe("An unknown error occurred.");
   });
+
+  it("parses FastAPI 422 HTTPValidationError format", () => {
+    const errorObj = {
+      detail: [
+        {
+          loc: ["body", "country"],
+          msg: "field required",
+          type: "value_error.missing",
+        },
+      ],
+    };
+
+    expect(getErrorMessage(errorObj)).toBe("Field 'country' is invalid: field required");
+  });
 });

@@ -3,6 +3,8 @@ from typing import TypeVar
 
 from pydantic import BaseModel, computed_field
 
+from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
+
 T = TypeVar("T")
 
 
@@ -11,7 +13,7 @@ class SalaryBase(BaseModel):
     housing_allowance_minor_units: int | None = None
     equity_minor_units: int | None = None
     other_allowance_minor_units: int | None = None
-    currency: str
+    currency: CurrencyRead
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -24,7 +26,12 @@ class SalaryBase(BaseModel):
         )
 
 
-class SalaryCreate(SalaryBase):
+class SalaryCreate(BaseModel):
+    base_salary_minor_units: int
+    housing_allowance_minor_units: int | None = None
+    equity_minor_units: int | None = None
+    other_allowance_minor_units: int | None = None
+    currency_id: int
     valid_from: date
 
 
@@ -37,8 +44,8 @@ class EmployeeRead(BaseModel):
     first_name: str
     last_name: str
     email: str
-    department: str
-    country: str
+    department: DepartmentRead
+    country: CountryRead
     current_salary: CurrentSalary | None = None
     created_at: datetime
     updated_at: datetime
@@ -50,16 +57,16 @@ class EmployeeCreate(BaseModel):
     first_name: str
     last_name: str
     email: str
-    department: str
-    country: str
+    department_id: int
+    country_id: int
 
 
 class EmployeeUpdate(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     email: str | None = None
-    department: str | None = None
-    country: str | None = None
+    department_id: int | None = None
+    country_id: int | None = None
 
 
 class PaginatedResponse[T](BaseModel):

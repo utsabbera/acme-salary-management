@@ -32,7 +32,7 @@ vi.mock("@/components/ui/select", () => ({
         type="button"
         data-testid="select-engineering"
         onClick={() => {
-          onValueChange("Engineering");
+          onValueChange("1");
         }}
       >
         Select Engineering
@@ -50,7 +50,7 @@ vi.mock("@/components/ui/select", () => ({
         type="button"
         data-testid="select-us"
         onClick={() => {
-          onValueChange("US");
+          onValueChange("1");
         }}
       >
         Select US
@@ -81,12 +81,12 @@ describe("Filters", () => {
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&department=Engineering");
+      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&department_id=1");
     });
   });
 
   it("removes filter when ALL is selected", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department=Engineering"));
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1"));
     render(<Filters />);
 
     const btn = screen.getAllByTestId("select-all")[0] as HTMLElement;
@@ -98,7 +98,7 @@ describe("Filters", () => {
   });
 
   it("removes country filter when ALL is selected", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country=US"));
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country_id=1"));
     render(<Filters />);
 
     const btn = screen.getAllByTestId("select-all")[1] as HTMLElement;
@@ -117,7 +117,7 @@ describe("Filters", () => {
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&country=US");
+      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&country_id=1");
     });
   });
 
@@ -130,10 +130,10 @@ describe("Filters", () => {
   });
 
   it("renders selected value text", () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department=Engineering&country=US"));
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1&country_id=1"));
     render(<Filters />);
 
     expect(screen.getAllByText("Engineering")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("US")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("United States")[0]).toBeInTheDocument();
   });
 });

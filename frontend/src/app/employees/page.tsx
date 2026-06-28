@@ -19,8 +19,10 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
   const params = await searchParams;
 
   const search = typeof params.search === "string" ? params.search : undefined;
-  const department = typeof params.department === "string" ? params.department : undefined;
-  const country = typeof params.country === "string" ? params.country : undefined;
+  const department_id =
+    typeof params.department_id === "string" ? parseInt(params.department_id, 10) : undefined;
+  const country_id =
+    typeof params.country_id === "string" ? parseInt(params.country_id, 10) : undefined;
   const offset = typeof params.offset === "string" ? parseInt(params.offset, 10) : 0;
   const limit = typeof params.limit === "string" ? parseInt(params.limit, 10) : 20;
 
@@ -41,8 +43,8 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
             <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
               <EmployeeData
                 search={search}
-                department={department}
-                country={country}
+                department_id={!Number.isNaN(department_id) ? department_id : undefined}
+                country_id={!Number.isNaN(country_id) ? country_id : undefined}
                 offset={offset}
                 limit={limit}
               />
@@ -61,14 +63,14 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
 
 async function EmployeeData({
   search,
-  department,
-  country,
+  department_id,
+  country_id,
   offset,
   limit,
 }: {
   search?: string;
-  department?: string;
-  country?: string;
+  department_id?: number;
+  country_id?: number;
   offset: number;
   limit: number;
 }) {
@@ -76,8 +78,8 @@ async function EmployeeData({
     client: apiClient,
     query: {
       search,
-      department,
-      country,
+      department_id,
+      country_id,
       offset,
       limit,
     },

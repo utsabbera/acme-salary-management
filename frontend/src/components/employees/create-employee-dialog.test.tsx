@@ -71,8 +71,8 @@ describe("CreateEmployeeDialog", () => {
     await user.type(screen.getByLabelText(/first name/i), "John");
     await user.type(screen.getByLabelText(/last name/i), "Doe");
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
-    await user.type(screen.getByLabelText(/department/i), "Engineering");
-    await user.type(screen.getByLabelText(/country/i), "USA");
+    await user.type(screen.getByLabelText(/department id/i), "1");
+    await user.type(screen.getByLabelText(/country id/i), "1");
 
     await user.click(screen.getByRole("button", { name: /create employee/i }));
 
@@ -83,8 +83,8 @@ describe("CreateEmployeeDialog", () => {
           first_name: "John",
           last_name: "Doe",
           email: "john.doe@example.com",
-          department: "Engineering",
-          country: "USA",
+          department_id: 1,
+          country_id: 1,
         },
       });
     });
@@ -108,8 +108,8 @@ describe("CreateEmployeeDialog", () => {
     await user.type(screen.getByLabelText(/first name/i), "John");
     await user.type(screen.getByLabelText(/last name/i), "Doe");
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
-    await user.type(screen.getByLabelText(/department/i), "Engineering");
-    await user.type(screen.getByLabelText(/country/i), "USA");
+    await user.type(screen.getByLabelText(/department id/i), "1");
+    await user.type(screen.getByLabelText(/country id/i), "1");
 
     await user.click(screen.getByRole("button", { name: /create employee/i }));
 
@@ -133,8 +133,8 @@ describe("CreateEmployeeDialog", () => {
     await user.type(screen.getByLabelText(/first name/i), "John");
     await user.type(screen.getByLabelText(/last name/i), "Doe");
     await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
-    await user.type(screen.getByLabelText(/department/i), "Engineering");
-    await user.type(screen.getByLabelText(/country/i), "USA");
+    await user.type(screen.getByLabelText(/department id/i), "1");
+    await user.type(screen.getByLabelText(/country id/i), "1");
 
     await user.click(screen.getByRole("button", { name: /create employee/i }));
 

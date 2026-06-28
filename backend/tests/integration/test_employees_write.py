@@ -10,8 +10,8 @@ class TestEmployeeCreation:
             "first_name": "John",
             "last_name": "Doe",
             "email": "john.doe@example.com",
-            "department": "Engineering",
-            "country": "US",
+            "department_id": 1,
+            "country_id": 1,
         }
         response = await client.post("/employees", json=payload)
         assert response.status_code == 201, response.text
@@ -28,8 +28,8 @@ class TestEmployeeCreation:
             "first_name": "John",
             "last_name": "Doe",
             "email": "jane.doe@example.com",
-            "department": "Engineering",
-            "country": "US",
+            "department_id": 1,
+            "country_id": 1,
         }
         resp1 = await client.post("/employees", json=payload)
         assert resp1.status_code == 201
@@ -58,20 +58,20 @@ class TestEmployeeUpdate:
             "first_name": "Bob",
             "last_name": "Smith",
             "email": "bob.smith@example.com",
-            "department": "Sales",
-            "country": "US",
+            "department_id": 2,
+            "country_id": 1,
         }
         create_resp = await client.post("/employees", json=payload)
         emp_id = create_resp.json()["id"]
 
-        update_payload = {"first_name": "Robert", "department": "Marketing"}
+        update_payload = {"first_name": "Robert", "department_id": 3}
         patch_resp = await client.patch(f"/employees/{emp_id}", json=update_payload)
         assert patch_resp.status_code == 200, patch_resp.text
 
         data = patch_resp.json()
         assert data["first_name"] == "Robert"
         assert data["last_name"] == "Smith"  # Unchanged
-        assert data["department"] == "Marketing"
+        assert data["department"]["name"] == "Marketing"
         assert data["current_salary"] is None  # Unchanged
 
 
@@ -81,8 +81,8 @@ class TestEmployeeDelete:
             "first_name": "Charlie",
             "last_name": "Brown",
             "email": "charlie.brown@example.com",
-            "department": "Engineering",
-            "country": "US",
+            "department_id": 1,
+            "country_id": 1,
         }
         create_resp = await client.post("/employees", json=payload)
         emp_id = create_resp.json()["id"]
@@ -103,15 +103,15 @@ class TestSalaryAdjustment:
             "first_name": "Salary",
             "last_name": "Test",
             "email": "salary.test@example.com",
-            "department": "Engineering",
-            "country": "US",
+            "department_id": 1,
+            "country_id": 1,
         }
         create_resp = await client.post("/employees", json=payload)
         emp_id = create_resp.json()["id"]
 
         salary_payload = {
             "base_salary_minor_units": 10000000,
-            "currency": "USD",
+            "currency_id": 1,
             "valid_from": "2024-01-01",
         }
 
@@ -126,7 +126,7 @@ class TestSalaryAdjustment:
         # Test validation on valid_from
         invalid_salary_payload = {
             "base_salary_minor_units": 11000000,
-            "currency": "USD",
+            "currency_id": 1,
             "valid_from": "2023-12-31",  # Before existing
         }
         invalid_resp = await client.post(
@@ -138,7 +138,7 @@ class TestSalaryAdjustment:
         # Add another salary adjustment
         new_salary_payload = {
             "base_salary_minor_units": 12000000,
-            "currency": "USD",
+            "currency_id": 1,
             "valid_from": "2024-06-01",
         }
         new_resp = await client.post(f"/employees/{emp_id}/salaries", json=new_salary_payload)

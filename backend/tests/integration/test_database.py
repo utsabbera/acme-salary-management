@@ -12,12 +12,24 @@ pytestmark = pytest.mark.asyncio
 
 class TestDatabaseBehaviors:
     async def test_scd_type2_resolution(self, db_session: AsyncSession) -> None:
+        from sqlalchemy import select
+
+        from app.models.reference import Country, Currency, Department
+
+        usd = (
+            await db_session.execute(select(Currency).where(Currency.code == "USD"))
+        ).scalar_one()
+        us = (await db_session.execute(select(Country).where(Country.code == "US"))).scalar_one()
+        dept = (
+            await db_session.execute(select(Department).where(Department.name == "HR"))
+        ).scalar_one()
+
         employee = Employee(
             first_name="John",
             last_name="Doe",
             email="john@example.com",
-            department="Engineering",
-            country="USD",
+            department_id=dept.id,
+            country_id=us.id,
         )
         db_session.add(employee)
         await db_session.flush()
@@ -25,14 +37,14 @@ class TestDatabaseBehaviors:
         old_salary = Salary(
             employee_id=employee.id,
             base_salary_minor_units=10000000,
-            currency="USD",
+            currency_id=usd.id,
             valid_from=date(2020, 1, 1),
             valid_to=date(2022, 1, 1),
         )
         new_salary = Salary(
             employee_id=employee.id,
             base_salary_minor_units=12000000,
-            currency="USD",
+            currency_id=usd.id,
             valid_from=date(2022, 1, 1),
             valid_to=None,
         )
@@ -48,12 +60,24 @@ class TestDatabaseBehaviors:
         assert "valid_to" not in active_record
 
     async def test_soft_deletes(self, db_session: AsyncSession) -> None:
+        from sqlalchemy import select
+
+        from app.models.reference import Country, Currency, Department
+
+        usd = (
+            await db_session.execute(select(Currency).where(Currency.code == "USD"))
+        ).scalar_one()
+        us = (await db_session.execute(select(Country).where(Country.code == "US"))).scalar_one()
+        dept = (
+            await db_session.execute(select(Department).where(Department.name == "HR"))
+        ).scalar_one()
+
         employee = Employee(
             first_name="Jane",
             last_name="Doe",
             email="jane@example.com",
-            department="Engineering",
-            country="USD",
+            department_id=dept.id,
+            country_id=us.id,
             is_active=False,
         )
         db_session.add(employee)
@@ -62,7 +86,7 @@ class TestDatabaseBehaviors:
         salary = Salary(
             employee_id=employee.id,
             base_salary_minor_units=10000000,
-            currency="USD",
+            currency_id=usd.id,
             valid_from=date(2020, 1, 1),
             valid_to=None,
         )
@@ -76,12 +100,24 @@ class TestDatabaseBehaviors:
         assert len(rows) == 0
 
     async def test_cascade_deletes(self, db_session: AsyncSession) -> None:
+        from sqlalchemy import select
+
+        from app.models.reference import Country, Currency, Department
+
+        usd = (
+            await db_session.execute(select(Currency).where(Currency.code == "USD"))
+        ).scalar_one()
+        us = (await db_session.execute(select(Country).where(Country.code == "US"))).scalar_one()
+        dept = (
+            await db_session.execute(select(Department).where(Department.name == "HR"))
+        ).scalar_one()
+
         employee = Employee(
             first_name="Bob",
             last_name="Smith",
             email="bob@example.com",
-            department="HR",
-            country="USD",
+            department_id=dept.id,
+            country_id=us.id,
         )
         db_session.add(employee)
         await db_session.flush()
@@ -89,7 +125,7 @@ class TestDatabaseBehaviors:
         salary = Salary(
             employee_id=employee.id,
             base_salary_minor_units=8000000,
-            currency="USD",
+            currency_id=usd.id,
             valid_from=date(2020, 1, 1),
             valid_to=None,
         )

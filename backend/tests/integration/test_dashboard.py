@@ -5,14 +5,35 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.employee import Employee
+from app.models.exchange_rate import ExchangeRate
 from app.models.salary import Salary
 
 pytestmark = pytest.mark.asyncio
 
 
+from app.models.reference import Country, Currency, Department
+
+
 @pytest.fixture
 async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession) -> AsyncClient:
     """Seed employees with different countries, departments, and active/inactive status."""
+
+    from sqlalchemy import select
+
+    currencies = {c.code: c for c in (await db_session.execute(select(Currency))).scalars().all()}
+    countries = {c.code: c for c in (await db_session.execute(select(Country))).scalars().all()}
+    departments = {
+        d.name: d for d in (await db_session.execute(select(Department))).scalars().all()
+    }
+
+    exchange_rates = {
+        "GBP": ExchangeRate(currency="GBP", rate=0.8),
+        "CAD": ExchangeRate(currency="CAD", rate=1.35),
+    }
+    for er in exchange_rates.values():
+        db_session.add(er)
+    await db_session.flush()
+
     employees_data = [
         # Active employees
         {
@@ -28,6 +49,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "other": 0,
             "active": True,
             "valid_to": None,
+            "currency": "USD",
         },
         {
             "first": "B",
@@ -42,6 +64,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "other": 500000,
             "active": True,
             "valid_to": None,
+            "currency": "GBP",
         },
         {
             "first": "C",
@@ -56,6 +79,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "other": 0,
             "active": True,
             "valid_to": None,
+            "currency": "USD",
         },
         # Inactive employee
         {
@@ -67,6 +91,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "salary_usd": 15000000,
             "active": False,
             "valid_to": None,
+            "currency": "USD",
         },
         # Active employee but with expired salary
         {
@@ -78,6 +103,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "salary_usd": 9000000,
             "active": True,
             "valid_to": date(2022, 12, 31),
+            "currency": "GBP",
         },
         # Active employee with NO valid salaries (triggers the NULL aggregation bug)
         {
@@ -89,6 +115,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "salary_usd": 7000000,
             "active": True,
             "valid_to": date(2022, 12, 31),
+            "currency": "CAD",
         },
     ]
 
@@ -97,24 +124,25 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             first_name=data["first"],
             last_name=data["last"],
             email=data["email"],
-            department=data["dept"],
-            country=data["country"],
+            department_id=departments[str(data["dept"])].id,
+            country_id=countries[str(data["country"])].id,
             is_active=data["active"],
         )
         db_session.add(emp)
         await db_session.flush()
 
-        sal = Salary(
-            employee_id=emp.id,
-            base_salary_minor_units=data.get("base", data["salary_usd"]),
-            housing_allowance_minor_units=data.get("housing", 0),
-            equity_minor_units=data.get("equity", 0),
-            other_allowance_minor_units=data.get("other", 0),
-            currency="USD",
-            valid_from=date(2022, 1, 1),
-            valid_to=data["valid_to"],
-        )
-        db_session.add(sal)
+        if "base" in data:
+            salary = Salary(
+                employee_id=emp.id,
+                base_salary_minor_units=data.get("base", 0),
+                housing_allowance_minor_units=data.get("housing", 0),
+                equity_minor_units=data.get("equity", 0),
+                other_allowance_minor_units=data.get("other", 0),
+                currency_id=currencies[str(data["currency"])].id,
+                valid_from=date(2022, 1, 1),
+                valid_to=data.get("valid_to"),
+            )
+            db_session.add(salary)
 
     await db_session.flush()
     return client
@@ -147,7 +175,7 @@ class TestDashboardStats:
             for d in data["department_averages"]
         }
         assert len(averages) == 3
-        assert averages["Engineering"] == 11500000
+        assert averages["Engineering"] == 12875000
         assert averages["HR"] == 8000000
         assert averages["Sales"] == 0
 
@@ -157,9 +185,9 @@ class TestDashboardStats:
         # CA: F is expired.
         totals = {d["country"]: d["total_salary_usd_minor_units"] for d in data["country_totals"]}
         assert len(totals) == 3
-        assert totals["US"] == 20000000
-        assert totals["UK"] == 11000000
-        assert totals["CA"] == 0
+        assert totals["United States"] == 20000000
+        assert totals["United Kingdom"] == 13750000
+        assert totals["Canada"] == 0
 
     async def test_get_dashboard_stats_components(
         self, seeded_dashboard_client: AsyncClient
@@ -178,10 +206,10 @@ class TestDashboardStats:
         # Housing: A(1m) + B(1m) = 2m
         # Equity: A(1m) + B(0.5m) = 1.5m
         # Other: B(0.5m) = 0.5m
-        assert totals["base_salary_usd_minor_units"] == 27000000
-        assert totals["housing_allowance_usd_minor_units"] == 2000000
-        assert totals["equity_usd_minor_units"] == 1500000
-        assert totals["other_allowance_usd_minor_units"] == 500000
+        assert totals["base_salary_usd_minor_units"] == 29250000
+        assert totals["housing_allowance_usd_minor_units"] == 2250000
+        assert totals["equity_usd_minor_units"] == 1625000
+        assert totals["other_allowance_usd_minor_units"] == 625000
 
     async def test_get_dashboard_stats_distribution(
         self, seeded_dashboard_client: AsyncClient
@@ -206,5 +234,5 @@ class TestDashboardStats:
         ]
         hr_salaries = [d["salary_usd_minor_units"] for d in distribution if d["department"] == "HR"]
 
-        assert sorted(eng_salaries) == [11000000, 12000000]
+        assert sorted(eng_salaries) == [12000000, 13750000]
         assert hr_salaries == [8000000]

@@ -150,7 +150,7 @@ export function EmployeeProfilePane() {
                     <BriefcaseIcon className="h-5 w-5 text-muted-foreground" />
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium leading-none text-foreground">Department</p>
-                      <p className="text-sm text-muted-foreground">{employee.department}</p>
+                      <p className="text-sm text-muted-foreground">{employee.department.name}</p>
                     </div>
                   </div>
 
@@ -158,7 +158,7 @@ export function EmployeeProfilePane() {
                     <MapPinIcon className="h-5 w-5 text-muted-foreground" />
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium leading-none text-foreground">Country</p>
-                      <p className="text-sm text-muted-foreground">{employee.country}</p>
+                      <p className="text-sm text-muted-foreground">{employee.country.name}</p>
                     </div>
                   </div>
 
@@ -170,7 +170,7 @@ export function EmployeeProfilePane() {
                         {employee.current_salary
                           ? formatCurrency(
                               employee.current_salary.salary_minor_units,
-                              employee.current_salary.currency,
+                              employee.current_salary.currency.code,
                             )
                           : "N/A"}
                       </p>
@@ -215,7 +215,7 @@ export function EmployeeProfilePane() {
                               <h4 className="font-bold text-2xl tracking-tight text-foreground">
                                 {formatCurrency(
                                   historyItem.salary_minor_units,
-                                  historyItem.currency,
+                                  historyItem.currency.code,
                                 )}
                               </h4>
                               {idx === 0 && !historyItem.valid_to && (
