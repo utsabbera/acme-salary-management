@@ -6,7 +6,7 @@ class Settings(BaseSettings):
 
     app_name: str = "ACME Salary Management"
     debug: bool = True
-    database_url: str
+    database_url: str = "postgresql+asyncpg://postgres:password@localhost:5432/acme_salary"
     cors_origins: list[str] = ["http://localhost:3000"]
 
 
