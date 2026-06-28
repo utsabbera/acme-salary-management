@@ -49,7 +49,7 @@ def upgrade() -> None:
         e.updated_at
     FROM employees e
     JOIN salaries s ON e.id = s.employee_id
-    WHERE e.is_active = 1 AND s.valid_to IS NULL
+    WHERE e.is_active = TRUE AND s.valid_to IS NULL
     """)
     # ### end Alembic commands ###
 
@@ -78,6 +78,6 @@ def downgrade() -> None:
         e.updated_at
     FROM employees e
     JOIN salaries s ON e.id = s.employee_id
-    WHERE e.is_active = 1 AND s.valid_to IS NULL
+    WHERE e.is_active = TRUE AND s.valid_to IS NULL
     """)
     # ### end Alembic commands ###

@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from app.models.employee import Employee
     from app.models.exchange_rate import ExchangeRate
 
-from sqlalchemy import Date, ForeignKey, Index, Integer, String
+from sqlalchemy import BigInteger, Date, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -19,13 +19,13 @@ class Salary(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
 
-    base_salary_minor_units: Mapped[int] = mapped_column(Integer)
-    housing_allowance_minor_units: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    equity_minor_units: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    other_allowance_minor_units: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    base_salary_minor_units: Mapped[int] = mapped_column(BigInteger)
+    housing_allowance_minor_units: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    equity_minor_units: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    other_allowance_minor_units: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
 
     currency: Mapped[str] = mapped_column(String(3))
-    salary_usd_minor_units: Mapped[int] = mapped_column(Integer)
+    salary_usd_minor_units: Mapped[int] = mapped_column(BigInteger)
 
     exchange_rate_id: Mapped[int] = mapped_column(ForeignKey("exchange_rates.id"))
 

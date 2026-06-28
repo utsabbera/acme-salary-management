@@ -22,8 +22,8 @@ def upgrade() -> None:
     op.execute("DROP VIEW IF EXISTS active_employees")
 
     with op.batch_alter_table("salaries", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("salary_minor_units", sa.Integer(), nullable=True))
-        batch_op.add_column(sa.Column("salary_usd_minor_units", sa.Integer(), nullable=True))
+        batch_op.add_column(sa.Column("salary_minor_units", sa.BigInteger(), nullable=True))
+        batch_op.add_column(sa.Column("salary_usd_minor_units", sa.BigInteger(), nullable=True))
 
     op.execute(
         "UPDATE salaries SET "
@@ -49,7 +49,7 @@ def upgrade() -> None:
     JOIN salaries sh
         ON sh.employee_id = e.id
         AND sh.valid_to IS NULL
-    WHERE e.is_active = 1
+    WHERE e.is_active = TRUE
     """)
 
 
@@ -86,5 +86,5 @@ def downgrade() -> None:
     JOIN salaries sh
         ON sh.employee_id = e.id
         AND sh.valid_to IS NULL
-    WHERE e.is_active = 1
+    WHERE e.is_active = TRUE
     """)

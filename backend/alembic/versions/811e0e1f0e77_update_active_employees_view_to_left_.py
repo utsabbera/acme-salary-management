@@ -30,7 +30,7 @@ def upgrade() -> None:
     LEFT JOIN salaries sh
         ON sh.employee_id = e.id
         AND sh.valid_to IS NULL
-    WHERE e.is_active = 1
+    WHERE e.is_active = TRUE
     """)
 
 
@@ -48,5 +48,5 @@ def downgrade() -> None:
     JOIN salaries sh
         ON sh.employee_id = e.id
         AND sh.valid_to IS NULL
-    WHERE e.is_active = 1
+    WHERE e.is_active = TRUE
     """)

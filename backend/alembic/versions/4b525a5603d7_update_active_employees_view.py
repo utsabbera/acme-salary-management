@@ -29,16 +29,16 @@ def upgrade() -> None:
         sh.equity_minor_units,
         sh.other_allowance_minor_units,
         (sh.base_salary_minor_units +
-         IFNULL(sh.housing_allowance_minor_units, 0) +
-         IFNULL(sh.equity_minor_units, 0) +
-         IFNULL(sh.other_allowance_minor_units, 0)) AS salary_minor_units,
+         COALESCE(sh.housing_allowance_minor_units, 0) +
+         COALESCE(sh.equity_minor_units, 0) +
+         COALESCE(sh.other_allowance_minor_units, 0)) AS salary_minor_units,
         sh.currency, sh.salary_usd_minor_units,
         sh.valid_from
     FROM employees e
     LEFT JOIN salaries sh
         ON sh.employee_id = e.id
         AND sh.valid_to IS NULL
-    WHERE e.is_active = 1
+    WHERE e.is_active = TRUE
     """)
 
 
@@ -57,5 +57,5 @@ def downgrade() -> None:
     LEFT JOIN salaries sh
         ON sh.employee_id = e.id
         AND sh.valid_to IS NULL
-    WHERE e.is_active = 1
+    WHERE e.is_active = TRUE
     """)
