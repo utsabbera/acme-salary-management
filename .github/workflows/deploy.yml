@@ -5,6 +5,7 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 # Required secrets (Settings → Secrets → Actions):
 #   RENDER_DEPLOY_HOOK_URL — Render Dashboard → Service → Settings → Deploy Hook
