@@ -40,8 +40,8 @@ vi.mock("@/components/ui/select", () => ({
       {children}
     </button>
   ),
-  SelectValue: ({ placeholder }: { placeholder?: string; children?: ReactNode }) => (
-    <span>{placeholder}</span>
+  SelectValue: ({ placeholder, children }: { placeholder?: string; children?: ReactNode }) => (
+    <span>{children ?? placeholder}</span>
   ),
 }));
 
@@ -85,9 +85,8 @@ describe("EmployeeForm", () => {
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/department/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/country/i)).toBeInTheDocument();
-
+    expect(screen.getByLabelText(/department/i)).toHaveTextContent("Select department");
+    expect(screen.getByLabelText(/country/i)).toHaveTextContent("Select country");
     expect(screen.getByRole("button", { name: /create employee/i })).toBeInTheDocument();
   });
 
@@ -134,6 +133,8 @@ describe("EmployeeForm", () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/first name/i)).toHaveValue("John");
       expect(screen.getByLabelText(/last name/i)).toHaveValue("Doe");
+      expect(screen.getByLabelText(/department/i)).toHaveTextContent("Engineering");
+      expect(screen.getByLabelText(/country/i)).toHaveTextContent("United States");
     });
     expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
     expect(screen.queryByLabelText(/valid from/i)).not.toBeInTheDocument();

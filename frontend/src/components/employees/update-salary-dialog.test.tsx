@@ -62,7 +62,9 @@ vi.mock("@/components/ui/select", () => ({
       {children}
     </button>
   ),
-  SelectValue: ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>,
+  SelectValue: ({ placeholder, children }: { placeholder?: string; children?: ReactNode }) => (
+    <span>{children ?? placeholder}</span>
+  ),
 }));
 
 const currencies: CurrencyRead[] = [
@@ -259,7 +261,9 @@ describe("UpdateSalaryDialog", () => {
     );
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByLabelText(/base salary/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/currency/i)).toHaveTextContent("USD – US Dollar");
+    expect(screen.getByRole("button", { name: "Save Adjustment" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
