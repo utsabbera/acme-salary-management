@@ -91,7 +91,7 @@ jobs:
 
       - name: Tests (vitest)
         working-directory: ./frontend
-        run: pnpm vitest run
+        run: pnpm test:cov
 
       - name: Build Next.js
         working-directory: ./frontend

@@ -36,5 +36,10 @@ test:
 	cd backend && uv run pytest
 
 
+test-cov:
+	cd frontend && pnpm test:cov
+	cd backend && uv run pytest
+
+
 seed:
 	cd backend && uv run python scripts/seed.py

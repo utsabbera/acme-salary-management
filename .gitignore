@@ -3,6 +3,7 @@ node_modules/
 .next/
 dist/
 .pnpm-store/
+coverage/
 
 # Python
 __pycache__/

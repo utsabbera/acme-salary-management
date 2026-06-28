@@ -32,3 +32,7 @@ pre-push:
       run: "cd frontend && pnpm tsc --noEmit"
     mypy:
       run: "cd backend && uv run mypy app/"
+    test-frontend:
+      run: "cd frontend && pnpm test:cov"
+    test-backend:
+      run: "cd backend && uv run pytest"
