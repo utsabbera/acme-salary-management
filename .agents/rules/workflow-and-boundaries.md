@@ -40,7 +40,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## 4. Context Retrieval (Pre-flight Checklist)
 
 **MANDATORY FIRST STEP: Always read the `README.md` file.**
-Before you do any planning, execution, or even answering complex questions about the project, you MUST read the `README.md` to understand the project's tech stack, directory structure, and essential commands. This is your absolute source of truth.
+Before you do any planning, execution, or even answering complex questions about the project, you MUST read the `README.md` to understand the project's tech stack, directory structure, and essential commands. This is your absolute source of truth. When running tasks, always adhere strictly to the project's tooling (e.g., `pnpm` exclusively for frontend, `uv` exclusively for backend) as detailed in the README's Commands section.
 
 **Always check existing documentation before planning.**
 When starting a new feature, planning an architecture change, or running project commands for the first time, proactively use the `list_dir` and `view_file` tools to check the `docs/` directory for any existing conventions or constraints that might apply to your task. If you're unsure how a subsystem works, check `docs/decisions/` before assuming a default architecture.

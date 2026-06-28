@@ -12,7 +12,7 @@ Built with **FastAPI** (Python 3.13) + **Next.js 16** (React 19, TypeScript 6, T
 
 ```bash
 make install          # install all deps (pnpm + uv)
-make migrate MSG="initial schema"  # run migrations
+make migrate          # run migrations
 make seed             # seed 10,000 employees
 make dev              # backend :8000 + frontend :3000
 ```
@@ -26,7 +26,7 @@ make test                             # run all tests
 make lint                             # biome (frontend) + ruff (backend)
 make typecheck                        # tsc (frontend) + mypy (backend)
 make gen-client                       # regenerate TS client from OpenAPI spec
-make migrate MSG="description"     # create + apply Alembic migration
+make migrate                          # apply Alembic migrations to head
 make seed                             # seed database with 10,000 employees
 
 ```
