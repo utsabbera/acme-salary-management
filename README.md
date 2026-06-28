@@ -1,5 +1,7 @@
 # ACME Salary Management
 
+[![CI / CD](https://github.com/utsabbera/acme-salary-management/actions/workflows/deploy.yml/badge.svg)](https://github.com/utsabbera/acme-salary-management/actions/workflows/deploy.yml)
+
 Full-stack HR salary management software for 10,000 employees across multiple countries.
 
 Built with **FastAPI** (Python 3.13) + **Next.js 16** (React 19, TypeScript 6, Tailwind CSS 4).
@@ -49,6 +51,7 @@ Makefile      Sole orchestrator
 
 ## Documentation
 
+- **[Deployment](docs/deployment.md)**: CI/CD pipeline overview, hosting stack, and required secrets.
 - **[Architecture](docs/architecture.md)**: High-level system design, data models, and API patterns.
 - **[Requirements](docs/requirements.md)**: Product requirements and feature specifications.
 - **[Workflow](docs/workflow.md)**: Standard operating procedures and development lifecycle.
@@ -57,6 +60,13 @@ Makefile      Sole orchestrator
 ## Database
 
 Default: `sqlite+aiosqlite:///./dev.db`
+
+## Deployment
+
+The application is deployed via GitHub Actions to Vercel (Frontend) and Render (Backend), using a Serverless PostgreSQL database on Neon. 
+
+See the **[Deployment Guide](docs/deployment.md)** for a full overview of the CI/CD pipeline, required GitHub secrets, and first-time setup instructions.
+
 ## Engineering Practices
 
 - **Monorepo & Trunk-Based Development:** We use a single repository for both frontend and backend to ensure atomic commits and unified tooling. We optimize for continuous deployment by pushing small, frequent commits directly to `main`. See the [Engineering Practices ADR](docs/decisions/engineering-practices.md) for full details on this approach.
