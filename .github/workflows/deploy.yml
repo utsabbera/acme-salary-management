@@ -96,6 +96,8 @@ jobs:
       - name: Build Next.js
         working-directory: ./frontend
         run: pnpm build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
 
   deploy-backend:
     name: Deploy backend → Render
