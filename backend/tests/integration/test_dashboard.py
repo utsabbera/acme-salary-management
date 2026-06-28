@@ -67,6 +67,17 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "active": True,
             "valid_to": date(2022, 12, 31),
         },
+        # Active employee with NO valid salaries (triggers the NULL aggregation bug)
+        {
+            "first": "F",
+            "last": "F",
+            "email": "f@ex.com",
+            "dept": "Sales",
+            "country": "CA",
+            "salary_usd": 7000000,
+            "active": True,
+            "valid_to": date(2022, 12, 31),
+        },
     ]
 
     for data in employees_data:
@@ -122,14 +133,17 @@ class TestDashboardStats:
             d["department"]: d["average_salary_usd_minor_units"]
             for d in data["department_averages"]
         }
-        assert len(averages) == 2
+        assert len(averages) == 3
         assert averages["Engineering"] == 11500000
         assert averages["HR"] == 8000000
+        assert averages["Sales"] == 0
 
         # Country totals
         # US: A (12m) + C (8m) = 20m. D is inactive.
         # UK: B (11m). E is expired.
+        # CA: F is expired.
         totals = {d["country"]: d["total_salary_usd_minor_units"] for d in data["country_totals"]}
-        assert len(totals) == 2
+        assert len(totals) == 3
         assert totals["US"] == 20000000
         assert totals["UK"] == 11000000
+        assert totals["CA"] == 0

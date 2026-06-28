@@ -18,7 +18,7 @@ class DashboardRepository:
 
         department_averages = [
             DepartmentAverage(
-                department=row.department, average_salary_usd_minor_units=int(row.avg_salary)
+                department=row.department, average_salary_usd_minor_units=int(row.avg_salary or 0)
             )
             for row in result_dept.all()
         ]
@@ -30,7 +30,9 @@ class DashboardRepository:
         result_country = await self._session.execute(stmt_country)
 
         country_totals = [
-            CountryTotal(country=row.country, total_salary_usd_minor_units=int(row.total_salary))
+            CountryTotal(
+                country=row.country, total_salary_usd_minor_units=int(row.total_salary or 0)
+            )
             for row in result_country.all()
         ]
 
