@@ -62,6 +62,13 @@ jobs:
         working-directory: ./backend
         run: uv run pytest
 
+      - name: Upload Backend Coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: backend/htmlcov/
+
   frontend-checks:
     name: Frontend — lint, typecheck, test
     needs: detect-changes
@@ -92,6 +99,13 @@ jobs:
       - name: Tests (vitest)
         working-directory: ./frontend
         run: pnpm test:cov
+
+      - name: Upload Frontend Coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
 
       - name: Build Next.js
         working-directory: ./frontend

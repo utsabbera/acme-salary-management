@@ -46,7 +46,7 @@ plugins = ["sqlalchemy.ext.mypy.plugin"]
 exclude = ["alembic/"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=app --cov-report=term-missing --cov-fail-under=90"
+addopts = "--cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90"
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
