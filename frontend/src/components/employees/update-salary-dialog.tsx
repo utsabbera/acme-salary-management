@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -86,9 +86,7 @@ export function UpdateSalaryDialog({
     handleSubmit,
     formState: { errors },
   } = useForm<SalaryFormData>({
-    resolver: zodResolver(
-      salarySchema,
-    ) as unknown as import("react-hook-form").Resolver<SalaryFormData>,
+    resolver: zodResolver(salarySchema),
     defaultValues,
   });
 

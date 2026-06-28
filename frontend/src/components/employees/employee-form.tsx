@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +19,7 @@ const employeeSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  department_id: z.coerce.number().min(1, "Department is required"),
+  department_id: z.number().min(1, "Department is required"),
   country_code: z.string().min(1, "Country is required"),
 });
 
@@ -46,9 +46,7 @@ export function EmployeeForm({
     handleSubmit,
     formState: { errors },
   } = useForm<EmployeeFormData>({
-    resolver: zodResolver(
-      employeeSchema,
-    ) as unknown as import("react-hook-form").Resolver<EmployeeFormData>,
+    resolver: zodResolver(employeeSchema),
     defaultValues,
   });
 
