@@ -1,12 +1,19 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { addSalaryAdjustmentEmployeesEmployeeIdSalariesPost } from "@/lib/generated";
 import { UpdateSalaryDialog } from "./update-salary-dialog";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/api", () => ({
@@ -103,5 +110,55 @@ describe("UpdateSalaryDialog", () => {
     });
 
     expect(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).not.toHaveBeenCalled();
+  });
+
+  it("shows an error toast when API returns an error", async () => {
+    const user = userEvent.setup();
+    vi.mocked(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).mockResolvedValue({
+      error: "API Error",
+    } as unknown as Awaited<ReturnType<typeof addSalaryAdjustmentEmployeesEmployeeIdSalariesPost>>);
+
+    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+
+    await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
+    await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Could not update salary"));
+    });
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("shows an error toast when API throws an exception", async () => {
+    const user = userEvent.setup();
+    vi.mocked(addSalaryAdjustmentEmployeesEmployeeIdSalariesPost).mockRejectedValue(
+      new Error("Network Error"),
+    );
+
+    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+
+    await user.type(screen.getByLabelText("Valid From Date"), "2024-01-01");
+    await user.click(screen.getByRole("button", { name: "Save Adjustment" }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Could not update salary"));
+    });
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("closes the dialog when Cancel is clicked", async () => {
+    const user = userEvent.setup();
+    render(<UpdateSalaryDialog employeeId={1} trigger={<button type="button">Adjust</button>} />);
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });

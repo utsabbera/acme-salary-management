@@ -80,12 +80,10 @@ export async function DashboardStats() {
   } satisfies ChartConfig;
 
   const getPercentile = (sortedData: number[], percentile: number) => {
-    if (sortedData.length === 0) return 0;
     const index = (percentile / 100) * (sortedData.length - 1);
     const lower = Math.floor(index);
     const upper = Math.ceil(index);
     const weight = index - lower;
-    if (upper >= sortedData.length) return sortedData[lower] ?? 0;
     return (sortedData[lower] ?? 0) * (1 - weight) + (sortedData[upper] ?? 0) * weight;
   };
 

@@ -1,9 +1,16 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getEmployeeEmployeesEmployeeIdGet } from "@/lib/generated";
 import { EmployeeProfilePane } from "./employee-profile-pane";
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+  },
+}));
 
 vi.mock("@/lib/generated", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/generated")>();
@@ -272,5 +279,59 @@ describe("EmployeeProfilePane", () => {
     });
 
     expect(screen.getByRole("button", { name: "Delete Employee" })).toBeInTheDocument();
+  });
+
+  it("shows an error toast when API returns an error", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=1") as unknown as ReadonlyURLSearchParams,
+    );
+
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      error: "API Error",
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    render(<EmployeeProfilePane />);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not load employee details"),
+      );
+    });
+  });
+
+  it("shows an error toast when API throws an exception", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=1") as unknown as ReadonlyURLSearchParams,
+    );
+
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockRejectedValue(new Error("Network Error"));
+
+    render(<EmployeeProfilePane />);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not load employee details"),
+      );
+    });
+  });
+
+  it("displays a not found message when employee is missing and not loading", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=999") as unknown as ReadonlyURLSearchParams,
+    );
+
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      error: "Not Found",
+      data: undefined,
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    render(<EmployeeProfilePane />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Employee not found")).toBeInTheDocument();
+      expect(
+        screen.getByText("The employee you are looking for does not exist or could not be loaded."),
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -100,6 +100,19 @@ describe("EmployeesTable", () => {
     expect(screen.getAllByText("£80,000.00").length).toBeGreaterThan(0);
   });
 
+  it("falls back to manual format when currency code is invalid", () => {
+    const invalidCurrencyEmployee = {
+      ...mockEmployees[0],
+      current_salary: {
+        // @ts-expect-error test mock
+        ...mockEmployees[0].current_salary,
+        currency: "INVALID",
+      },
+    } as unknown as import("@/lib/generated").EmployeeRead;
+    render(<EmployeesTable employees={[invalidCurrencyEmployee]} />);
+    expect(screen.getAllByText("INVALID 120000").length).toBeGreaterThan(0);
+  });
+
   it("renders an action menu with Edit and Delete options for each employee", async () => {
     const user = userEvent.setup();
     render(<EmployeesTable employees={mockEmployees} />);

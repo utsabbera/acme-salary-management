@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmployeeRead } from "@/lib/generated";
 import { deleteEmployeeEmployeesEmployeeIdDelete } from "@/lib/generated";
@@ -12,6 +13,12 @@ vi.mock("next/navigation", () => ({
     push: mockPush,
     refresh: mockRefresh,
   }),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/generated", async (importOriginal) => {
@@ -117,6 +124,60 @@ describe("DeleteEmployeeDialog", () => {
     await waitFor(() => {
       expect(mockRefresh).toHaveBeenCalled();
       expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
+
+  it("shows an error toast when API returns an error", async () => {
+    vi.mocked(deleteEmployeeEmployeesEmployeeIdDelete).mockResolvedValueOnce({
+      error: "API Error",
+    } as unknown as Awaited<ReturnType<typeof deleteEmployeeEmployeesEmployeeIdDelete>>);
+
+    render(
+      <DeleteEmployeeDialog
+        employee={mockEmployee}
+        trigger={
+          <button type="button" data-testid="trigger">
+            Delete
+          </button>
+        }
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("trigger"));
+    const confirmButton = screen.getByRole("button", { name: "Delete" });
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not delete employee"),
+      );
+    });
+  });
+
+  it("shows an error toast when API throws an exception", async () => {
+    vi.mocked(deleteEmployeeEmployeesEmployeeIdDelete).mockRejectedValueOnce(
+      new Error("Network Error"),
+    );
+
+    render(
+      <DeleteEmployeeDialog
+        employee={mockEmployee}
+        trigger={
+          <button type="button" data-testid="trigger">
+            Delete
+          </button>
+        }
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("trigger"));
+    const confirmButton = screen.getByRole("button", { name: "Delete" });
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not delete employee"),
+      );
     });
   });
 });

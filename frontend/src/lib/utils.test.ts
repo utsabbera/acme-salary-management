@@ -11,6 +11,11 @@ describe("getErrorMessage", () => {
     expect(getErrorMessage("Direct string error")).toBe("Direct string error");
   });
 
+  it("returns fallback for primitive values that are not strings", () => {
+    expect(getErrorMessage(123)).toBe("An unknown error occurred.");
+    expect(getErrorMessage(true)).toBe("An unknown error occurred.");
+  });
+
   it("parses the new standardized Error Contract for validation errors", () => {
     const errorObj = {
       error: {

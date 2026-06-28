@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmployeeRead } from "@/lib/generated";
 import { updateEmployeeEmployeesEmployeeIdPatch } from "@/lib/generated";
@@ -12,6 +13,12 @@ vi.mock("next/navigation", () => ({
     push: mockPush,
     refresh: mockRefresh,
   }),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/generated", async (importOriginal) => {
@@ -91,6 +98,60 @@ describe("EditEmployeeDialog", () => {
         }),
       });
       expect(mockRefresh).toHaveBeenCalled();
+    });
+  });
+
+  it("shows an error toast when API returns an error", async () => {
+    vi.mocked(updateEmployeeEmployeesEmployeeIdPatch).mockResolvedValueOnce({
+      error: "API Error",
+    } as unknown as Awaited<ReturnType<typeof updateEmployeeEmployeesEmployeeIdPatch>>);
+
+    render(
+      <EditEmployeeDialog
+        employee={mockEmployee}
+        trigger={
+          <button type="button" data-testid="trigger">
+            Edit
+          </button>
+        }
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("trigger"));
+    const saveButton = screen.getByRole("button", { name: "Save Changes" });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not update employee"),
+      );
+    });
+  });
+
+  it("shows an error toast when API throws an exception", async () => {
+    vi.mocked(updateEmployeeEmployeesEmployeeIdPatch).mockRejectedValueOnce(
+      new Error("Network Error"),
+    );
+
+    render(
+      <EditEmployeeDialog
+        employee={mockEmployee}
+        trigger={
+          <button type="button" data-testid="trigger">
+            Edit
+          </button>
+        }
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("trigger"));
+    const saveButton = screen.getByRole("button", { name: "Save Changes" });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not update employee"),
+      );
     });
   });
 });

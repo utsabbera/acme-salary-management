@@ -1,12 +1,19 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createEmployeeEmployeesPost } from "@/lib/generated";
 import { CreateEmployeeDialog } from "./create-employee-dialog";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/api", () => ({
@@ -86,5 +93,57 @@ describe("CreateEmployeeDialog", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
+  });
+
+  it("shows an error toast when API returns an error", async () => {
+    const user = userEvent.setup();
+    const trigger = <button type="button">Open Dialog</button>;
+    vi.mocked(createEmployeeEmployeesPost).mockResolvedValue({
+      error: "Some API Error",
+    } as unknown as Awaited<ReturnType<typeof createEmployeeEmployeesPost>>);
+
+    render(<CreateEmployeeDialog trigger={trigger} />);
+    await user.click(screen.getByRole("button", { name: /open dialog/i }));
+
+    await user.type(screen.getByLabelText(/first name/i), "John");
+    await user.type(screen.getByLabelText(/last name/i), "Doe");
+    await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
+    await user.type(screen.getByLabelText(/department/i), "Engineering");
+    await user.type(screen.getByLabelText(/country/i), "USA");
+
+    await user.click(screen.getByRole("button", { name: /create employee/i }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not create employee"),
+      );
+    });
+    // Dialog should remain open
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("shows an error toast when API throws an exception", async () => {
+    const user = userEvent.setup();
+    const trigger = <button type="button">Open Dialog</button>;
+    vi.mocked(createEmployeeEmployeesPost).mockRejectedValue(new Error("Network Error"));
+
+    render(<CreateEmployeeDialog trigger={trigger} />);
+    await user.click(screen.getByRole("button", { name: /open dialog/i }));
+
+    await user.type(screen.getByLabelText(/first name/i), "John");
+    await user.type(screen.getByLabelText(/last name/i), "Doe");
+    await user.type(screen.getByLabelText(/email/i), "john.doe@example.com");
+    await user.type(screen.getByLabelText(/department/i), "Engineering");
+    await user.type(screen.getByLabelText(/country/i), "USA");
+
+    await user.click(screen.getByRole("button", { name: /create employee/i }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("Could not create employee"),
+      );
+    });
+    // Dialog should remain open
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 });

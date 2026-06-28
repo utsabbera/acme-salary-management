@@ -63,4 +63,28 @@ describe("EmployeePage", () => {
     expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
     expect(screen.getAllByText("$120,000.00").length).toBeGreaterThan(0);
   });
+
+  it("calls notFound when the employee ID is invalid", async () => {
+    const { notFound } = await import("next/navigation");
+    await EmployeePage({ params: Promise.resolve({ id: "invalid" }) });
+    expect(notFound).toHaveBeenCalled();
+  });
+
+  it("calls notFound when the API response has no data", async () => {
+    const { notFound } = await import("next/navigation");
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      data: undefined,
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    await EmployeePage({ params: Promise.resolve({ id: "1" }) });
+    expect(notFound).toHaveBeenCalled();
+  });
+
+  it("calls notFound when the API throws an error", async () => {
+    const { notFound } = await import("next/navigation");
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockRejectedValue(new Error("API Error"));
+
+    await EmployeePage({ params: Promise.resolve({ id: "1" }) });
+    expect(notFound).toHaveBeenCalled();
+  });
 });

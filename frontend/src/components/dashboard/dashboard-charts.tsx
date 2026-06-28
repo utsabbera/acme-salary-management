@@ -55,6 +55,8 @@ interface DashboardChartsProps {
   distributionConfig: ChartConfig;
 }
 
+export const formatSalaryTick = (value: number) => `$${value / 1000}k`;
+
 export function DashboardCharts({
   chartDeptData,
   chartCountryData,
@@ -151,7 +153,7 @@ export function DashboardCharts({
               <XAxis dataKey="department" tickLine={false} tickMargin={10} axisLine={false} />
               <YAxis
                 type="number"
-                tickFormatter={(value) => `$${value / 1000}k`}
+                tickFormatter={formatSalaryTick}
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}

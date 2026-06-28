@@ -1,8 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { DashboardCharts } from "./dashboard-charts";
+import { DashboardCharts, formatSalaryTick } from "./dashboard-charts";
 
 describe("DashboardCharts", () => {
+  it("formats salary ticks correctly", () => {
+    expect(formatSalaryTick(120000)).toBe("$120k");
+    expect(formatSalaryTick(50000)).toBe("$50k");
+  });
+
   it("renders the charts without crashing", () => {
     const chartDeptData = [{ department: "Engineering", averageSalary: 120500 }];
     const chartCountryData = [{ country: "US", totalSalary: 500000, fill: "var(--color-us)" }];

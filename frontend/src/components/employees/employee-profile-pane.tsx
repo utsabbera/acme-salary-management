@@ -100,7 +100,7 @@ export function EmployeeProfilePane() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 sm:p-10">
-        {isLoading || !employee ? (
+        {isLoading ? (
           <div className="space-y-6">
             <div className="space-y-2">
               <Skeleton className="h-8 w-[200px]" />
@@ -108,6 +108,16 @@ export function EmployeeProfilePane() {
             </div>
             <Skeleton className="h-[200px] w-full" />
             <Skeleton className="h-[300px] w-full" />
+          </div>
+        ) : !employee ? (
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Employee not found</h2>
+            <p className="text-muted-foreground">
+              The employee you are looking for does not exist or could not be loaded.
+            </p>
+            <Button variant="outline" onClick={handleClose}>
+              Close Pane
+            </Button>
           </div>
         ) : (
           <div className="space-y-8 max-w-3xl mx-auto pb-12">

@@ -97,6 +97,18 @@ describe("Filters", () => {
     });
   });
 
+  it("removes country filter when ALL is selected", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country=US"));
+    render(<Filters />);
+
+    const btn = screen.getAllByTestId("select-all")[1] as HTMLElement;
+    fireEvent.click(btn);
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0");
+    });
+  });
+
   it("updates country and resets offset", async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20"));
     render(<Filters />);
