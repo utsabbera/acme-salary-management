@@ -1,0 +1,148 @@
+name: CI / CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+# Required secrets (Settings → Secrets → Actions):
+#   RENDER_DEPLOY_HOOK_URL — Render Dashboard → Service → Settings → Deploy Hook
+#   VERCEL_TOKEN           — vercel.com/account/tokens
+#   VERCEL_ORG_ID          — vercel.com/account (Personal) or team Settings
+#   VERCEL_PROJECT_ID      — Vercel project → Settings → General
+
+jobs:
+  detect-changes:
+    name: Detect changed stacks
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/deploy.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/deploy.yml'
+
+  backend-checks:
+    name: Backend — lint, typecheck, test
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: uv sync
+
+      - name: Lint (ruff)
+        working-directory: ./backend
+        run: uv run ruff check app/
+
+      - name: Type check (mypy)
+        working-directory: ./backend
+        run: uv run mypy app/
+
+      - name: Tests (pytest)
+        working-directory: ./backend
+        run: uv run pytest
+
+  frontend-checks:
+    name: Frontend — lint, typecheck, test
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint (biome)
+        working-directory: ./frontend
+        run: pnpm biome check src/
+
+      - name: Type check (tsc)
+        working-directory: ./frontend
+        run: pnpm tsc --noEmit
+
+      - name: Tests (vitest)
+        working-directory: ./frontend
+        run: pnpm vitest run
+
+  deploy-backend:
+    name: Deploy backend → Render
+    needs: [detect-changes, backend-checks]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        run: |
+          curl --fail-with-body -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
+  deploy-frontend:
+    name: Deploy frontend → Vercel
+    needs: [detect-changes, frontend-checks]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Pull Vercel project config
+        working-directory: ./frontend
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build for production
+        working-directory: ./frontend
+        run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy prebuilt output
+        working-directory: ./frontend
+        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
