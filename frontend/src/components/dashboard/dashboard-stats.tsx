@@ -1,8 +1,9 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 import { apiClient } from "@/lib/api";
 import { getDashboardStatsDashboardStatsGet } from "@/lib/generated";
+import { formatCurrency } from "@/lib/utils/currency";
 import { DashboardCharts } from "./dashboard-charts";
-import { DashboardKpis } from "./dashboard-kpis";
 
 export async function DashboardStats() {
   const { data, error } = await getDashboardStatsDashboardStatsGet({
@@ -96,12 +97,42 @@ export async function DashboardStats() {
     range: { label: "Core Band", color: "var(--color-chart-5)" },
   } satisfies ChartConfig;
 
+  const totalEmployees = data.country_totals.reduce((acc, curr) => acc + (curr.headcount || 0), 0);
+  const totalPayrollMinor = data.country_totals.reduce(
+    (acc, curr) => acc + curr.total_salary_usd_minor_units,
+    0,
+  );
+  const globalAvgCtcMinor = totalEmployees > 0 ? totalPayrollMinor / totalEmployees : 0;
+
   return (
     <div className="flex flex-col gap-8">
-      <DashboardKpis
-        departmentAverages={data.department_averages}
-        countryTotals={data.country_totals}
-      />
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalEmployees}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Global Avg CTC</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(globalAvgCtcMinor, "USD")}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Annual Payroll</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(totalPayrollMinor, "USD")}</div>
+          </CardContent>
+        </Card>
+      </div>
+
       <DashboardCharts
         chartDeptData={chartDeptData}
         chartCountryData={chartCountryData}

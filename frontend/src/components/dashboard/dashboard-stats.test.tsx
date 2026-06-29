@@ -21,7 +21,7 @@ describe("DashboardStats", () => {
     vi.clearAllMocks();
   });
 
-  it("renders dashboard statistics including KPI cards and charts", async () => {
+  it("renders dashboard statistics including summary strip and charts", async () => {
     vi.mocked(getDashboardStatsDashboardStatsGet).mockResolvedValue({
       data: {
         department_averages: [
@@ -29,8 +29,8 @@ describe("DashboardStats", () => {
           { department: "HR", average_salary_usd_minor_units: 8000000 },
         ],
         country_totals: [
-          { country: "US", total_salary_usd_minor_units: 50000000 },
-          { country: "UK", total_salary_usd_minor_units: 30000000 },
+          { country: "US", total_salary_usd_minor_units: 50000000, headcount: 5 },
+          { country: "UK", total_salary_usd_minor_units: 30000000, headcount: 3 },
         ],
         component_totals: {
           base_salary_usd_minor_units: 70000000,
@@ -50,10 +50,12 @@ describe("DashboardStats", () => {
     render(Stats);
 
     await waitFor(() => {
-      expect(screen.getByText(/\$120,500\.00/)).toBeInTheDocument();
-      expect(screen.getByText(/\$500,000\.00/)).toBeInTheDocument();
-      expect(screen.getByText(/Engineering/)).toBeInTheDocument();
-      expect(screen.getByText(/US/)).toBeInTheDocument();
+      expect(screen.getByText("Total Employees")).toBeInTheDocument();
+      expect(screen.getByText("8")).toBeInTheDocument();
+      expect(screen.getByText("Total Annual Payroll")).toBeInTheDocument();
+      expect(screen.getByText(/\$800,000\.00/)).toBeInTheDocument();
+      expect(screen.getByText("Global Avg CTC")).toBeInTheDocument();
+      expect(screen.getByText(/\$100,000\.00/)).toBeInTheDocument();
 
       expect(screen.getByTestId("department-chart")).toBeInTheDocument();
       expect(screen.getByTestId("country-chart")).toBeInTheDocument();
