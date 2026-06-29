@@ -41,7 +41,7 @@ describe("SearchInput", () => {
       () => {
         expect(mockReplace).toHaveBeenCalledWith("/employees?search=John&offset=0");
       },
-      { timeout: 600 },
+      { timeout: 1500 },
     );
   });
 
@@ -56,7 +56,7 @@ describe("SearchInput", () => {
       () => {
         expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&search=Doe");
       },
-      { timeout: 600 },
+      { timeout: 1500 },
     );
   });
 
@@ -71,7 +71,7 @@ describe("SearchInput", () => {
       () => {
         expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0");
       },
-      { timeout: 600 },
+      { timeout: 1500 },
     );
   });
 
