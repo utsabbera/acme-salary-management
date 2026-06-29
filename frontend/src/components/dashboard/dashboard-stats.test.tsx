@@ -77,6 +77,33 @@ describe("DashboardStats", () => {
     });
   });
 
+  it("renders with missing optional data gracefully", async () => {
+    vi.mocked(getDashboardStatsDashboardStatsGet).mockResolvedValue({
+      data: {
+        department_averages: [],
+        country_totals: [{ country: "US", total_salary_usd_minor_units: 50000000 }],
+        component_totals: {
+          base_salary_usd_minor_units: 70000000,
+          housing_allowance_usd_minor_units: 5000000,
+          equity_usd_minor_units: 4000000,
+          other_allowance_usd_minor_units: 1000000,
+        },
+      },
+    } as unknown as Awaited<ReturnType<typeof getDashboardStatsDashboardStatsGet>>);
+
+    const Stats = await DashboardStats();
+    render(Stats);
+
+    await waitFor(() => {
+      expect(screen.getByText("Total Employees")).toBeInTheDocument();
+      expect(screen.getByText("0")).toBeInTheDocument();
+      expect(screen.getByText("Total Annual Payroll")).toBeInTheDocument();
+      expect(screen.getByText(/\$500,000\.00/)).toBeInTheDocument();
+      expect(screen.getByText("Global Avg CTC")).toBeInTheDocument();
+      expect(screen.getByText(/\$0\.00/)).toBeInTheDocument();
+    });
+  });
+
   describe("Chart Data Builders", () => {
     const mockData = {
       department_averages: [],

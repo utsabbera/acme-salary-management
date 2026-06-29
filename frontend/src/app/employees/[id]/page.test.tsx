@@ -125,4 +125,42 @@ describe("EmployeePage", () => {
     await EmployeePage({ params: Promise.resolve({ id: "1" }) });
     expect(notFound).toHaveBeenCalled();
   });
+
+  it("renders employee details with missing optional data gracefully", async () => {
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      data: {
+        id: 1,
+        first_name: "Jane",
+        last_name: "Doe",
+        email: "jane.doe@example.com",
+        department: { id: 1, name: "Engineering" },
+        country: { id: 1, name: "US", code: "US" },
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+        current_salary: null,
+        salary_history: [],
+      },
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    vi.mocked(getDepartmentsDepartmentsGet).mockResolvedValue({
+      data: undefined,
+    } as unknown as Awaited<ReturnType<typeof getDepartmentsDepartmentsGet>>);
+
+    vi.mocked(getCountriesCountriesGet).mockResolvedValue({
+      data: undefined,
+    } as unknown as Awaited<ReturnType<typeof getCountriesCountriesGet>>);
+
+    vi.mocked(getCurrenciesCurrenciesGet).mockResolvedValue({
+      data: undefined,
+    } as unknown as Awaited<ReturnType<typeof getCurrenciesCurrenciesGet>>);
+
+    const Page = await EmployeePage({ params: Promise.resolve({ id: "1" }) });
+    render(Page);
+
+    await waitFor(() => {
+      expect(screen.getByText("Jane Doe")).toBeInTheDocument();
+      expect(screen.getByText("N/A")).toBeInTheDocument();
+      expect(screen.getByText("No salary history available.")).toBeInTheDocument();
+    });
+  });
 });
