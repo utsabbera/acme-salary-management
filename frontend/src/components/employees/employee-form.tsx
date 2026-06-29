@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod/v3";
 import { Button } from "@/components/ui/button";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -137,9 +138,10 @@ export function EmployeeForm({
         </div>
       </div>
 
-      <div className="flex justify-end gap-2 pt-4">
+      <DialogFooter>
+        <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
         <Button type="submit">{mode === "create" ? "Create Employee" : "Save Changes"}</Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

@@ -2,6 +2,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { Dialog } from "@/components/ui/dialog";
 import type { CountryRead, DepartmentRead } from "@/lib/generated";
 import { EmployeeForm } from "./employee-form";
 
@@ -74,12 +75,14 @@ describe("EmployeeForm", () => {
   it("renders all required fields for creating an employee", () => {
     const onSubmit = vi.fn();
     render(
-      <EmployeeForm
-        onSubmit={onSubmit}
-        mode="create"
-        departments={departments}
-        countries={countries}
-      />,
+      <Dialog>
+        <EmployeeForm
+          onSubmit={onSubmit}
+          mode="create"
+          departments={departments}
+          countries={countries}
+        />
+      </Dialog>,
     );
 
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
@@ -94,12 +97,14 @@ describe("EmployeeForm", () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(
-      <EmployeeForm
-        onSubmit={onSubmit}
-        mode="create"
-        departments={departments}
-        countries={countries}
-      />,
+      <Dialog>
+        <EmployeeForm
+          onSubmit={onSubmit}
+          mode="create"
+          departments={departments}
+          countries={countries}
+        />
+      </Dialog>,
     );
 
     const submitButtons = screen.getAllByRole("button", { name: /create employee/i });
@@ -121,13 +126,15 @@ describe("EmployeeForm", () => {
       country_code: "US",
     };
     render(
-      <EmployeeForm
-        onSubmit={onSubmit}
-        mode="edit"
-        defaultValues={defaultValues}
-        departments={departments}
-        countries={countries}
-      />,
+      <Dialog>
+        <EmployeeForm
+          onSubmit={onSubmit}
+          mode="edit"
+          defaultValues={defaultValues}
+          departments={departments}
+          countries={countries}
+        />
+      </Dialog>,
     );
 
     await waitFor(() => {

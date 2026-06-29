@@ -88,15 +88,13 @@ export function EditEmployeeDialog({
             Update the details for the employee. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <EmployeeForm
-            onSubmit={handleSubmit}
-            mode="edit"
-            defaultValues={defaultValues}
-            departments={departments}
-            countries={countries}
-          />
-        </div>
+        <EmployeeForm
+          onSubmit={handleSubmit}
+          mode="edit"
+          defaultValues={defaultValues}
+          departments={departments}
+          countries={countries}
+        />
       </DialogContent>
     </Dialog>
   );

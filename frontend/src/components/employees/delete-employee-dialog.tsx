@@ -81,7 +81,7 @@ export function DeleteEmployeeDialog({
             's record from the system.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="mt-4 gap-2 sm:space-x-0">
+        <DialogFooter>
           <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
           <Button variant="destructive" onClick={handleDelete}>
             Delete

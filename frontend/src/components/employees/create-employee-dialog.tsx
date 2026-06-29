@@ -68,14 +68,12 @@ export function CreateEmployeeDialog({
             Enter the details for the new employee. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <EmployeeForm
-            onSubmit={handleSubmit}
-            mode="create"
-            departments={departments}
-            countries={countries}
-          />
-        </div>
+        <EmployeeForm
+          onSubmit={handleSubmit}
+          mode="create"
+          departments={departments}
+          countries={countries}
+        />
       </DialogContent>
     </Dialog>
   );

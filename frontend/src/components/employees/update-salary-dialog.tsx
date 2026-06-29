@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -133,103 +134,99 @@ export function UpdateSalaryDialog({
             closed.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="valid_from">Valid From Date</Label>
-                <Input id="valid_from" type="date" {...register("valid_from")} />
-                {errors.valid_from && (
-                  <span className="text-sm text-destructive">{errors.valid_from.message}</span>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="currency_code">Currency</Label>
-                <Controller
-                  name="currency_code"
-                  control={control}
-                  render={({ field }) => {
-                    const selectedCurrency = currencies.find((c) => c.code === field.value);
-                    return (
-                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                        <SelectTrigger id="currency_code" aria-label="Currency">
-                          <SelectValue placeholder="Select currency">
-                            {selectedCurrency
-                              ? `${selectedCurrency.code} – ${selectedCurrency.name}`
-                              : null}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {currencies.map((c) => (
-                            <SelectItem key={c.code} value={c.code}>
-                              {c.code} – {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    );
-                  }}
-                />
-                {errors.currency_code && (
-                  <span className="text-sm text-destructive">{errors.currency_code.message}</span>
-                )}
-              </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="valid_from">Valid From Date</Label>
+              <Input id="valid_from" type="date" {...register("valid_from")} />
+              {errors.valid_from && (
+                <span className="text-sm text-destructive">{errors.valid_from.message}</span>
+              )}
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="currency_code">Currency</Label>
+              <Controller
+                name="currency_code"
+                control={control}
+                render={({ field }) => {
+                  const selectedCurrency = currencies.find((c) => c.code === field.value);
+                  return (
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                      <SelectTrigger id="currency_code" aria-label="Currency">
+                        <SelectValue placeholder="Select currency">
+                          {selectedCurrency
+                            ? `${selectedCurrency.code} – ${selectedCurrency.name}`
+                            : null}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((c) => (
+                          <SelectItem key={c.code} value={c.code}>
+                            {c.code} – {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
+              />
+              {errors.currency_code && (
+                <span className="text-sm text-destructive">{errors.currency_code.message}</span>
+              )}
+            </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="base_salary">Base Salary</Label>
-                <Input id="base_salary" type="number" step="0.01" {...register("base_salary")} />
-                {errors.base_salary && (
-                  <span className="text-sm text-destructive">{errors.base_salary.message}</span>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="housing_allowance">Housing Allowance</Label>
-                <Input
-                  id="housing_allowance"
-                  type="number"
-                  step="0.01"
-                  {...register("housing_allowance")}
-                />
-                {errors.housing_allowance && (
-                  <span className="text-sm text-destructive">
-                    {errors.housing_allowance.message}
-                  </span>
-                )}
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="base_salary">Base Salary</Label>
+              <Input id="base_salary" type="number" step="0.01" {...register("base_salary")} />
+              {errors.base_salary && (
+                <span className="text-sm text-destructive">{errors.base_salary.message}</span>
+              )}
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="housing_allowance">Housing Allowance</Label>
+              <Input
+                id="housing_allowance"
+                type="number"
+                step="0.01"
+                {...register("housing_allowance")}
+              />
+              {errors.housing_allowance && (
+                <span className="text-sm text-destructive">{errors.housing_allowance.message}</span>
+              )}
+            </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="equity">Equity</Label>
-                <Input id="equity" type="number" step="0.01" {...register("equity")} />
-                {errors.equity && (
-                  <span className="text-sm text-destructive">{errors.equity.message}</span>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="other_allowance">Other Allowance</Label>
-                <Input
-                  id="other_allowance"
-                  type="number"
-                  step="0.01"
-                  {...register("other_allowance")}
-                />
-                {errors.other_allowance && (
-                  <span className="text-sm text-destructive">{errors.other_allowance.message}</span>
-                )}
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="equity">Equity</Label>
+              <Input id="equity" type="number" step="0.01" {...register("equity")} />
+              {errors.equity && (
+                <span className="text-sm text-destructive">{errors.equity.message}</span>
+              )}
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="other_allowance">Other Allowance</Label>
+              <Input
+                id="other_allowance"
+                type="number"
+                step="0.01"
+                {...register("other_allowance")}
+              />
+              {errors.other_allowance && (
+                <span className="text-sm text-destructive">{errors.other_allowance.message}</span>
+              )}
+            </div>
+          </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save Adjustment</Button>
-            </div>
-          </form>
-        </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">Save Adjustment</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
