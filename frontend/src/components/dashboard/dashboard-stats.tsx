@@ -1,9 +1,70 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 import { apiClient } from "@/lib/api";
-import { getDashboardStatsDashboardStatsGet } from "@/lib/generated";
+import {
+  type DashboardStats as DashboardStatsSchema,
+  getDashboardStatsDashboardStatsGet,
+} from "@/lib/generated";
 import { formatCurrency } from "@/lib/utils/currency";
 import { DashboardCharts } from "./dashboard-charts";
+
+export function buildCountryChartData(data: DashboardStatsSchema) {
+  const chartCountryData = data.country_totals.map((c) => ({
+    country: c.country,
+    totalSalary: c.total_salary_usd_minor_units / 100,
+    fill: `var(--color-${c.country})`,
+  }));
+
+  const countryConfig = chartCountryData.reduce(
+    (acc, curr, index) => {
+      acc[curr.country] = {
+        label: curr.country,
+        color: `var(--color-chart-${(index % 5) + 1})`,
+      };
+      return acc;
+    },
+    {
+      totalSalary: { label: "Total Payroll" },
+    } as ChartConfig,
+  );
+
+  return { chartCountryData, countryConfig };
+}
+
+export function buildComponentChartData(data: DashboardStatsSchema) {
+  const chartComponentData = [
+    {
+      name: "base",
+      value: data.component_totals.base_salary_usd_minor_units / 100,
+      fill: "var(--color-base)",
+    },
+    {
+      name: "housing",
+      value: data.component_totals.housing_allowance_usd_minor_units / 100,
+      fill: "var(--color-housing)",
+    },
+    {
+      name: "equity",
+      value: data.component_totals.equity_usd_minor_units / 100,
+      fill: "var(--color-equity)",
+    },
+    {
+      name: "other",
+      value: data.component_totals.other_allowance_usd_minor_units / 100,
+      fill: "var(--color-other)",
+    },
+  ].filter((item) => item.value > 0);
+
+  const componentConfig = {
+    value: { label: "Value" },
+    base: { label: "Base Salary", color: "var(--color-chart-1)" },
+    housing: { label: "Housing", color: "var(--color-chart-2)" },
+    equity: { label: "Equity", color: "var(--color-chart-3)" },
+    other: { label: "Other", color: "var(--color-chart-4)" },
+  } satisfies ChartConfig;
+
+  return { chartComponentData, componentConfig };
+}
 
 export async function DashboardStats() {
   const { data, error } = await getDashboardStatsDashboardStatsGet({
@@ -18,15 +79,13 @@ export async function DashboardStats() {
     );
   }
 
+  const { chartCountryData, countryConfig } = buildCountryChartData(data);
+  const { chartComponentData, componentConfig } = buildComponentChartData(data);
+
   const chartDeptData = data.department_averages.map((d) => ({
     department: d.department,
     averageSalary: d.average_salary_usd_minor_units / 100,
-  }));
-
-  const chartCountryData = data.country_totals.map((c) => ({
-    country: c.country,
-    totalSalary: c.total_salary_usd_minor_units / 100,
-    fill: `var(--color-${c.country.toLowerCase()})`,
+    fill: "var(--color-chart-1)",
   }));
 
   const deptConfig = {
@@ -34,50 +93,6 @@ export async function DashboardStats() {
       label: "Avg Salary",
       color: "var(--color-chart-1)",
     },
-  } satisfies ChartConfig;
-
-  const countryConfig = chartCountryData.reduce(
-    (acc, curr, index) => {
-      acc[curr.country.toLowerCase()] = {
-        label: curr.country,
-        color: `var(--color-chart-${(index % 5) + 1})`,
-      };
-      return acc;
-    },
-    {
-      totalSalary: { label: "Total Payroll" },
-    } as ChartConfig,
-  );
-
-  const chartComponentData = [
-    {
-      name: "Base",
-      value: data.component_totals.base_salary_usd_minor_units / 100,
-      fill: "var(--color-chart-1)",
-    },
-    {
-      name: "Housing",
-      value: data.component_totals.housing_allowance_usd_minor_units / 100,
-      fill: "var(--color-chart-2)",
-    },
-    {
-      name: "Equity",
-      value: data.component_totals.equity_usd_minor_units / 100,
-      fill: "var(--color-chart-3)",
-    },
-    {
-      name: "Other",
-      value: data.component_totals.other_allowance_usd_minor_units / 100,
-      fill: "var(--color-chart-4)",
-    },
-  ].filter((item) => item.value > 0);
-
-  const componentConfig = {
-    value: { label: "Value" },
-    base: { label: "Base Salary", color: "var(--color-chart-1)" },
-    housing: { label: "Housing", color: "var(--color-chart-2)" },
-    equity: { label: "Equity", color: "var(--color-chart-3)" },
-    other: { label: "Other", color: "var(--color-chart-4)" },
   } satisfies ChartConfig;
 
   const chartDistributionData = (data.salary_distribution || []).map((d) => {

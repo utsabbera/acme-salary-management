@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getDashboardStatsDashboardStatsGet } from "@/lib/generated";
-import { DashboardStats } from "./dashboard-stats";
+import { buildComponentChartData, buildCountryChartData, DashboardStats } from "./dashboard-stats";
 
 vi.mock("@/lib/generated", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/generated")>();
@@ -74,6 +74,45 @@ describe("DashboardStats", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Failed to load dashboard statistics.")).toBeInTheDocument();
+    });
+  });
+
+  describe("Chart Data Builders", () => {
+    const mockData = {
+      department_averages: [],
+      country_totals: [{ country: "US", total_salary_usd_minor_units: 50000000, headcount: 5 }],
+      component_totals: {
+        base_salary_usd_minor_units: 70000000,
+        housing_allowance_usd_minor_units: 5000000,
+        equity_usd_minor_units: 0,
+        other_allowance_usd_minor_units: 0,
+      },
+      salary_distribution: [],
+    } as unknown as Awaited<ReturnType<typeof getDashboardStatsDashboardStatsGet>>["data"];
+
+    it("ensures country chart data keys strictly match country chart config keys", () => {
+      const { chartCountryData, countryConfig } = buildCountryChartData(
+        mockData as NonNullable<typeof mockData>,
+      );
+
+      expect(chartCountryData[0]?.country).toBe("US");
+      expect(countryConfig.US).toBeDefined();
+      expect(countryConfig.US?.label).toBe("US");
+    });
+
+    it("ensures component chart data keys strictly match component chart config keys", () => {
+      const { chartComponentData, componentConfig } = buildComponentChartData(
+        mockData as NonNullable<typeof mockData>,
+      );
+
+      const componentNames = chartComponentData.map((d: { name: string }) => d.name);
+      expect(componentNames).toContain("base");
+      expect(componentNames).toContain("housing");
+
+      const configMap = componentConfig as Record<string, unknown>;
+      componentNames.forEach((name: string) => {
+        expect(configMap[name]).toBeDefined();
+      });
     });
   });
 });

@@ -16,6 +16,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   type ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -75,16 +77,24 @@ export function DashboardCharts({
           <CardDescription>Mean compensation across different business units</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={deptConfig} className="min-h-[250px] w-full">
+          <ChartContainer config={deptConfig} className="min-h-[300px] w-full">
             <BarChart
               accessibilityLayer
               data={chartDeptData}
+              layout="vertical"
               margin={{ top: 20, right: 20, left: 20, bottom: 0 }}
             >
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="department" tickLine={false} tickMargin={10} axisLine={false} />
+              <CartesianGrid horizontal={false} />
+              <YAxis
+                dataKey="department"
+                type="category"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <XAxis type="number" hide />
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-              <Bar dataKey="averageSalary" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="averageSalary" fill="var(--color-chart-1)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ChartContainer>
         </CardContent>
@@ -96,17 +106,26 @@ export function DashboardCharts({
           <CardDescription>Distribution of salary expenses globally</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={countryConfig} className="min-h-[250px] w-full">
-            <BarChart
-              accessibilityLayer
-              data={chartCountryData}
-              margin={{ top: 20, right: 20, left: 20, bottom: 0 }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="country" tickLine={false} tickMargin={10} axisLine={false} />
+          <ChartContainer config={countryConfig} className="min-h-[300px] w-full">
+            <PieChart>
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-              <Bar dataKey="totalSalary" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} />
-            </BarChart>
+              <Pie
+                data={chartCountryData}
+                dataKey="totalSalary"
+                nameKey="country"
+                innerRadius={60}
+                strokeWidth={5}
+                paddingAngle={2}
+              >
+                {chartCountryData.map((entry) => (
+                  <Cell key={entry.country} fill={entry.fill} />
+                ))}
+              </Pie>
+              <ChartLegend
+                content={<ChartLegendContent nameKey="country" />}
+                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              />
+            </PieChart>
           </ChartContainer>
         </CardContent>
       </Card>
@@ -117,7 +136,7 @@ export function DashboardCharts({
           <CardDescription>Breakdown of total compensation costs</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={componentConfig} className="min-h-[250px] w-full">
+          <ChartContainer config={componentConfig} className="min-h-[300px] w-full">
             <PieChart>
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
               <Pie
@@ -133,6 +152,10 @@ export function DashboardCharts({
                   <Cell key={entry.name} fill={entry.fill} />
                 ))}
               </Pie>
+              <ChartLegend
+                content={<ChartLegendContent nameKey="name" />}
+                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              />
             </PieChart>
           </ChartContainer>
         </CardContent>
@@ -144,7 +167,7 @@ export function DashboardCharts({
           <CardDescription>Salary band (middle 50%) and median by department</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={distributionConfig} className="min-h-[250px] w-full">
+          <ChartContainer config={distributionConfig} className="min-h-[300px] w-full">
             <ComposedChart
               data={chartDistributionData}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -166,6 +189,7 @@ export function DashboardCharts({
                 dot={{ fill: "var(--color-chart-1)", r: 5, strokeWidth: 2, stroke: "white" }}
                 activeDot={{ r: 7 }}
               />
+              <ChartLegend content={<ChartLegendContent />} />
             </ComposedChart>
           </ChartContainer>
         </CardContent>
