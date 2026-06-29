@@ -265,7 +265,6 @@ export function EmployeeProfilePane({
                                 </>
                               )}
                             </div>
-                            <SalaryBreakdown item={historyItem} />
                           </div>
                         </div>
                       ))}
