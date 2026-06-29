@@ -4,11 +4,12 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   ComposedChart,
   Line,
   Pie,
   PieChart,
+  Rectangle,
+  Sector,
   XAxis,
   YAxis,
 } from "recharts";
@@ -25,6 +26,7 @@ import {
 interface DepartmentData {
   department: string;
   averageSalary: number;
+  fill?: string;
 }
 
 interface CountryData {
@@ -93,8 +95,17 @@ export function DashboardCharts({
                 axisLine={false}
               />
               <XAxis type="number" hide />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-              <Bar dataKey="averageSalary" fill="var(--color-chart-1)" radius={[0, 4, 4, 0]} />
+              <ChartTooltip
+                cursor={false}
+                animationDuration={150}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar
+                dataKey="averageSalary"
+                shape={(props) => (
+                  <Rectangle {...props} fill={props.payload.fill} radius={[0, 4, 4, 0]} />
+                )}
+              />
             </BarChart>
           </ChartContainer>
         </CardContent>
@@ -108,7 +119,11 @@ export function DashboardCharts({
         <CardContent>
           <ChartContainer config={countryConfig} className="min-h-[300px] w-full">
             <PieChart>
-              <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+              <ChartTooltip
+                cursor={false}
+                animationDuration={150}
+                content={<ChartTooltipContent hideLabel />}
+              />
               <Pie
                 data={chartCountryData}
                 dataKey="totalSalary"
@@ -116,11 +131,8 @@ export function DashboardCharts({
                 innerRadius={60}
                 strokeWidth={5}
                 paddingAngle={2}
-              >
-                {chartCountryData.map((entry) => (
-                  <Cell key={entry.country} fill={entry.fill} />
-                ))}
-              </Pie>
+                shape={(props) => <Sector {...props} fill={props.payload.fill} />}
+              />
               <ChartLegend
                 content={<ChartLegendContent nameKey="country" />}
                 className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
@@ -138,20 +150,20 @@ export function DashboardCharts({
         <CardContent>
           <ChartContainer config={componentConfig} className="min-h-[300px] w-full">
             <PieChart>
-              <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+              <ChartTooltip
+                cursor={false}
+                animationDuration={150}
+                content={<ChartTooltipContent hideLabel />}
+              />
               <Pie
                 data={chartComponentData}
                 dataKey="value"
                 nameKey="name"
                 innerRadius={60}
-                outerRadius={80}
                 strokeWidth={5}
                 paddingAngle={2}
-              >
-                {chartComponentData.map((entry) => (
-                  <Cell key={entry.name} fill={entry.fill} />
-                ))}
-              </Pie>
+                shape={(props) => <Sector {...props} fill={props.payload.fill} />}
+              />
               <ChartLegend
                 content={<ChartLegendContent nameKey="name" />}
                 className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
@@ -181,7 +193,11 @@ export function DashboardCharts({
                 axisLine={false}
                 tickMargin={10}
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <ChartTooltip
+                cursor={false}
+                animationDuration={150}
+                content={<ChartTooltipContent />}
+              />
               <Bar dataKey="range" fill="var(--color-chart-5)" radius={[4, 4, 4, 4]} barSize={40} />
               <Line
                 dataKey="median"

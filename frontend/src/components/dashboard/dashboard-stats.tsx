@@ -1,3 +1,4 @@
+import { CircleDollarSign, Globe, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 import { apiClient } from "@/lib/api";
@@ -82,18 +83,24 @@ export async function DashboardStats() {
   const { chartCountryData, countryConfig } = buildCountryChartData(data);
   const { chartComponentData, componentConfig } = buildComponentChartData(data);
 
-  const chartDeptData = data.department_averages.map((d) => ({
+  const chartDeptData = data.department_averages.map((d, index) => ({
     department: d.department,
     averageSalary: d.average_salary_usd_minor_units / 100,
-    fill: "var(--color-chart-1)",
+    fill: `var(--color-chart-${(index % 5) + 1})`,
   }));
 
-  const deptConfig = {
-    averageSalary: {
-      label: "Avg Salary",
-      color: "var(--color-chart-1)",
+  const deptConfig = chartDeptData.reduce(
+    (acc, curr, index) => {
+      acc[curr.department] = {
+        label: curr.department,
+        color: `var(--color-chart-${(index % 5) + 1})`,
+      };
+      return acc;
     },
-  } satisfies ChartConfig;
+    {
+      averageSalary: { label: "Avg Salary" },
+    } as ChartConfig,
+  );
 
   const chartDistributionData = (data.salary_distribution || []).map((d) => {
     return {
@@ -125,25 +132,31 @@ export async function DashboardStats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalEmployees}</div>
+            <p className="text-xs text-muted-foreground">Active workforce globally</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Global Avg CTC</CardTitle>
+            <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(globalAvgCtcMinor, "USD")}</div>
+            <p className="text-xs text-muted-foreground">Mean cost-to-company</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Annual Payroll</CardTitle>
+            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totalPayrollMinor, "USD")}</div>
+            <p className="text-xs text-muted-foreground">Aggregated yearly spend</p>
           </CardContent>
         </Card>
       </div>
