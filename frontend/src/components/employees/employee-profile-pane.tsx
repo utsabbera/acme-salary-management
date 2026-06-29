@@ -265,6 +265,17 @@ export function EmployeeProfilePane({
                                 </>
                               )}
                             </div>
+                            <details className="group/details mt-2">
+                              <summary className="cursor-pointer text-xs font-medium text-muted-foreground hover:text-foreground mb-2 select-none flex items-center gap-1 transition-colors">
+                                <span className="group-open/details:hidden">View Breakdown</span>
+                                <span className="hidden group-open/details:inline">
+                                  Hide Breakdown
+                                </span>
+                              </summary>
+                              <div>
+                                <SalaryBreakdown item={historyItem} />
+                              </div>
+                            </details>
                           </div>
                         </div>
                       ))}

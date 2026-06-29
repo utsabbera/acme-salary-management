@@ -181,7 +181,7 @@ describe("EmployeeProfilePane", () => {
     expect(screen.queryByText("Other")).not.toBeInTheDocument();
   });
 
-  it("does NOT render component breakdown within the salary_history timeline items", async () => {
+  it("renders component breakdown within the salary_history timeline items", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("?employeeId=4") as unknown as ReadonlyURLSearchParams,
     );
@@ -218,10 +218,11 @@ describe("EmployeeProfilePane", () => {
       expect(screen.getByText("Timeline Tester")).toBeInTheDocument();
     });
 
-    // History item should render total but not the breakdown
-    expect(screen.getByText("$70,000.00")).toBeInTheDocument();
-    expect(screen.queryByText("Base Salary")).not.toBeInTheDocument();
-    expect(screen.queryByText("Equity")).not.toBeInTheDocument();
+    // It should render "Base Salary" and "Equity" within the history item
+    expect(screen.getByText("Base Salary")).toBeInTheDocument();
+    expect(screen.getByText("Equity")).toBeInTheDocument();
+    expect(screen.getByText("$60,000.00")).toBeInTheDocument();
+    expect(screen.getByText("$10,000.00")).toBeInTheDocument();
   });
 
   it("renders the Edit Employee button in the Details section", async () => {

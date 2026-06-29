@@ -87,7 +87,7 @@ export default async function EmployeePage({ params }: PageProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-                Details
+                Employee Details
               </CardTitle>
               <EditEmployeeDialog
                 employee={employee as unknown as EmployeeRead}
@@ -116,30 +116,14 @@ export default async function EmployeePage({ params }: PageProps) {
                   <p className="text-sm text-muted-foreground">{employee.country.name}</p>
                 </div>
               </div>
-
-              <div className="flex items-start space-x-4">
-                <BanknoteIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none text-foreground">CTC</p>
-                  <p className="text-2xl font-bold tracking-tight text-foreground">
-                    {employee.current_salary
-                      ? formatCurrency(
-                          employee.current_salary.salary_minor_units,
-                          employee.current_salary.currency.code,
-                        )
-                      : "N/A"}
-                  </p>
-                  {employee.current_salary && <SalaryBreakdown item={employee.current_salary} />}
-                </div>
-              </div>
             </CardContent>
           </Card>
 
-          {/* Timeline Section */}
+          {/* Current Compensation Section */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-                Compensation History
+                Current Compensation
               </CardTitle>
               <UpdateSalaryDialog
                 employeeId={employee.id}
@@ -151,6 +135,38 @@ export default async function EmployeePage({ params }: PageProps) {
                   </Button>
                 }
               />
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <BanknoteIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium leading-none text-foreground">
+                    Total Compensation
+                  </p>
+                  <p className="text-4xl font-bold tracking-tight text-foreground">
+                    {employee.current_salary
+                      ? formatCurrency(
+                          employee.current_salary.salary_minor_units,
+                          employee.current_salary.currency.code,
+                        )
+                      : "N/A"}
+                  </p>
+                  {employee.current_salary && (
+                    <div className="pt-4">
+                      <SalaryBreakdown item={employee.current_salary} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Timeline Section */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+                Compensation History
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {employee.salary_history && employee.salary_history.length > 0 ? (
@@ -191,7 +207,15 @@ export default async function EmployeePage({ params }: PageProps) {
                             </>
                           )}
                         </div>
-                        <SalaryBreakdown item={historyItem} />
+                        <details className="group/details mt-2">
+                          <summary className="cursor-pointer text-xs font-medium text-muted-foreground hover:text-foreground mb-2 select-none flex items-center gap-1 transition-colors">
+                            <span className="group-open/details:hidden">View Breakdown</span>
+                            <span className="hidden group-open/details:inline">Hide Breakdown</span>
+                          </summary>
+                          <div>
+                            <SalaryBreakdown item={historyItem} />
+                          </div>
+                        </details>
                       </div>
                     </div>
                   ))}
