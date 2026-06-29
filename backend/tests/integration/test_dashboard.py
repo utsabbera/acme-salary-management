@@ -181,11 +181,20 @@ class TestDashboardStats:
         # US: A (12m) + C (8m) = 20m. D is inactive.
         # UK: B (11m). E is expired.
         # CA: F is expired.
-        totals = {d["country"]: d["total_salary_usd_minor_units"] for d in data["country_totals"]}
+        totals = {
+            d["country"]: {
+                "total": d["total_salary_usd_minor_units"],
+                "headcount": d.get("headcount", -1),
+            }
+            for d in data["country_totals"]
+        }
         assert len(totals) == 3
-        assert totals["United States"] == 20000000
-        assert totals["United Kingdom"] == 13750000
-        assert totals["Canada"] == 0
+        assert totals["United States"]["total"] == 20000000
+        assert totals["United States"]["headcount"] == 2
+        assert totals["United Kingdom"]["total"] == 13750000
+        assert totals["United Kingdom"]["headcount"] == 2
+        assert totals["Canada"]["total"] == 0
+        assert totals["Canada"]["headcount"] == 1
 
     async def test_get_dashboard_stats_components(
         self, seeded_dashboard_client: AsyncClient

@@ -57,6 +57,10 @@ export type CountryTotal = {
      * Total Salary Usd Minor Units
      */
     total_salary_usd_minor_units: number;
+    /**
+     * Headcount
+     */
+    headcount: number;
 };
 
 /**

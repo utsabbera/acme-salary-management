@@ -11,6 +11,7 @@ class DepartmentAverage(BaseModel):
 class CountryTotal(BaseModel):
     country: str
     total_salary_usd_minor_units: int
+    headcount: int
 
     model_config = ConfigDict(from_attributes=True)
 

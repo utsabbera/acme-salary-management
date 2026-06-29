@@ -35,12 +35,15 @@ class DashboardRepository:
         stmt_country = select(
             active_employees.c.country_name.label("country"),
             func.sum(active_employees.c.salary_usd_minor_units).label("total_salary"),
+            func.count().label("headcount"),
         ).group_by(active_employees.c.country_name)
         result_country = await self._session.execute(stmt_country)
 
         country_totals = [
             CountryTotal(
-                country=row.country, total_salary_usd_minor_units=int(row.total_salary or 0)
+                country=row.country,
+                total_salary_usd_minor_units=int(row.total_salary or 0),
+                headcount=row.headcount or 0,
             )
             for row in result_country.all()
         ]

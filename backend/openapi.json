@@ -560,12 +560,17 @@
           "total_salary_usd_minor_units": {
             "type": "integer",
             "title": "Total Salary Usd Minor Units"
+          },
+          "headcount": {
+            "type": "integer",
+            "title": "Headcount"
           }
         },
         "type": "object",
         "required": [
           "country",
-          "total_salary_usd_minor_units"
+          "total_salary_usd_minor_units",
+          "headcount"
         ],
         "title": "CountryTotal"
       },
