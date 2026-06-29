@@ -88,7 +88,7 @@ describe("EmployeeProfilePane", () => {
     expect(mockPush).toHaveBeenCalledWith("?");
   });
 
-  it.skip("renders granular salary components if they exist in current_salary", async () => {
+  it("renders granular salary components if they exist in current_salary", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("?employeeId=2") as unknown as ReadonlyURLSearchParams,
     );
@@ -139,7 +139,7 @@ describe("EmployeeProfilePane", () => {
     expect(screen.getByText("$5,000.00")).toBeInTheDocument();
   });
 
-  it.skip("safely omits optional components if they are null or 0", async () => {
+  it("safely omits optional components if they are null or 0", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("?employeeId=3") as unknown as ReadonlyURLSearchParams,
     );
@@ -282,7 +282,55 @@ describe("EmployeeProfilePane", () => {
 
     const detailsCard = screen.getByText("Employee Details").closest(".group\\/card");
     expect(detailsCard).toBeInTheDocument();
-    expect(detailsCard).not.toHaveTextContent("CTC");
+    expect(detailsCard).not.toHaveTextContent("Total Compensation");
+  });
+
+  it("renders the Current Compensation card with Total Compensation and Adjust button", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=1") as unknown as ReadonlyURLSearchParams,
+    );
+
+    vi.mocked(getEmployeeEmployeesEmployeeIdGet).mockResolvedValue({
+      data: {
+        id: 1,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john@example.com",
+        department: { id: 1, name: "Engineering" },
+        country: { id: 1, name: "US", code: "US" },
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+        current_salary: {
+          salary_minor_units: 12000000,
+          base_salary_minor_units: 10000000,
+          housing_allowance_minor_units: 2000000,
+          equity_minor_units: null,
+          other_allowance_minor_units: null,
+          currency: { code: "USD", name: "US Dollar" },
+          valid_from: "2023-01-01",
+        },
+        salary_history: [],
+      },
+    } as unknown as Awaited<ReturnType<typeof getEmployeeEmployeesEmployeeIdGet>>);
+
+    render(<EmployeeProfilePane departments={[]} countries={[]} currencies={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Current Compensation")).toBeInTheDocument();
+    });
+
+    // It should have "Total Compensation" instead of CTC
+    expect(screen.getByText("Total Compensation")).toBeInTheDocument();
+    expect(screen.getByText("$120,000.00")).toBeInTheDocument();
+    expect(screen.getByText("$100,000.00")).toBeInTheDocument(); // Base salary
+
+    // The adjust button should be rendered
+    const adjustButton = screen.getByRole("button", { name: "Adjust" });
+    expect(adjustButton).toBeInTheDocument();
+
+    // Check that Adjust button is in the Current Compensation card
+    const compensationCard = screen.getByText("Current Compensation").closest(".group\\/card");
+    expect(compensationCard?.contains(adjustButton)).toBe(true);
   });
 
   it("renders the Delete Employee button in the Danger Zone section", async () => {

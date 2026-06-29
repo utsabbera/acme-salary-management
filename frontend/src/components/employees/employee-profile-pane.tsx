@@ -1,6 +1,13 @@
 "use client";
 
-import { BriefcaseIcon, CalendarIcon, ChevronsRight, MapPinIcon, Maximize2 } from "lucide-react";
+import {
+  BanknoteIcon,
+  BriefcaseIcon,
+  CalendarIcon,
+  ChevronsRight,
+  MapPinIcon,
+  Maximize2,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
@@ -169,11 +176,11 @@ export function EmployeeProfilePane({
                 </CardContent>
               </Card>
 
-              {/* Timeline Section */}
+              {/* Current Compensation Section */}
               <Card className="shadow-none border-muted/60 bg-transparent">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-                    Compensation History
+                    Current Compensation
                   </CardTitle>
                   <UpdateSalaryDialog
                     employeeId={employee.id}
@@ -186,6 +193,38 @@ export function EmployeeProfilePane({
                       </Button>
                     }
                   />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <BanknoteIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium leading-none text-foreground">
+                        Total Compensation
+                      </p>
+                      <p className="text-4xl font-bold tracking-tight text-foreground">
+                        {employee.current_salary
+                          ? formatCurrency(
+                              employee.current_salary.salary_minor_units,
+                              employee.current_salary.currency.code,
+                            )
+                          : "N/A"}
+                      </p>
+                      {employee.current_salary && (
+                        <div className="pt-4">
+                          <SalaryBreakdown item={employee.current_salary} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Timeline Section */}
+              <Card className="shadow-none border-muted/60 bg-transparent">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+                    Compensation History
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {employee.salary_history && employee.salary_history.length > 0 ? (
