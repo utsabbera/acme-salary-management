@@ -43,22 +43,23 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
   const currencies = currenciesRes.data ?? [];
 
   return (
-    <div className="flex-1 flex flex-col p-8 pt-6 gap-6 relative">
+    <div className="flex-1 flex flex-col p-8 pt-6 gap-6 relative h-full min-h-0">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Employees</h2>
-        <CreateEmployeeDialog
-          departments={departments}
-          countries={countries}
-          trigger={<Button>Add Employee</Button>}
-        />
       </div>
 
       <SidePeekLayout
         list={
-          <div className="flex flex-col gap-6 pr-4 min-w-0">
+          <div className="flex flex-col gap-6 pr-4 min-w-0 h-full">
             <div className="flex items-center gap-4">
               <SearchInput />
               <Filters departments={departments} countries={countries} />
+              <div className="flex-1" />
+              <CreateEmployeeDialog
+                departments={departments}
+                countries={countries}
+                trigger={<Button>Add Employee</Button>}
+              />
             </div>
             <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
               <EmployeeData
