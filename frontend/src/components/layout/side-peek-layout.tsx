@@ -17,7 +17,7 @@ export function SidePeekLayout({
   return (
     <ResizablePanelGroup
       orientation="horizontal"
-      className="min-h-[calc(100vh-theme(spacing.16))] w-full bg-background overflow-hidden flex"
+      className="flex-1 min-h-0 h-full w-full bg-background overflow-hidden flex"
     >
       <ResizablePanel
         defaultSize={employeeId ? 60 : 100}
