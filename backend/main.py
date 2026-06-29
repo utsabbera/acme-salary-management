@@ -2,12 +2,10 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from app.core.config import settings
 from app.core.exceptions import http_exception_handler, validation_exception_handler, integrity_error_handler
 from app.core.logger import setup_logging
-from app.middlewares.logging import logging_middleware
+from app.middlewares.logging import LoggingMiddleware
 from sqlalchemy.exc import IntegrityError
 from app.routers.api import api_router
 
@@ -28,11 +26,14 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.add_middleware(BaseHTTPMiddleware, dispatch=logging_middleware)
+    app.add_middleware(LoggingMiddleware)
 
-    app.add_exception_handler(StarletteHTTPException, http_exception_handler)
-    app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(IntegrityError, integrity_error_handler)
+    # Note: We use `# type: ignore` here because Pyright enforces strict invariance
+    # on Starlette's `add_exception_handler` (expecting exactly `Exception`), but
+    # our handlers are safely typed to their specific exception subclasses.
+    app.add_exception_handler(StarletteHTTPException, http_exception_handler)  # type: ignore
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
+    app.add_exception_handler(IntegrityError, integrity_error_handler)  # type: ignore
 
     app.include_router(api_router)
 
