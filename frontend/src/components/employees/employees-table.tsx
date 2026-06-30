@@ -2,6 +2,8 @@
 
 import { MoreHorizontal } from "lucide-react";
 import * as React from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -112,12 +114,32 @@ function EmployeeRow({
         )}
         onClick={handleRowClick}
       >
-        <TableCell className="font-medium">
-          {employee.first_name} {employee.last_name}
+        <TableCell>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                {employee.first_name[0]}
+                {employee.last_name[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium">
+                {employee.first_name} {employee.last_name}
+              </span>
+            </div>
+          </div>
         </TableCell>
-        <TableCell>{employee.email}</TableCell>
-        <TableCell>{employee.department.name}</TableCell>
-        <TableCell>{employee.country.name}</TableCell>
+        <TableCell className="text-muted-foreground">{employee.email}</TableCell>
+        <TableCell>
+          <Badge variant="secondary" className="font-normal text-xs">
+            {employee.department.name}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          <Badge variant="outline" className="font-normal text-xs">
+            {employee.country.name}
+          </Badge>
+        </TableCell>
         <TableCell className="text-right">
           {employee.current_salary
             ? formatCurrency(
