@@ -136,7 +136,9 @@ export async function DashboardStats() {
                 <span className="text-sm font-medium text-muted-foreground">Total Employees</span>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </div>
-              <span className="text-3xl font-bold mt-2 tracking-tight">{totalEmployees}</span>
+              <span className="text-3xl font-bold mt-2 tracking-tight font-mono tabular-nums">
+                {totalEmployees}
+              </span>
               <p className="text-xs text-muted-foreground mt-1">Active workforce globally</p>
             </div>
 
@@ -145,7 +147,7 @@ export async function DashboardStats() {
                 <span className="text-sm font-medium text-muted-foreground">Global Avg CTC</span>
                 <Globe className="h-4 w-4 text-muted-foreground" />
               </div>
-              <span className="text-3xl font-bold mt-2 tracking-tight">
+              <span className="text-3xl font-bold mt-2 tracking-tight font-mono tabular-nums">
                 {formatCurrency(globalAvgCtcMinor, "USD")}
               </span>
               <p className="text-xs text-muted-foreground mt-1">Mean cost-to-company</p>
@@ -158,7 +160,7 @@ export async function DashboardStats() {
                 </span>
                 <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
               </div>
-              <span className="text-3xl font-bold mt-2 tracking-tight text-primary">
+              <span className="text-3xl font-bold mt-2 tracking-tight text-primary font-mono tabular-nums">
                 {formatCurrency(totalPayrollMinor, "USD")}
               </span>
               <p className="text-xs text-muted-foreground mt-1">Aggregated yearly spend</p>

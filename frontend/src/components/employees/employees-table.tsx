@@ -140,7 +140,7 @@ function EmployeeRow({
             {employee.country.name}
           </Badge>
         </TableCell>
-        <TableCell className="text-right">
+        <TableCell className="text-right font-mono tabular-nums">
           {employee.current_salary
             ? formatCurrency(
                 employee.current_salary.salary_minor_units / 100,

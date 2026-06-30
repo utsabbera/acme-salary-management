@@ -141,7 +141,7 @@ export function EmployeeProfilePane({
                     <p className="text-sm font-medium leading-none text-foreground">
                       Total Compensation
                     </p>
-                    <p className="text-4xl font-bold tracking-tight text-foreground">
+                    <p className="text-4xl font-bold tracking-tight text-foreground font-mono tabular-nums">
                       {employee.current_salary
                         ? formatCurrency(
                             employee.current_salary.salary_minor_units,
@@ -179,7 +179,7 @@ export function EmployeeProfilePane({
                         </div>
                         <div className="flex-1 bg-card p-4 rounded-xl border shadow-sm transition-all hover:shadow-md">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-bold text-2xl tracking-tight text-foreground">
+                            <h4 className="font-bold text-2xl tracking-tight text-foreground font-mono tabular-nums">
                               {formatCurrency(
                                 historyItem.salary_minor_units,
                                 historyItem.currency.code,
