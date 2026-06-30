@@ -1,5 +1,5 @@
 import { CircleDollarSign, Globe, Users } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 import { apiClient } from "@/lib/api";
 import {
@@ -128,38 +128,44 @@ export async function DashboardStats() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalEmployees}</div>
-            <p className="text-xs text-muted-foreground">Active workforce globally</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Global Avg CTC</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(globalAvgCtcMinor, "USD")}</div>
-            <p className="text-xs text-muted-foreground">Mean cost-to-company</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Annual Payroll</CardTitle>
-            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalPayrollMinor, "USD")}</div>
-            <p className="text-xs text-muted-foreground">Aggregated yearly spend</p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="overflow-hidden">
+        <CardContent className="p-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
+            <div className="flex flex-col p-6 justify-center">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">Total Employees</span>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <span className="text-3xl font-bold mt-2 tracking-tight">{totalEmployees}</span>
+              <p className="text-xs text-muted-foreground mt-1">Active workforce globally</p>
+            </div>
+
+            <div className="flex flex-col p-6 justify-center">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">Global Avg CTC</span>
+                <Globe className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <span className="text-3xl font-bold mt-2 tracking-tight">
+                {formatCurrency(globalAvgCtcMinor, "USD")}
+              </span>
+              <p className="text-xs text-muted-foreground mt-1">Mean cost-to-company</p>
+            </div>
+
+            <div className="flex flex-col p-6 justify-center bg-muted/20">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Total Annual Payroll
+                </span>
+                <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <span className="text-3xl font-bold mt-2 tracking-tight text-primary">
+                {formatCurrency(totalPayrollMinor, "USD")}
+              </span>
+              <p className="text-xs text-muted-foreground mt-1">Aggregated yearly spend</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <DashboardCharts
         chartDeptData={chartDeptData}
