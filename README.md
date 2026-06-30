@@ -29,6 +29,8 @@ make gen-client                       # regenerate TS client from OpenAPI spec
 make migrate                          # apply Alembic migrations to head
 make seed                             # seed database with 10,000 employees
 
+```
+
 ### Database Seeding
 
 The application comes with flexible seeding scripts located in `backend/scripts/seed/`.
