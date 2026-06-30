@@ -1,4 +1,16 @@
-from app.schemas.employee import PaginatedResponse
+from datetime import date, datetime
+
+import pytest
+from pydantic import ValidationError
+
+from app.schemas.employee import (
+    EmployeeCreate,
+    EmployeeDetailRead,
+    PaginatedResponse,
+    SalaryBase,
+    SalaryHistoryItem,
+)
+from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
 
 
 class TestPaginatedResponse:
@@ -12,13 +24,48 @@ class TestPaginatedResponse:
         assert response.limit == 5
 
 
+def test_salary_minor_units_calculation() -> None:
+    salary = SalaryBase(
+        base_salary_minor_units=1000,
+        housing_allowance_minor_units=500,
+        equity_minor_units=None,
+        other_allowance_minor_units=200,
+        currency=CurrencyRead(id=1, code="USD", name="US Dollar"),
+    )
+    assert salary.salary_minor_units == 1700
+
+
+def test_employee_create_validation() -> None:
+    with pytest.raises(ValidationError):
+        EmployeeCreate(
+            first_name="Jane",
+            last_name="Doe",
+            email="not-an-email",  # Invalid email
+            department_id=1,
+            country_code="US",
+        )
+
+    with pytest.raises(ValidationError):
+        EmployeeCreate(
+            first_name="Jane",
+            last_name="Doe",
+            email="jane@example.com",
+            department_id=1,
+            country_code="USA",  # Invalid country code length
+        )
+
+    with pytest.raises(ValidationError):
+        EmployeeCreate(
+            first_name="",  # Empty first name
+            last_name="Doe",
+            email="jane@example.com",
+            department_id=1,
+            country_code="US",
+        )
+
+
 class TestEmployeeDetailRead:
     def test_employee_detail_read_validation(self) -> None:
-        from datetime import date, datetime
-
-        from app.schemas.employee import EmployeeDetailRead, SalaryHistoryItem
-        from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
-
         history_item = SalaryHistoryItem(
             base_salary_minor_units=100000,
             currency=CurrencyRead(id=1, code="USD", name="US Dollar"),
@@ -44,5 +91,6 @@ class TestEmployeeDetailRead:
             salary_history=[history_item],
         )
 
+        assert detail.id == 1
         assert len(detail.salary_history) == 1
         assert detail.salary_history[0].currency.code == "USD"

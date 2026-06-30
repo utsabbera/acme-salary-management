@@ -601,12 +601,14 @@
         "properties": {
           "base_salary_minor_units": {
             "type": "integer",
+            "exclusiveMinimum": 0.0,
             "title": "Base Salary Minor Units"
           },
           "housing_allowance_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -617,7 +619,8 @@
           "equity_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -628,7 +631,8 @@
           "other_allowance_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -763,22 +767,31 @@
         "properties": {
           "first_name": {
             "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
             "title": "First Name"
           },
           "last_name": {
             "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
             "title": "Last Name"
           },
           "email": {
             "type": "string",
+            "format": "email",
             "title": "Email"
           },
           "department_id": {
             "type": "integer",
+            "exclusiveMinimum": 0.0,
             "title": "Department Id"
           },
           "country_code": {
             "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "pattern": "^[A-Z]{2}$",
             "title": "Country Code"
           }
         },
@@ -921,7 +934,9 @@
           "first_name": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -932,7 +947,9 @@
           "last_name": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -943,7 +960,8 @@
           "email": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "format": "email"
               },
               {
                 "type": "null"
@@ -954,7 +972,8 @@
           "department_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "exclusiveMinimum": 0.0
               },
               {
                 "type": "null"
@@ -965,7 +984,10 @@
           "country_code": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2,
+                "pattern": "^[A-Z]{2}$"
               },
               {
                 "type": "null"
@@ -981,10 +1003,14 @@
         "properties": {
           "currency": {
             "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "pattern": "^[A-Z]{3}$",
             "title": "Currency"
           },
           "rate": {
             "type": "number",
+            "exclusiveMinimum": 0.0,
             "title": "Rate"
           }
         },
@@ -1079,12 +1105,14 @@
         "properties": {
           "base_salary_minor_units": {
             "type": "integer",
+            "exclusiveMinimum": 0.0,
             "title": "Base Salary Minor Units"
           },
           "housing_allowance_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -1095,7 +1123,8 @@
           "equity_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -1106,7 +1135,8 @@
           "other_allowance_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -1116,6 +1146,9 @@
           },
           "currency_code": {
             "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "pattern": "^[A-Z]{3}$",
             "title": "Currency Code"
           },
           "valid_from": {
@@ -1136,12 +1169,14 @@
         "properties": {
           "base_salary_minor_units": {
             "type": "integer",
+            "exclusiveMinimum": 0.0,
             "title": "Base Salary Minor Units"
           },
           "housing_allowance_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -1152,7 +1187,8 @@
           "equity_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"
@@ -1163,7 +1199,8 @@
           "other_allowance_minor_units": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0.0
               },
               {
                 "type": "null"

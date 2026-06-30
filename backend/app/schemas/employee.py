@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import TypeVar
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, EmailStr, Field, computed_field, model_validator
 
 from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
 
@@ -9,10 +9,10 @@ T = TypeVar("T")
 
 
 class SalaryBase(BaseModel):
-    base_salary_minor_units: int
-    housing_allowance_minor_units: int | None = None
-    equity_minor_units: int | None = None
-    other_allowance_minor_units: int | None = None
+    base_salary_minor_units: int = Field(gt=0)
+    housing_allowance_minor_units: int | None = Field(default=None, ge=0)
+    equity_minor_units: int | None = Field(default=None, ge=0)
+    other_allowance_minor_units: int | None = Field(default=None, ge=0)
     currency: CurrencyRead
 
     @computed_field  # type: ignore[prop-decorator]
@@ -27,12 +27,18 @@ class SalaryBase(BaseModel):
 
 
 class SalaryCreate(BaseModel):
-    base_salary_minor_units: int
-    housing_allowance_minor_units: int | None = None
-    equity_minor_units: int | None = None
-    other_allowance_minor_units: int | None = None
-    currency_code: str
+    base_salary_minor_units: int = Field(gt=0)
+    housing_allowance_minor_units: int | None = Field(default=None, ge=0)
+    equity_minor_units: int | None = Field(default=None, ge=0)
+    other_allowance_minor_units: int | None = Field(default=None, ge=0)
+    currency_code: str = Field(min_length=3, max_length=3, pattern=r"^[A-Z]{3}$")
     valid_from: date
+
+    @model_validator(mode="after")
+    def validate_valid_from(self) -> "SalaryCreate":
+        if self.valid_from < date(2000, 1, 1):
+            raise ValueError("valid_from cannot be before company founding date (2000-01-01)")
+        return self
 
 
 class CurrentSalary(SalaryBase):
@@ -54,19 +60,24 @@ class EmployeeRead(BaseModel):
 
 
 class EmployeeCreate(BaseModel):
-    first_name: str
-    last_name: str
-    email: str
-    department_id: int
-    country_code: str
+    first_name: str = Field(min_length=1, max_length=100)
+    last_name: str = Field(min_length=1, max_length=100)
+    email: EmailStr
+    department_id: int = Field(gt=0)
+    country_code: str = Field(min_length=2, max_length=2, pattern=r"^[A-Z]{2}$")
 
 
 class EmployeeUpdate(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    email: str | None = None
-    department_id: int | None = None
-    country_code: str | None = None
+    first_name: str | None = Field(default=None, min_length=1, max_length=100)
+    last_name: str | None = Field(default=None, min_length=1, max_length=100)
+    email: EmailStr | None = None
+    department_id: int | None = Field(default=None, gt=0)
+    country_code: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=2,
+        pattern=r"^[A-Z]{2}$",
+    )
 
 
 class PaginatedResponse[T](BaseModel):
