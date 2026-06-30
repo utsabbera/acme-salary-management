@@ -72,14 +72,14 @@ export function DashboardCharts({
   distributionConfig,
 }: DashboardChartsProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-      <Card className="col-span-4" data-testid="department-chart">
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card data-testid="department-chart">
         <CardHeader>
           <CardTitle>Average Salary by Department</CardTitle>
           <CardDescription>Mean compensation across different business units</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={deptConfig} className="min-h-[300px] w-full">
+          <ChartContainer config={deptConfig} className="h-[350px] w-full">
             <BarChart
               accessibilityLayer
               data={chartDeptData}
@@ -102,6 +102,7 @@ export function DashboardCharts({
               />
               <Bar
                 dataKey="averageSalary"
+                barSize={32}
                 shape={(props) => (
                   <Rectangle {...props} fill={props.payload.fill} radius={[0, 4, 4, 0]} />
                 )}
@@ -111,20 +112,26 @@ export function DashboardCharts({
         </CardContent>
       </Card>
 
-      <Card className="col-span-3" data-testid="country-chart">
+      <Card data-testid="country-chart">
         <CardHeader>
           <CardTitle>Total Payroll by Country</CardTitle>
           <CardDescription>Distribution of salary expenses globally</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={countryConfig} className="min-h-[300px] w-full">
+          <ChartContainer config={countryConfig} className="h-[350px] w-full">
             <BarChart
               accessibilityLayer
               data={chartCountryData}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="country" tickLine={false} tickMargin={10} axisLine={false} />
+              <XAxis
+                dataKey="country"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tick={{ fontSize: 11 }}
+              />
               <YAxis
                 type="number"
                 tickFormatter={formatSalaryTick}
@@ -139,6 +146,7 @@ export function DashboardCharts({
               />
               <Bar
                 dataKey="totalSalary"
+                maxBarSize={48}
                 shape={(props) => (
                   <Rectangle {...props} fill={props.payload.fill} radius={[4, 4, 0, 0]} />
                 )}
@@ -148,13 +156,13 @@ export function DashboardCharts({
         </CardContent>
       </Card>
 
-      <Card className="col-span-3" data-testid="component-chart">
+      <Card data-testid="component-chart">
         <CardHeader>
           <CardTitle>Spend by Component</CardTitle>
           <CardDescription>Breakdown of total compensation costs</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={componentConfig} className="min-h-[300px] w-full">
+          <ChartContainer config={componentConfig} className="mx-auto aspect-square max-h-[350px]">
             <PieChart>
               <ChartTooltip
                 cursor={false}
@@ -172,26 +180,32 @@ export function DashboardCharts({
               />
               <ChartLegend
                 content={<ChartLegendContent nameKey="name" />}
-                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                className="-translate-y-2 flex-wrap gap-4 justify-center"
               />
             </PieChart>
           </ChartContainer>
         </CardContent>
       </Card>
 
-      <Card className="col-span-4" data-testid="distribution-chart">
+      <Card data-testid="distribution-chart">
         <CardHeader>
           <CardTitle>Pay Distribution across Roles</CardTitle>
           <CardDescription>Salary band (middle 50%) and median by department</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={distributionConfig} className="min-h-[300px] w-full">
+          <ChartContainer config={distributionConfig} className="h-[350px] w-full">
             <ComposedChart
               data={chartDistributionData}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="department" tickLine={false} tickMargin={10} axisLine={false} />
+              <XAxis
+                dataKey="department"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tick={{ fontSize: 11 }}
+              />
               <YAxis
                 type="number"
                 tickFormatter={formatSalaryTick}
@@ -204,11 +218,17 @@ export function DashboardCharts({
                 animationDuration={150}
                 content={<ChartTooltipContent />}
               />
-              <Bar dataKey="range" fill="var(--color-chart-5)" radius={[4, 4, 4, 4]} barSize={40} />
+              <Bar
+                dataKey="range"
+                fill="var(--color-range)"
+                radius={[4, 4, 4, 4]}
+                maxBarSize={40}
+              />
               <Line
                 dataKey="median"
-                stroke="none"
-                dot={{ fill: "var(--color-chart-1)", r: 5, strokeWidth: 2, stroke: "white" }}
+                stroke="var(--color-median)"
+                strokeWidth={0}
+                dot={{ fill: "var(--color-median)", r: 5, strokeWidth: 2, stroke: "white" }}
                 activeDot={{ r: 7 }}
               />
               <ChartLegend content={<ChartLegendContent />} />
