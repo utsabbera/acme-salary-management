@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "ACME Salary Management",
+  title: "Acme Salary Management",
   description: "HR salary management for 10,000 employees across multiple countries",
 };
 
