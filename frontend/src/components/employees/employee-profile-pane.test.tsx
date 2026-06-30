@@ -41,7 +41,6 @@ describe("EmployeeProfilePane", () => {
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
 
-    // Check for toolbar buttons
     expect(screen.getByRole("button", { name: /close pane/i })).toBeInTheDocument();
   });
 
@@ -147,5 +146,51 @@ describe("EmployeeProfilePane", () => {
       />,
     );
     expect(screen.getByRole("button", { name: "Delete Employee" })).toBeInTheDocument();
+  });
+
+  it("renders 'Employee not found' when employee is undefined", () => {
+    render(
+      <EmployeeProfilePane
+        employee={undefined as unknown as import("@/lib/generated").EmployeeRead}
+        departments={[]}
+        countries={[]}
+        currencies={[]}
+      />,
+    );
+    expect(screen.getByText("Employee not found")).toBeInTheDocument();
+  });
+
+  it("renders salary history if present", () => {
+    const employeeWithHistory = {
+      ...mockEmployee,
+      salary_history: [
+        {
+          salary_minor_units: 9000000,
+          currency: { code: "USD", name: "US Dollar" },
+          valid_from: "2022-01-01",
+          valid_to: "2023-01-01",
+        },
+        {
+          salary_minor_units: 8000000,
+          currency: { code: "USD", name: "US Dollar" },
+          valid_from: "2021-01-01",
+          valid_to: "2022-01-01",
+        },
+      ],
+    } as unknown as import("@/lib/generated").EmployeeRead;
+
+    render(
+      <EmployeeProfilePane
+        employee={employeeWithHistory}
+        departments={[]}
+        countries={[]}
+        currencies={[]}
+      />,
+    );
+
+    expect(screen.getByText("Compensation History")).toBeInTheDocument();
+
+    expect(screen.getByText("$90,000.00")).toBeInTheDocument();
+    expect(screen.getByText("$80,000.00")).toBeInTheDocument();
   });
 });
