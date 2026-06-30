@@ -54,6 +54,7 @@ class EmployeeService:
         ]
 
         current_salary_model = employee.current_salary
+        current_salary = None
         if current_salary_model:
             current_salary = CurrentSalary(
                 base_salary_minor_units=current_salary_model.base_salary_minor_units,
