@@ -1,4 +1,5 @@
 import { BanknoteIcon, BriefcaseIcon, CalendarIcon, MapPinIcon } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type {
@@ -64,11 +65,19 @@ export function EmployeeProfilePane({
 
       <div className="flex-1 overflow-y-auto p-6 sm:p-10">
         <div className="space-y-8 max-w-3xl mx-auto pb-12">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {employee.first_name} {employee.last_name}
-            </h1>
-            <p className="text-muted-foreground mt-1">{employee.email}</p>
+          <div className="flex items-center gap-6">
+            <Avatar className="h-20 w-20 border">
+              <AvatarFallback className="bg-primary/5 text-primary text-2xl font-medium">
+                {employee.first_name[0]}
+                {employee.last_name[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {employee.first_name} {employee.last_name}
+              </h1>
+              <p className="text-muted-foreground mt-1">{employee.email}</p>
+            </div>
           </div>
 
           <div className="grid gap-6">
