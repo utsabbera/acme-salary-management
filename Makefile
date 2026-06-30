@@ -44,4 +44,6 @@ test-cov:
 
 
 seed:
-	cd backend && uv run python scripts/seed.py
+	cd backend && uv run python scripts/seed/reference.py scripts/seed/samples/countries.csv scripts/seed/samples/departments.csv
+	cd backend && uv run python scripts/seed/fx.py scripts/seed/samples/fx.csv
+	cd backend && uv run python scripts/seed/employee.py --random --count 10000

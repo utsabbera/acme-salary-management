@@ -29,7 +29,25 @@ make gen-client                       # regenerate TS client from OpenAPI spec
 make migrate                          # apply Alembic migrations to head
 make seed                             # seed database with 10,000 employees
 
+### Database Seeding
+
+The application comes with flexible seeding scripts located in `backend/scripts/seed/`.
+
+**Zero-config (Random Generation):**
+```bash
+make seed
 ```
+This will seed the reference data (countries, departments, currencies) and FX rates from `backend/scripts/seed/samples/`, and then generate 10,000 random fake employees.
+
+**Importing from CSV:**
+If you have your own CSV files, you can manually run the seed scripts:
+```bash
+cd backend
+uv run scripts/seed/reference.py path/to/countries.csv path/to/departments.csv
+uv run scripts/seed/fx.py path/to/fx.csv
+uv run scripts/seed/employee.py path/to/employee.csv
+```
+Sample templates for these CSVs are located in `backend/scripts/seed/samples/`.
 
 ## Stack
 

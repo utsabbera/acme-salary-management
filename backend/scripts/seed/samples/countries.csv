@@ -1,0 +1,11 @@
+country_code,country_name,currency_code,currency_name
+US,United States,USD,US Dollar
+DE,Germany,EUR,Euro
+GB,United Kingdom,GBP,British Pound
+IN,India,INR,Indian Rupee
+CA,Canada,CAD,Canadian Dollar
+AU,Australia,AUD,Australian Dollar
+JP,Japan,JPY,Japanese Yen
+BR,Brazil,BRL,Brazilian Real
+SG,Singapore,SGD,Singapore Dollar
+MX,Mexico,MXN,Mexican Peso
