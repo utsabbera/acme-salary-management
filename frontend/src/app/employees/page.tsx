@@ -85,6 +85,11 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                 departments={departments}
                 countries={countries}
                 currencies={currencies}
+                search={search}
+                department_id={!Number.isNaN(department_id) ? department_id : undefined}
+                country_code={country_code}
+                offset={offset}
+                limit={limit}
               />
             </Suspense>
           ) : null
@@ -99,16 +104,38 @@ async function EmployeeProfileServerPane({
   departments,
   countries,
   currencies,
+  search,
+  department_id,
+  country_code,
+  offset,
+  limit,
 }: {
   id: number;
   departments: DepartmentRead[];
   countries: CountryRead[];
   currencies: CurrencyRead[];
+  search?: string;
+  department_id?: number;
+  country_code?: string;
+  offset: number;
+  limit: number;
 }) {
-  const { data } = await getEmployeeEmployeesEmployeeIdGet({
-    client: apiClient,
-    path: { employee_id: id },
-  });
+  const [{ data }, { data: listData }] = await Promise.all([
+    getEmployeeEmployeesEmployeeIdGet({
+      client: apiClient,
+      path: { employee_id: id },
+    }),
+    listEmployeesEmployeesGet({
+      client: apiClient,
+      query: {
+        search,
+        department_id,
+        country_code,
+        offset: Math.max(0, offset - 1),
+        limit: offset > 0 ? limit + 2 : limit + 1,
+      },
+    }),
+  ]);
 
   if (!data) {
     return (
@@ -118,12 +145,42 @@ async function EmployeeProfileServerPane({
     );
   }
 
+  let prevId: number | null = null;
+  let nextId: number | null = null;
+  let prevOffset: number | null = null;
+  let nextOffset: number | null = null;
+
+  if (listData?.items) {
+    const currentIndex = listData.items.findIndex((item) => item.id === id);
+    if (currentIndex !== -1) {
+      if (currentIndex > 0) {
+        prevId = listData.items[currentIndex - 1]!.id;
+        if (offset > 0 && currentIndex === 1) {
+          prevOffset = Math.max(0, offset - limit);
+        }
+      }
+
+      if (currentIndex < listData.items.length - 1) {
+        nextId = listData.items[currentIndex + 1]!.id;
+        const offsetInFetchedArray = offset > 0 ? 1 : 0;
+        const isNextItemOnNextPage = currentIndex >= offsetInFetchedArray + limit - 1;
+        if (isNextItemOnNextPage) {
+          nextOffset = offset + limit;
+        }
+      }
+    }
+  }
+
   return (
     <EmployeeProfilePane
       employee={data}
       departments={departments}
       countries={countries}
       currencies={currencies}
+      prevId={prevId}
+      nextId={nextId}
+      prevOffset={prevOffset}
+      nextOffset={nextOffset}
     />
   );
 }

@@ -108,6 +108,21 @@ describe("EmployeesTable", () => {
     expect(screen.getByText("No employees found.")).toBeInTheDocument();
   });
 
+  it("renders the active row with a highlighted background if its ID matches searchParams", () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("?employeeId=1") as unknown as ReadonlyURLSearchParams,
+    );
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
+
+    const activeRow = screen.getByText("John Doe").closest("tr");
+    expect(activeRow).toHaveClass("bg-muted");
+
+    const inactiveRow = screen.getByText("Jane Smith").closest("tr");
+    expect(inactiveRow).not.toHaveClass("bg-muted");
+  });
+
   it("renders a list of employees", () => {
     render(
       <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,

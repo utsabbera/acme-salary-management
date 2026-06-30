@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { EmployeeRead } from "@/lib/generated";
+import { cn } from "@/lib/utils";
 import { DeleteEmployeeDialog } from "./delete-employee-dialog";
 import { EditEmployeeDialog } from "./edit-employee-dialog";
 
@@ -94,6 +95,8 @@ function EmployeeRow({
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
+  const isSelected = searchParams.get("employeeId") === employee.id.toString();
+
   const handleRowClick = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("employeeId", employee.id.toString());
@@ -103,7 +106,10 @@ function EmployeeRow({
   return (
     <>
       <TableRow
-        className="cursor-pointer hover:bg-muted/50 transition-colors"
+        className={cn(
+          "cursor-pointer transition-colors",
+          isSelected ? "bg-muted hover:bg-muted" : "hover:bg-muted/50",
+        )}
         onClick={handleRowClick}
       >
         <TableCell className="font-medium">

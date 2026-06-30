@@ -13,6 +13,7 @@ import { formatDate } from "@/lib/utils/date";
 import { ClosePaneButton } from "./close-pane-button";
 import { DeleteEmployeeDialog } from "./delete-employee-dialog";
 import { EditEmployeeDialog } from "./edit-employee-dialog";
+import { NextPrevButtons } from "./next-prev-buttons";
 import { SalaryBreakdown } from "./salary-breakdown";
 import { UpdateSalaryDialog } from "./update-salary-dialog";
 
@@ -21,6 +22,10 @@ interface EmployeeProfilePaneProps {
   departments: DepartmentRead[];
   countries: CountryRead[];
   currencies: CurrencyRead[];
+  prevId?: number | null;
+  nextId?: number | null;
+  prevOffset?: number | null;
+  nextOffset?: number | null;
 }
 
 export function EmployeeProfilePane({
@@ -28,6 +33,10 @@ export function EmployeeProfilePane({
   departments,
   countries,
   currencies,
+  prevId = null,
+  nextId = null,
+  prevOffset = null,
+  nextOffset = null,
 }: EmployeeProfilePaneProps) {
   if (!employee) {
     return (
@@ -42,9 +51,15 @@ export function EmployeeProfilePane({
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Notion-style Sticky Toolbar */}
       <div className="sticky top-0 z-10 flex items-center gap-1 px-4 py-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ClosePaneButton />
+        <div className="w-px h-4 bg-border mx-1" />
+        <NextPrevButtons
+          prevId={prevId}
+          nextId={nextId}
+          prevOffset={prevOffset}
+          nextOffset={nextOffset}
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 sm:p-10">
