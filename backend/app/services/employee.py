@@ -1,8 +1,13 @@
 from datetime import timedelta
 
-from fastapi import HTTPException
 from sqlalchemy import select
 
+from app.core.exceptions import (
+    BusinessRuleError,
+    ConflictError,
+    DomainError,
+    NotFoundError,
+)
 from app.models.employee import Employee
 from app.models.reference import Country, Currency
 from app.models.salary import Salary
@@ -27,7 +32,7 @@ class EmployeeService:
     async def get_employee(self, employee_id: int) -> EmployeeDetailRead:
         employee = await self._repo.get_by_id_with_salaries(employee_id)
         if not employee:
-            raise HTTPException(status_code=404, detail="Not Found")
+            raise NotFoundError("Employee not found")
 
         history = sorted(employee.salaries, key=lambda s: (s.valid_from, s.id), reverse=True)
 
@@ -91,14 +96,14 @@ class EmployeeService:
 
     async def create_employee(self, data: EmployeeCreate) -> EmployeeRead:
         if await self._repo.get_by_email(data.email):
-            raise HTTPException(status_code=409, detail="Email already registered")
+            raise ConflictError("Email already registered")
 
         country = await self._repo._session.execute(
             select(Country).where(Country.code == data.country_code)
         )
         country_obj = country.scalar_one_or_none()
         if not country_obj:
-            raise HTTPException(status_code=404, detail="Country code not found")
+            raise NotFoundError("Country code not found")
         employee = Employee(
             first_name=data.first_name,
             last_name=data.last_name,
@@ -111,7 +116,7 @@ class EmployeeService:
 
         active_emp = await self._repo.get_active_employee(created.id)
         if not active_emp:
-            raise HTTPException(status_code=500, detail="Failed to retrieve created employee")
+            raise DomainError("Failed to retrieve created employee")
 
         return active_emp
 
@@ -119,7 +124,7 @@ class EmployeeService:
 
         employee = await self._repo.get_by_id_with_salaries(employee_id)
         if not employee:
-            raise HTTPException(status_code=404, detail="Not Found")
+            raise NotFoundError("Employee not found")
 
         update_data = data.model_dump(exclude_unset=True)
 
@@ -128,7 +133,7 @@ class EmployeeService:
             and update_data["email"] != employee.email
             and await self._repo.get_by_email(update_data["email"])
         ):
-            raise HTTPException(status_code=409, detail="Email already registered")
+            raise ConflictError("Email already registered")
 
         for field in ["first_name", "last_name", "email", "department_id", "country_code"]:
             if field in update_data:
@@ -138,7 +143,7 @@ class EmployeeService:
                     )
                     country_obj = country.scalar_one_or_none()
                     if not country_obj:
-                        raise HTTPException(status_code=404, detail="Country code not found")
+                        raise NotFoundError("Country code not found")
                     employee.country_id = country_obj.id
                 else:
                     setattr(employee, field, update_data[field])
@@ -147,14 +152,14 @@ class EmployeeService:
 
         active_emp = await self._repo.get_active_employee(employee_id)
         if not active_emp:
-            raise HTTPException(status_code=404, detail="Not Found")
+            raise NotFoundError("Employee not found")
 
         return active_emp
 
     async def delete_employee(self, employee_id: int) -> None:
         employee = await self._repo.get_by_id_with_salaries(employee_id)
         if not employee:
-            raise HTTPException(status_code=404, detail="Not Found")
+            raise NotFoundError("Employee not found")
 
         employee.is_active = False
         await self._repo.commit()
@@ -188,14 +193,13 @@ class EmployeeService:
     ) -> EmployeeDetailRead:
         employee = await self._repo.get_by_id_with_salaries(employee_id)
         if not employee:
-            raise HTTPException(status_code=404, detail="Not Found")
+            raise NotFoundError("Employee not found")
 
         active_salary = next((s for s in employee.salaries if s.valid_to is None), None)
         if active_salary:
             if data.valid_from <= active_salary.valid_from:
-                raise HTTPException(
-                    status_code=400,
-                    detail="New salary valid_from must be after current salary valid_from",
+                raise BusinessRuleError(
+                    "New salary valid_from must be after current salary valid_from"
                 )
             active_salary.valid_to = data.valid_from - timedelta(days=1)
 
@@ -205,7 +209,7 @@ class EmployeeService:
         )
         currency_obj = currency.scalar_one_or_none()
         if not currency_obj:
-            raise HTTPException(status_code=404, detail="Currency code not found")
+            raise NotFoundError("Currency code not found")
         new_salary = Salary(
             employee_id=employee_id,
             base_salary_minor_units=data.base_salary_minor_units,

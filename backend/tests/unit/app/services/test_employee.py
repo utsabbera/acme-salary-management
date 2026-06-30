@@ -118,13 +118,113 @@ class TestEmployeeService:
 
     @pytest.mark.asyncio
     async def test_get_employee_not_found(self) -> None:
-        from fastapi import HTTPException
+        from app.core.exceptions import NotFoundError
 
         mock_repo = AsyncMock()
         mock_repo.get_by_id_with_salaries.return_value = None
 
         service = EmployeeService(repo=mock_repo)
-        with pytest.raises(HTTPException) as exc:
+        with pytest.raises(NotFoundError):
             await service.get_employee(999)
 
-        assert exc.value.status_code == 404
+    @pytest.mark.asyncio
+    async def test_create_employee_success(self) -> None:
+        from datetime import datetime
+
+        from app.models.employee import Employee
+        from app.models.reference import Country
+        from app.schemas.employee import EmployeeCreate
+        from app.schemas.reference import CountryRead, CurrencyRead, DepartmentRead
+
+        mock_repo = AsyncMock()
+        mock_repo.get_by_email.return_value = None
+
+        mock_country = Country(id=1, code="US")
+        from unittest.mock import MagicMock
+
+        mock_country_result = MagicMock()
+        mock_country_result.scalar_one_or_none.return_value = mock_country
+        mock_repo._session.execute.return_value = mock_country_result
+
+        mock_created_employee = Employee(
+            id=1, first_name="John", last_name="Doe", email="john@example.com"
+        )
+        mock_repo.create.return_value = mock_created_employee
+
+        mock_active_emp = EmployeeRead(
+            id=1,
+            first_name="John",
+            last_name="Doe",
+            email="john@example.com",
+            department=DepartmentRead(id=1, name="IT"),
+            country=CountryRead(
+                id=1,
+                code="US",
+                name="United States",
+                default_currency=CurrencyRead(id=1, code="USD", name="US Dollar"),
+            ),
+            current_salary=None,
+            created_at=datetime(2023, 1, 1),
+            updated_at=datetime(2023, 1, 1),
+        )
+        mock_repo.get_active_employee.return_value = mock_active_emp
+
+        service = EmployeeService(repo=mock_repo)
+        data = EmployeeCreate(
+            first_name="John",
+            last_name="Doe",
+            email="john@example.com",
+            department_id=1,
+            country_code="US",
+        )
+        result = await service.create_employee(data)
+
+        assert result.id == 1
+        assert result.email == "john@example.com"
+        mock_repo.create.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_create_employee_email_conflict(self) -> None:
+        from app.core.exceptions import ConflictError
+        from app.schemas.employee import EmployeeCreate
+
+        mock_repo = AsyncMock()
+        mock_repo.get_by_email.return_value = True  # Email exists
+
+        service = EmployeeService(repo=mock_repo)
+        data = EmployeeCreate(
+            first_name="John",
+            last_name="Doe",
+            email="john@example.com",
+            department_id=1,
+            country_code="US",
+        )
+
+        with pytest.raises(ConflictError):
+            await service.create_employee(data)
+
+    @pytest.mark.asyncio
+    async def test_delete_employee_success(self) -> None:
+        mock_repo = AsyncMock()
+
+        from app.models.employee import Employee
+
+        mock_emp = Employee(id=1, is_active=True)
+        mock_repo.get_by_id_with_salaries.return_value = mock_emp
+
+        service = EmployeeService(repo=mock_repo)
+        await service.delete_employee(1)
+
+        assert mock_emp.is_active is False
+        mock_repo.commit.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_delete_employee_not_found(self) -> None:
+        from app.core.exceptions import NotFoundError
+
+        mock_repo = AsyncMock()
+        mock_repo.get_by_id_with_salaries.return_value = None
+
+        service = EmployeeService(repo=mock_repo)
+        with pytest.raises(NotFoundError):
+            await service.delete_employee(999)

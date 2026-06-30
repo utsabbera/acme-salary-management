@@ -31,8 +31,6 @@ async def validation_exception_handler(
 ) -> JSONResponse:
     details = []
     for error in exc.errors():
-        # Build field path (e.g., body.user.email -> user.email)
-        # Skip the first element if it's 'body' or 'query'
         loc = error.get("loc", [])
         if loc and loc[0] in ("body", "query", "path", "header", "cookie"):
             loc = loc[1:]
@@ -64,4 +62,48 @@ async def integrity_error_handler(request: Request, exc: IntegrityError) -> JSON
                 ),
             }
         },
+    )
+
+
+class DomainError(Exception):
+    """Base class for all domain-specific exceptions."""
+
+    pass
+
+
+class NotFoundError(DomainError):
+    """Raised when a requested resource is not found."""
+
+    pass
+
+
+class ConflictError(DomainError):
+    """Raised when a resource state conflict occurs (e.g., duplicates)."""
+
+    pass
+
+
+class BusinessRuleError(DomainError):
+    """Raised when a business logic rule is violated."""
+
+    pass
+
+
+async def domain_error_handler(request: Request, exc: DomainError) -> JSONResponse:
+    if isinstance(exc, NotFoundError):
+        status_code = 404
+        code = "NOT_FOUND"
+    elif isinstance(exc, ConflictError):
+        status_code = 409
+        code = "CONFLICT"
+    elif isinstance(exc, BusinessRuleError):
+        status_code = 400
+        code = "BAD_REQUEST"
+    else:
+        status_code = 500
+        code = "INTERNAL_SERVER_ERROR"
+
+    return JSONResponse(
+        status_code=status_code,
+        content={"error": {"code": code, "message": str(exc)}},
     )
