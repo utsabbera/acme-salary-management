@@ -134,7 +134,9 @@ export async function DashboardStats() {
             <div className="flex flex-col p-6 justify-center">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Total Employees</span>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <div className="p-2 bg-primary/5 rounded-full">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
               </div>
               <span className="text-3xl font-bold mt-2 tracking-tight font-mono tabular-nums">
                 {totalEmployees}
@@ -145,7 +147,9 @@ export async function DashboardStats() {
             <div className="flex flex-col p-6 justify-center">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Global Avg CTC</span>
-                <Globe className="h-4 w-4 text-muted-foreground" />
+                <div className="p-2 bg-primary/5 rounded-full">
+                  <Globe className="h-5 w-5 text-primary" />
+                </div>
               </div>
               <span className="text-3xl font-bold mt-2 tracking-tight font-mono tabular-nums">
                 {formatCurrency(globalAvgCtcMinor, "USD")}
@@ -158,7 +162,9 @@ export async function DashboardStats() {
                 <span className="text-sm font-medium text-muted-foreground">
                   Total Annual Payroll
                 </span>
-                <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+                <div className="p-2 bg-primary/5 rounded-full">
+                  <CircleDollarSign className="h-5 w-5 text-primary" />
+                </div>
               </div>
               <span className="text-3xl font-bold mt-2 tracking-tight text-primary font-mono tabular-nums">
                 {formatCurrency(totalPayrollMinor, "USD")}
