@@ -30,7 +30,7 @@ export function getNextPrevRouting({
   let nextOffset: number | null = null;
 
   if (currentIndex > 0) {
-    prevId = items[currentIndex - 1]!.id;
+    prevId = items[currentIndex - 1]?.id ?? null;
 
     if (currentOffset > 0 && currentIndex === 1) {
       prevOffset = Math.max(0, currentOffset - limit);
@@ -38,7 +38,7 @@ export function getNextPrevRouting({
   }
 
   if (currentIndex < items.length - 1) {
-    nextId = items[currentIndex + 1]!.id;
+    nextId = items[currentIndex + 1]?.id ?? null;
 
     const offsetInFetchedArray = currentOffset > 0 ? 1 : 0;
     const isNextItemOnNextPage = currentIndex >= offsetInFetchedArray + limit - 1;
