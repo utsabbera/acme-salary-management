@@ -145,7 +145,7 @@ describe("EmployeeProfilePane", () => {
         currencies={[]}
       />,
     );
-    expect(screen.getByRole("button", { name: "Delete Employee" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
   });
 
   it("renders 'Employee not found' when employee is undefined", () => {

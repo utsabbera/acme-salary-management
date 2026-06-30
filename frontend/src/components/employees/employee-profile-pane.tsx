@@ -256,7 +256,7 @@ export function EmployeeProfilePane({
                   employee={employee}
                   trigger={
                     <Button variant="destructive" size="sm">
-                      <TrashIcon className="mr-2 h-4 w-4" /> Delete Employee
+                      <TrashIcon className="mr-2 h-4 w-4" /> Delete
                     </Button>
                   }
                 />
