@@ -4,6 +4,7 @@ import { GalleryVerticalEnd, LayoutDashboardIcon, Sparkles, UsersIcon } from "lu
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
@@ -68,9 +69,11 @@ export function Sidebar() {
       </div>
       <div className="mt-auto p-4 border-t">
         <div className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-muted/50 transition-colors cursor-pointer">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
-            JD
-          </div>
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+              JD
+            </AvatarFallback>
+          </Avatar>
           <div className="flex flex-col">
             <span className="text-sm font-medium leading-none">Jane Doe</span>
             <span className="text-xs text-muted-foreground mt-1">HR Admin</span>
