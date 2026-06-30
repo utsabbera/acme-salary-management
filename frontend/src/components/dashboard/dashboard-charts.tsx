@@ -72,8 +72,8 @@ export function DashboardCharts({
   distributionConfig,
 }: DashboardChartsProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card data-testid="department-chart">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+      <Card className="col-span-4" data-testid="department-chart">
         <CardHeader>
           <CardTitle>Average Salary by Department</CardTitle>
           <CardDescription>Mean compensation across different business units</CardDescription>
@@ -111,7 +111,7 @@ export function DashboardCharts({
         </CardContent>
       </Card>
 
-      <Card data-testid="country-chart">
+      <Card className="col-span-3" data-testid="country-chart">
         <CardHeader>
           <CardTitle>Total Payroll by Country</CardTitle>
           <CardDescription>Distribution of salary expenses globally</CardDescription>
@@ -148,7 +148,7 @@ export function DashboardCharts({
         </CardContent>
       </Card>
 
-      <Card data-testid="component-chart">
+      <Card className="col-span-3" data-testid="component-chart">
         <CardHeader>
           <CardTitle>Spend by Component</CardTitle>
           <CardDescription>Breakdown of total compensation costs</CardDescription>
@@ -179,7 +179,7 @@ export function DashboardCharts({
         </CardContent>
       </Card>
 
-      <Card data-testid="distribution-chart">
+      <Card className="col-span-4" data-testid="distribution-chart">
         <CardHeader>
           <CardTitle>Pay Distribution across Roles</CardTitle>
           <CardDescription>Salary band (middle 50%) and median by department</CardDescription>
