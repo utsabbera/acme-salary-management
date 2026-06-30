@@ -201,15 +201,29 @@ async def _run_seed_employees(
 
         country_codes = list(country_map.keys())
         department_names = list(department_map.keys())
+        generated_emails = set()
 
         for _ in range(count):
             country_code = random.choice(country_codes)
             country_id = country_map[country_code]
 
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+
+            base_email_prefix = f"{first_name.lower()}.{last_name.lower()}"
+            email_prefix = base_email_prefix
+            counter = 1
+            while f"{email_prefix}@acme.com" in generated_emails:
+                email_prefix = f"{base_email_prefix}{counter}"
+                counter += 1
+
+            email = f"{email_prefix}@acme.com"
+            generated_emails.add(email)
+
             employee = Employee(
-                first_name=fake.first_name(),
-                last_name=fake.last_name(),
-                email=f"{fake.unique.user_name()}@acme.com",
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
                 department_id=department_map[random.choice(department_names)],
                 country_id=country_id,
                 is_active=True,
