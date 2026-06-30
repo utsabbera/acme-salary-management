@@ -12,21 +12,25 @@ export function SearchInput() {
   const [value, setValue] = useState(searchParams.get("search") || "");
 
   useEffect(() => {
+    const currentSearch = searchParams.get("search") || "";
+    if (value === currentSearch) {
+      return;
+    }
+
     const delay = setTimeout(() => {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(searchParams.toString());
       if (value) {
         params.set("search", value);
       } else {
         params.delete("search");
       }
 
-      if (value !== (searchParams.get("search") || "")) {
-        params.set("offset", "0");
-      }
+      params.delete("offset");
+      params.delete("employeeId");
 
       const newQueryString = params.toString();
       if (newQueryString !== searchParams.toString()) {
-        router.replace(`${pathname}?${newQueryString}` as Route);
+        router.replace(`${pathname}${newQueryString ? `?${newQueryString}` : ""}` as Route);
       }
     }, 500);
 

@@ -37,8 +37,10 @@ export function Filters({ departments, countries }: FiltersProps) {
     } else {
       params.set("department_id", value);
     }
-    params.set("offset", "0");
-    router.replace(`${pathname}?${params.toString()}` as Route);
+    params.delete("offset");
+    params.delete("employeeId");
+    const newQuery = params.toString();
+    router.replace(`${pathname}${newQuery ? `?${newQuery}` : ""}` as Route);
   };
 
   const handleCountryChange = (value: string | null) => {
@@ -49,8 +51,10 @@ export function Filters({ departments, countries }: FiltersProps) {
     } else {
       params.set("country_code", value);
     }
-    params.set("offset", "0");
-    router.replace(`${pathname}?${params.toString()}` as Route);
+    params.delete("offset");
+    params.delete("employeeId");
+    const newQuery = params.toString();
+    router.replace(`${pathname}${newQuery ? `?${newQuery}` : ""}` as Route);
   };
 
   return (

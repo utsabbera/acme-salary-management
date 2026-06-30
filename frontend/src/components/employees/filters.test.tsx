@@ -83,52 +83,51 @@ describe("Filters", () => {
     cleanup();
   });
 
-  it("updates department and resets offset", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20"));
+  it("updates department and resets offset and employeeId", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20&employeeId=10"));
     render(<Filters departments={departments} countries={countries} />);
 
-    // Trigger select for department
     const btn = screen.getAllByTestId("select-engineering")[0] as HTMLElement;
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&department_id=1");
+      expect(mockReplace).toHaveBeenCalledWith("/employees?department_id=1");
     });
   });
 
-  it("removes filter when ALL is selected", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1"));
+  it("removes filter and resets offset and employeeId when ALL is selected", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?department_id=1&employeeId=10"));
     render(<Filters departments={departments} countries={countries} />);
 
     const btn = screen.getAllByTestId("select-all")[0] as HTMLElement;
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0");
+      expect(mockReplace).toHaveBeenCalledWith("/employees");
     });
   });
 
-  it("removes country filter when ALL is selected", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country_code=US"));
+  it("removes country filter and resets offset and employeeId when ALL is selected", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?country_code=US&employeeId=10"));
     render(<Filters departments={departments} countries={countries} />);
 
     const btn = screen.getAllByTestId("select-all")[1] as HTMLElement;
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0");
+      expect(mockReplace).toHaveBeenCalledWith("/employees");
     });
   });
 
-  it("updates country and resets offset", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20"));
+  it("updates country and resets offset and employeeId", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=20&employeeId=10"));
     render(<Filters departments={departments} countries={countries} />);
 
     const btn = screen.getAllByTestId("select-us")[1] as HTMLElement;
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&country_code=US");
+      expect(mockReplace).toHaveBeenCalledWith("/employees?country_code=US");
     });
   });
 

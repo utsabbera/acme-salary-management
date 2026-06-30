@@ -39,14 +39,14 @@ describe("SearchInput", () => {
 
     await waitFor(
       () => {
-        expect(mockReplace).toHaveBeenCalledWith("/employees?search=John&offset=0");
+        expect(mockReplace).toHaveBeenCalledWith("/employees?search=John");
       },
       { timeout: 1500 },
     );
   });
 
-  it("resets offset to 0 when search changes", async () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=40"));
+  it("resets offset to 0 and removes employeeId when search changes", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?offset=40&employeeId=10"));
     render(<SearchInput />);
 
     const input = screen.getByRole("textbox");
@@ -54,7 +54,7 @@ describe("SearchInput", () => {
 
     await waitFor(
       () => {
-        expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0&search=Doe");
+        expect(mockReplace).toHaveBeenCalledWith("/employees?search=Doe");
       },
       { timeout: 1500 },
     );
@@ -69,7 +69,7 @@ describe("SearchInput", () => {
 
     await waitFor(
       () => {
-        expect(mockReplace).toHaveBeenCalledWith("/employees?offset=0");
+        expect(mockReplace).toHaveBeenCalledWith("/employees");
       },
       { timeout: 1500 },
     );
@@ -82,8 +82,20 @@ describe("SearchInput", () => {
     // Wait for the 500ms debounce
     await new Promise((r) => setTimeout(r, 600));
 
-    // Currently, it always replaces the router even if the params are identical.
-    // We expect it NOT to call replace if the query is equivalent, to prevent infinite polling loops.
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("does not strip employeeId when searchParams change externally without search changing", async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?search=Jane"));
+    const { rerender } = render(<SearchInput />);
+
+    await new Promise((r) => setTimeout(r, 600));
+    expect(mockReplace).not.toHaveBeenCalled();
+
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("?search=Jane&employeeId=10"));
+    rerender(<SearchInput />);
+
+    await new Promise((r) => setTimeout(r, 600));
     expect(mockReplace).not.toHaveBeenCalled();
   });
 });
