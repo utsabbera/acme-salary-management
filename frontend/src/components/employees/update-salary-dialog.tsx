@@ -154,15 +154,13 @@ export function UpdateSalaryDialog({
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <SelectTrigger id="currency_code" aria-label="Currency">
                         <SelectValue placeholder="Select currency">
-                          {selectedCurrency
-                            ? `${selectedCurrency.code} – ${selectedCurrency.name}`
-                            : null}
+                          {selectedCurrency ? selectedCurrency.code : null}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {currencies.map((c) => (
                           <SelectItem key={c.code} value={c.code}>
-                            {c.code} – {c.name}
+                            {c.code}
                           </SelectItem>
                         ))}
                       </SelectContent>

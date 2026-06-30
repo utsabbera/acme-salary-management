@@ -262,7 +262,7 @@ describe("UpdateSalaryDialog", () => {
     await user.click(screen.getByRole("button", { name: "Adjust" }));
 
     expect(screen.getByLabelText(/base salary/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/currency/i)).toHaveTextContent("USD – US Dollar");
+    expect(screen.getByLabelText(/currency/i)).toHaveTextContent("USD");
     expect(screen.getByRole("button", { name: "Save Adjustment" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
