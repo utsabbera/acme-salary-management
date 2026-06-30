@@ -11,10 +11,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import {
   type CountryRead,
+  type CurrencyRead,
   type DepartmentRead,
   getCountriesCountriesGet,
   getCurrenciesCurrenciesGet,
   getDepartmentsDepartmentsGet,
+  getEmployeeEmployeesEmployeeIdGet,
   listEmployeesEmployeesGet,
 } from "@/lib/generated";
 
@@ -31,6 +33,8 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
   const country_code = typeof params.country_code === "string" ? params.country_code : undefined;
   const offset = typeof params.offset === "string" ? parseInt(params.offset, 10) : 0;
   const limit = typeof params.limit === "string" ? parseInt(params.limit, 10) : 20;
+  const employeeId =
+    typeof params.employeeId === "string" ? parseInt(params.employeeId, 10) : undefined;
 
   const [departmentsRes, countriesRes, currenciesRes] = await Promise.all([
     getDepartmentsDepartmentsGet({ client: apiClient }),
@@ -74,16 +78,53 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
           </div>
         }
         detail={
-          <Suspense fallback={null}>
-            <EmployeeProfilePane
-              departments={departments}
-              countries={countries}
-              currencies={currencies}
-            />
-          </Suspense>
+          employeeId && !Number.isNaN(employeeId) ? (
+            <Suspense fallback={null}>
+              <EmployeeProfileServerPane
+                id={employeeId}
+                departments={departments}
+                countries={countries}
+                currencies={currencies}
+              />
+            </Suspense>
+          ) : null
         }
       />
     </div>
+  );
+}
+
+async function EmployeeProfileServerPane({
+  id,
+  departments,
+  countries,
+  currencies,
+}: {
+  id: number;
+  departments: DepartmentRead[];
+  countries: CountryRead[];
+  currencies: CurrencyRead[];
+}) {
+  const { data } = await getEmployeeEmployeesEmployeeIdGet({
+    client: apiClient,
+    path: { employee_id: id },
+  });
+
+  if (!data) {
+    return (
+      <div className="h-full flex items-center justify-center p-8 text-muted-foreground">
+        Employee not found.
+      </div>
+    );
+  }
+
+  return (
+    <EmployeeProfilePane
+      employee={data}
+      departments={departments}
+      countries={countries}
+      currencies={currencies}
+    />
   );
 }
 
