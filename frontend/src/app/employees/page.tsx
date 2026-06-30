@@ -1,4 +1,3 @@
-import { UserPlusIcon } from "lucide-react";
 import { Suspense } from "react";
 import { CreateEmployeeDialog } from "@/components/employees/create-employee-dialog";
 import { EmployeeProfilePane } from "@/components/employees/employee-profile-pane";
@@ -7,7 +6,6 @@ import { Filters } from "@/components/employees/filters";
 import { Pagination } from "@/components/employees/pagination";
 import { SearchInput } from "@/components/employees/search-input";
 import { SidePeekLayout } from "@/components/layout/side-peek-layout";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import {
@@ -59,15 +57,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
               <SearchInput />
               <Filters departments={departments} countries={countries} />
               <div className="flex-1" />
-              <CreateEmployeeDialog
-                departments={departments}
-                countries={countries}
-                trigger={
-                  <Button>
-                    <UserPlusIcon className="w-4 h-4 mr-2" /> Add Employee
-                  </Button>
-                }
-              />
+              <CreateEmployeeDialog departments={departments} countries={countries} />
             </div>
             <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
               <EmployeeData
@@ -159,14 +149,14 @@ async function EmployeeProfileServerPane({
     const currentIndex = listData.items.findIndex((item) => item.id === id);
     if (currentIndex !== -1) {
       if (currentIndex > 0) {
-        prevId = listData.items[currentIndex - 1]!.id;
+        prevId = listData.items[currentIndex - 1]?.id ?? null;
         if (offset > 0 && currentIndex === 1) {
           prevOffset = Math.max(0, offset - limit);
         }
       }
 
       if (currentIndex < listData.items.length - 1) {
-        nextId = listData.items[currentIndex + 1]!.id;
+        nextId = listData.items[currentIndex + 1]?.id ?? null;
         const offsetInFetchedArray = offset > 0 ? 1 : 0;
         const isNextItemOnNextPage = currentIndex >= offsetInFetchedArray + limit - 1;
         if (isNextItemOnNextPage) {

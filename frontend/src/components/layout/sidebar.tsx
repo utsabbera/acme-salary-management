@@ -1,6 +1,6 @@
 "use client";
 
-import { GalleryVerticalEnd, LayoutDashboardIcon, UsersIcon } from "lucide-react";
+import { GalleryVerticalEnd, LayoutDashboardIcon, Sparkles, UsersIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,6 +48,22 @@ export function Sidebar() {
             <UsersIcon className="h-4 w-4" />
             Employees
           </Link>
+
+          <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-6">
+            Intelligence
+          </div>
+          <div
+            className="flex items-center justify-between gap-3 rounded-md px-3 py-2 transition-all text-muted-foreground bg-primary/5 border border-primary/10 cursor-not-allowed select-none"
+            title="Ask AI is coming soon!"
+          >
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="font-medium text-primary">Ask AI</span>
+            </div>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded-sm">
+              Soon
+            </span>
+          </div>
         </nav>
       </div>
       <div className="mt-auto p-4 border-t">

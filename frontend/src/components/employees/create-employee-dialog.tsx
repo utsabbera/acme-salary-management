@@ -1,9 +1,11 @@
 "use client";
 
+import { UserPlusIcon } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +29,11 @@ interface CreateEmployeeDialogProps {
 export function CreateEmployeeDialog({
   departments,
   countries,
-  trigger,
+  trigger = (
+    <Button>
+      <UserPlusIcon className="w-4 h-4 mr-2" /> Add Employee
+    </Button>
+  ),
   onSuccess,
 }: CreateEmployeeDialogProps) {
   const [open, setOpen] = React.useState(false);
