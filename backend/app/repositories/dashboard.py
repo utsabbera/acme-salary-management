@@ -55,7 +55,7 @@ class DashboardRepository:
                         (Currency.code == "USD", Salary.base_salary_minor_units),
                         (
                             ExchangeRate.rate.is_not(None),
-                            Salary.base_salary_minor_units / ExchangeRate.rate,
+                            Salary.base_salary_minor_units * ExchangeRate.rate,
                         ),
                         else_=None,
                     )
@@ -69,7 +69,7 @@ class DashboardRepository:
                         (
                             ExchangeRate.rate.is_not(None),
                             func.coalesce(Salary.housing_allowance_minor_units, 0)
-                            / ExchangeRate.rate,
+                            * ExchangeRate.rate,
                         ),
                         else_=None,
                     )
@@ -79,7 +79,7 @@ class DashboardRepository:
                         (Currency.code == "USD", func.coalesce(Salary.equity_minor_units, 0)),
                         (
                             ExchangeRate.rate.is_not(None),
-                            func.coalesce(Salary.equity_minor_units, 0) / ExchangeRate.rate,
+                            func.coalesce(Salary.equity_minor_units, 0) * ExchangeRate.rate,
                         ),
                         else_=None,
                     )
@@ -93,7 +93,7 @@ class DashboardRepository:
                         (
                             ExchangeRate.rate.is_not(None),
                             func.coalesce(Salary.other_allowance_minor_units, 0)
-                            / ExchangeRate.rate,
+                            * ExchangeRate.rate,
                         ),
                         else_=None,
                     )

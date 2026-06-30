@@ -25,8 +25,8 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
     }
 
     exchange_rates = {
-        "GBP": ExchangeRate(currency="GBP", rate=0.8),
-        "CAD": ExchangeRate(currency="CAD", rate=1.35),
+        "GBP": ExchangeRate(currency="GBP", rate=1.25),
+        "CAD": ExchangeRate(currency="CAD", rate=0.74),
     }
     for er in exchange_rates.values():
         db_session.add(er)
@@ -103,7 +103,7 @@ async def seeded_dashboard_client(client: AsyncClient, db_session: AsyncSession)
             "valid_to": date(2022, 12, 31),
             "currency": "GBP",
         },
-        # Active employee with NO valid salaries (triggers the NULL aggregation bug)
+        # Active employee with NO valid salaries
         {
             "first": "F",
             "last": "F",
@@ -233,10 +233,8 @@ class TestDashboardStats:
         # A (Engineering, 12m), B (Engineering, 11m), C (HR, 8m)
         # D is inactive, E is expired, F is expired
 
-        # Expect 2 data points (departments: Engineering and HR)
         assert len(distribution) == 2
 
-        # Verify the structure has percentiles
         dept_names = [d["department"] for d in distribution]
         assert "Engineering" in dept_names
         assert "HR" in dept_names
