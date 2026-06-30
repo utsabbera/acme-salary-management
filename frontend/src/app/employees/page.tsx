@@ -1,3 +1,4 @@
+import { UserPlusIcon } from "lucide-react";
 import { Suspense } from "react";
 import { CreateEmployeeDialog } from "@/components/employees/create-employee-dialog";
 import { EmployeeProfilePane } from "@/components/employees/employee-profile-pane";
@@ -61,7 +62,11 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
               <CreateEmployeeDialog
                 departments={departments}
                 countries={countries}
-                trigger={<Button>Add Employee</Button>}
+                trigger={
+                  <Button>
+                    <UserPlusIcon className="w-4 h-4 mr-2" /> Add Employee
+                  </Button>
+                }
               />
             </div>
             <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>

@@ -1,4 +1,12 @@
-import { BanknoteIcon, BriefcaseIcon, CalendarIcon, MapPinIcon } from "lucide-react";
+import {
+  BanknoteIcon,
+  BriefcaseIcon,
+  CalendarIcon,
+  CoinsIcon,
+  MapPinIcon,
+  PencilIcon,
+  TrashIcon,
+} from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -93,7 +101,7 @@ export function EmployeeProfilePane({
                   countries={countries}
                   trigger={
                     <Button variant="outline" size="sm">
-                      Edit
+                      <PencilIcon className="mr-2 h-4 w-4" /> Edit
                     </Button>
                   }
                 />
@@ -129,7 +137,7 @@ export function EmployeeProfilePane({
                   currentSalary={employee.current_salary}
                   trigger={
                     <Button variant="outline" size="sm">
-                      Adjust
+                      <CoinsIcon className="mr-2 h-4 w-4" /> Adjust
                     </Button>
                   }
                 />
@@ -246,7 +254,7 @@ export function EmployeeProfilePane({
                   employee={employee}
                   trigger={
                     <Button variant="destructive" size="sm">
-                      Delete Employee
+                      <TrashIcon className="mr-2 h-4 w-4" /> Delete Employee
                     </Button>
                   }
                 />
