@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import csv
 import random
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 
@@ -117,9 +118,16 @@ async def seed_employees(
         await _run_seed_employees(session, csv_path, random_flag, count)
 
 
-async def _run_seed_employees(
-    session: AsyncSession, csv_path: str | None, random_flag: bool, count: int
-) -> None:
+@dataclass
+class ReferenceData:
+    department_map: dict[str, int]
+    country_map: dict[str, int]
+    country_currency_map: dict[int, int]
+    currency_map: dict[str, int]
+    fx_rates: dict[str, Decimal]
+
+
+async def fetch_reference_data(session: AsyncSession) -> ReferenceData:
     departments_res = await session.execute(select(Department))
     department_map = {d.name: d.id for d in departments_res.scalars().all()}
 
@@ -137,128 +145,151 @@ async def _run_seed_employees(
     }
     fx_rates["USD"] = Decimal("1.0")
 
-    if not department_map or not country_map:
-        logger.error(
-            "Reference data missing. Please run 'uv run python scripts/seed/reference.py' first."
-        )
-        return
+    return ReferenceData(
+        department_map=department_map,
+        country_map=country_map,
+        country_currency_map=country_currency_map,
+        currency_map=currency_map,
+        fx_rates=fx_rates,
+    )
 
+
+async def clear_existing_data(session: AsyncSession) -> None:
     logger.info("Clearing existing employees and salaries...")
     await session.execute(delete(Salary))
     await session.execute(delete(Employee))
     await session.flush()
 
-    if not random_flag and csv_path:
-        logger.info(f"Importing employees from {csv_path}...")
-        employees_to_insert: list[Employee] = []
 
-        with open(csv_path, encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                dept_id = department_map.get(row["department_name"])
-                country_id = country_map.get(row["country_code"].upper())
+async def import_from_csv(session: AsyncSession, csv_path: str, ref: ReferenceData) -> None:
+    logger.info(f"Importing employees from {csv_path}...")
 
-                if not dept_id or not country_id:
-                    logger.warning(f"Skipping row due to invalid department or country: {row}")
-                    continue
+    with open(csv_path, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            dept_id = ref.department_map.get(row["department_name"])
+            country_id = ref.country_map.get(row["country_code"].upper())
 
-                employee = Employee(
-                    first_name=row["first_name"],
-                    last_name=row["last_name"],
-                    email=row["email"],
-                    department_id=dept_id,
-                    country_id=country_id,
-                    is_active=True,
-                )
-                session.add(employee)
-                await session.flush()
-
-                curr_id = country_currency_map[country_id]
-                valid_from_date = datetime.strptime(row["valid_from"], "%Y-%m-%d").date()
-
-                salary = Salary(
-                    employee_id=employee.id,
-                    base_salary_minor_units=int(float(row["base_salary_local"]) * 100),
-                    housing_allowance_minor_units=int(
-                        float(row.get("housing_allowance_local", 0)) * 100
-                    ),
-                    equity_minor_units=int(float(row.get("equity_local", 0)) * 100),
-                    other_allowance_minor_units=int(
-                        float(row.get("other_allowance_local", 0)) * 100
-                    ),
-                    currency_id=curr_id,
-                    valid_from=valid_from_date,
-                    valid_to=None,
-                )
-                session.add(salary)
-
-        await session.commit()
-        logger.info("CSV import complete!")
-    elif random_flag:
-        logger.info(f"Generating {count} fake employees...")
-        employees_to_insert = []
-        total_salaries = 0
-
-        country_codes = list(country_map.keys())
-        department_names = list(department_map.keys())
-        generated_emails = set()
-
-        for _ in range(count):
-            country_code = random.choice(country_codes)
-            country_id = country_map[country_code]
-
-            first_name = fake.first_name()
-            last_name = fake.last_name()
-
-            base_email_prefix = f"{first_name.lower()}.{last_name.lower()}"
-            email_prefix = base_email_prefix
-            counter = 1
-            while f"{email_prefix}@acme.com" in generated_emails:
-                email_prefix = f"{base_email_prefix}{counter}"
-                counter += 1
-
-            email = f"{email_prefix}@acme.com"
-            generated_emails.add(email)
+            if not dept_id or not country_id:
+                logger.warning(f"Skipping row due to invalid department or country: {row}")
+                continue
 
             employee = Employee(
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                department_id=department_map[random.choice(department_names)],
+                first_name=row["first_name"],
+                last_name=row["last_name"],
+                email=row["email"],
+                department_id=dept_id,
                 country_id=country_id,
                 is_active=True,
             )
-            employees_to_insert.append(employee)
-
-        session.add_all(employees_to_insert)
-        await session.flush()
-
-        department_id_to_name = {v: k for k, v in department_map.items()}
-
-        salaries = []
-        for employee in employees_to_insert:
-            employee_sals = generate_salaries(
-                employee,
-                department_id_to_name[employee.department_id],
-                country_currency_map[employee.country_id],
-                currency_map,
-                fx_rates,
-            )
-            salaries.extend(employee_sals)
-            total_salaries += len(employee_sals)
-
-        logger.info(
-            f"Generated {len(employees_to_insert)} employees and {total_salaries} salary records."
-        )
-
-        logger.info("Inserting salaries...")
-        chunk_size = 2000
-        for i in range(0, len(salaries), chunk_size):
-            session.add_all(salaries[i : i + chunk_size])
+            session.add(employee)
             await session.flush()
 
-        await session.commit()
-        logger.info("Fake data generation complete!")
+            curr_id = ref.country_currency_map[country_id]
+            valid_from_date = datetime.strptime(row["valid_from"], "%Y-%m-%d").date()
+
+            salary = Salary(
+                employee_id=employee.id,
+                base_salary_minor_units=int(float(row["base_salary_local"]) * 100),
+                housing_allowance_minor_units=int(
+                    float(row.get("housing_allowance_local", 0)) * 100
+                ),
+                equity_minor_units=int(float(row.get("equity_local", 0)) * 100),
+                other_allowance_minor_units=int(float(row.get("other_allowance_local", 0)) * 100),
+                currency_id=curr_id,
+                valid_from=valid_from_date,
+                valid_to=None,
+            )
+            session.add(salary)
+
+    await session.commit()
+    logger.info("CSV import complete!")
+
+
+async def generate_random_data(session: AsyncSession, count: int, ref: ReferenceData) -> None:
+    logger.info(f"Generating {count} fake employees...")
+    employees_to_insert = []
+    total_salaries = 0
+
+    country_codes = list(ref.country_map.keys())
+    department_names = list(ref.department_map.keys())
+    generated_emails = set()
+
+    for _ in range(count):
+        country_code = random.choice(country_codes)
+        country_id = ref.country_map[country_code]
+
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+
+        base_email_prefix = f"{first_name.lower()}.{last_name.lower()}"
+        email_prefix = base_email_prefix
+        counter = 1
+        while f"{email_prefix}@acme.com" in generated_emails:
+            email_prefix = f"{base_email_prefix}{counter}"
+            counter += 1
+
+        email = f"{email_prefix}@acme.com"
+        generated_emails.add(email)
+
+        employee = Employee(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            department_id=ref.department_map[random.choice(department_names)],
+            country_id=country_id,
+            is_active=True,
+        )
+        employees_to_insert.append(employee)
+
+    session.add_all(employees_to_insert)
+    await session.flush()
+
+    department_id_to_name = {v: k for k, v in ref.department_map.items()}
+
+    salaries = []
+    for employee in employees_to_insert:
+        employee_sals = generate_salaries(
+            employee,
+            department_id_to_name[employee.department_id],
+            ref.country_currency_map[employee.country_id],
+            ref.currency_map,
+            ref.fx_rates,
+        )
+        salaries.extend(employee_sals)
+        total_salaries += len(employee_sals)
+
+    logger.info(
+        f"Generated {len(employees_to_insert)} employees and {total_salaries} salary records."
+    )
+
+    logger.info("Inserting salaries...")
+    chunk_size = 2000
+    for i in range(0, len(salaries), chunk_size):
+        session.add_all(salaries[i : i + chunk_size])
+        await session.flush()
+
+    await session.commit()
+    logger.info("Fake data generation complete!")
+
+
+async def _run_seed_employees(
+    session: AsyncSession, csv_path: str | None, random_flag: bool, count: int
+) -> None:
+    ref_data = await fetch_reference_data(session)
+
+    if not ref_data.department_map or not ref_data.country_map:
+        logger.error(
+            "Reference data missing. Please run 'uv run python scripts/seed/reference.py' first."
+        )
+        return
+
+    await clear_existing_data(session)
+
+    if not random_flag and csv_path:
+        await import_from_csv(session, csv_path, ref_data)
+    elif random_flag:
+        await generate_random_data(session, count, ref_data)
 
 
 if __name__ == "__main__":
