@@ -59,7 +59,7 @@ export function EmployeesTable({ employees, departments, countries }: EmployeesT
             <TableHead>Email</TableHead>
             <TableHead>Department</TableHead>
             <TableHead>Country</TableHead>
-            <TableHead className="text-right">CTC</TableHead>
+            <TableHead className="text-right">Current Compensation</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
