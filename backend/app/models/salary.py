@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from app.models.employee import Employee
     from app.models.reference import Currency
 
-from sqlalchemy import BigInteger, Date, ForeignKey, Index
+from sqlalchemy import BigInteger, Date, ForeignKey, Index, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -14,7 +14,16 @@ from app.core.database import Base
 class Salary(Base):
     __tablename__ = "salaries"
 
-    __table_args__ = (Index("ix_salaries_employee_id_valid_to", "employee_id", "valid_to"),)
+    __table_args__ = (
+        Index("ix_salaries_employee_id_valid_to", "employee_id", "valid_to"),
+        Index(
+            "ix_active_salary",
+            "employee_id",
+            unique=True,
+            sqlite_where=text("valid_to IS NULL"),
+            postgresql_where=text("valid_to IS NULL"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))

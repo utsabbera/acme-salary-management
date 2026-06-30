@@ -100,6 +100,7 @@ class TestEmployeeService:
             valid_to=None,
         )
         employee.salaries = [salary1, salary2]
+        employee.current_salary = salary2
 
         mock_repo.get_by_id_with_salaries.return_value = employee
 

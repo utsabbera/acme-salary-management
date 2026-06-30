@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from app.models.reference import Country, Department
@@ -29,6 +29,12 @@ class Employee(Base):
 
     salaries: Mapped[list["Salary"]] = relationship(
         "Salary", back_populates="employee", cascade="all, delete-orphan"
+    )
+    current_salary: Mapped[Optional["Salary"]] = relationship(
+        "Salary",
+        primaryjoin="and_(Employee.id == Salary.employee_id, Salary.valid_to.is_(None))",
+        uselist=False,
+        viewonly=True,
     )
     department: Mapped["Department"] = relationship("Department")
     country: Mapped["Country"] = relationship("Country")

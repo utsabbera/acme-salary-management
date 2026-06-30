@@ -31,6 +31,7 @@ class EmployeeRepository:
             select(Employee)
             .options(
                 selectinload(Employee.salaries).selectinload(Salary.currency),
+                selectinload(Employee.current_salary).selectinload(Salary.currency),
                 selectinload(Employee.department),
                 selectinload(Employee.country).selectinload(Country.default_currency),
             )

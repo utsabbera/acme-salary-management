@@ -53,20 +53,19 @@ class EmployeeService:
             for s in history
         ]
 
-        current_salary = None
-        active_salary = next((s for s in history if s.valid_to is None), None)
-        if active_salary:
+        current_salary_model = employee.current_salary
+        if current_salary_model:
             current_salary = CurrentSalary(
-                base_salary_minor_units=active_salary.base_salary_minor_units,
-                housing_allowance_minor_units=active_salary.housing_allowance_minor_units,
-                equity_minor_units=active_salary.equity_minor_units,
-                other_allowance_minor_units=active_salary.other_allowance_minor_units,
+                base_salary_minor_units=current_salary_model.base_salary_minor_units,
+                housing_allowance_minor_units=current_salary_model.housing_allowance_minor_units,
+                equity_minor_units=current_salary_model.equity_minor_units,
+                other_allowance_minor_units=current_salary_model.other_allowance_minor_units,
                 currency=CurrencyRead(
-                    id=active_salary.currency.id,
-                    code=active_salary.currency.code,
-                    name=active_salary.currency.name,
+                    id=current_salary_model.currency.id,
+                    code=current_salary_model.currency.code,
+                    name=current_salary_model.currency.name,
                 ),
-                valid_from=active_salary.valid_from,
+                valid_from=current_salary_model.valid_from,
             )
 
         return EmployeeDetailRead(
@@ -195,15 +194,14 @@ class EmployeeService:
         if not employee:
             raise NotFoundError("Employee not found")
 
-        active_salary = next((s for s in employee.salaries if s.valid_to is None), None)
-        if active_salary:
-            if data.valid_from <= active_salary.valid_from:
+        current_salary_model = employee.current_salary
+        if current_salary_model:
+            if data.valid_from <= current_salary_model.valid_from:
                 raise BusinessRuleError(
                     "New salary valid_from must be after current salary valid_from"
                 )
-            active_salary.valid_to = data.valid_from - timedelta(days=1)
+            current_salary_model.valid_to = data.valid_from - timedelta(days=1)
 
-        # Resolve ISO currency_code to internal ID
         currency = await self._repo._session.execute(
             select(Currency).where(Currency.code == data.currency_code)
         )
@@ -221,5 +219,6 @@ class EmployeeService:
         )
         employee.salaries.append(new_salary)
         await self._repo.commit()
+        await self._repo._session.refresh(employee)
 
         return await self.get_employee(employee_id)
