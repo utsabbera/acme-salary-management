@@ -1,8 +1,6 @@
-import { DownloadIcon } from "lucide-react";
 import { Suspense } from "react";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
-import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +13,6 @@ export default async function DashboardPage() {
           <p className="text-muted-foreground">
             Real-time compensation and payroll distribution metrics.
           </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button size="sm">
-            <DownloadIcon className="mr-2 h-4 w-4" />
-            Download
-          </Button>
         </div>
       </div>
 
