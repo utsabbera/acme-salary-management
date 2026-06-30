@@ -118,26 +118,32 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           <ChartContainer config={countryConfig} className="min-h-[300px] w-full">
-            <PieChart>
+            <BarChart
+              accessibilityLayer
+              data={chartCountryData}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="country" tickLine={false} tickMargin={10} axisLine={false} />
+              <YAxis
+                type="number"
+                tickFormatter={formatSalaryTick}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+              />
               <ChartTooltip
                 cursor={false}
                 animationDuration={150}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Pie
-                data={chartCountryData}
+              <Bar
                 dataKey="totalSalary"
-                nameKey="country"
-                innerRadius={60}
-                strokeWidth={5}
-                paddingAngle={2}
-                shape={(props) => <Sector {...props} fill={props.payload.fill} />}
+                shape={(props) => (
+                  <Rectangle {...props} fill={props.payload.fill} radius={[4, 4, 0, 0]} />
+                )}
               />
-              <ChartLegend
-                content={<ChartLegendContent nameKey="country" />}
-                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-              />
-            </PieChart>
+            </BarChart>
           </ChartContainer>
         </CardContent>
       </Card>
