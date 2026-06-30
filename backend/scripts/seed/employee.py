@@ -23,8 +23,21 @@ logger = structlog.get_logger(__name__)
 fake = Faker()
 
 
+def get_salary_range_for_department(department_name: str) -> tuple[int, int]:
+    ranges = {
+        "Engineering": (60_000, 160_000),
+        "Sales": (50_000, 150_000),
+        "Operations": (40_000, 120_000),
+        "Finance": (50_000, 140_000),
+        "Marketing": (45_000, 130_000),
+        "HR": (45_000, 125_000),
+    }
+    return ranges.get(department_name, (40_000, 150_000))
+
+
 def generate_salaries(
     employee: Employee,
+    department_name: str,
     country_currency_id: int,
     currency_map: dict[str, int],
     fx_rates: dict[str, Decimal],
@@ -33,7 +46,8 @@ def generate_salaries(
     salaries = []
 
     current_date = date.today() - timedelta(days=random.randint(365, 3650))
-    base_salary_usd = Decimal(random.randint(40_000, 150_000))
+    min_sal, max_sal = get_salary_range_for_department(department_name)
+    base_salary_usd = Decimal(random.randint(min_sal, max_sal))
     currency_id = country_currency_id
 
     currency_code = [k for k, v in currency_map.items() if v == currency_id][0]
@@ -205,10 +219,16 @@ async def _run_seed_employees(
         session.add_all(employees_to_insert)
         await session.flush()
 
+        department_id_to_name = {v: k for k, v in department_map.items()}
+
         salaries = []
         for employee in employees_to_insert:
             employee_sals = generate_salaries(
-                employee, country_currency_map[employee.country_id], currency_map, fx_rates
+                employee,
+                department_id_to_name[employee.department_id],
+                country_currency_map[employee.country_id],
+                currency_map,
+                fx_rates,
             )
             salaries.extend(employee_sals)
             total_salaries += len(employee_sals)
