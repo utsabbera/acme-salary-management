@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import type { Route } from "next";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 import {
@@ -31,10 +32,12 @@ export function CreateEmployeeDialog({
 }: CreateEmployeeDialogProps) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleSubmit = async (data: EmployeeFormData) => {
     try {
-      const { error } = await createEmployeeEmployeesPost({
+      const { data: responseData, error } = await createEmployeeEmployeesPost({
         client: apiClient,
         body: {
           first_name: data.first_name,
@@ -52,6 +55,13 @@ export function CreateEmployeeDialog({
 
       setOpen(false);
       onSuccess?.();
+
+      if (responseData?.id) {
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.set("employeeId", responseData.id.toString());
+        router.push(`${pathname}?${newParams.toString()}` as Route);
+      }
+
       router.refresh();
     } catch (err) {
       toast.error(`Could not create employee. ${getErrorMessage(err)}`);

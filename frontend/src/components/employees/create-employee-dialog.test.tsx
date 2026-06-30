@@ -1,6 +1,6 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CountryRead, DepartmentRead } from "@/lib/generated";
@@ -9,6 +9,8 @@ import { CreateEmployeeDialog } from "./create-employee-dialog";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+  usePathname: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 vi.mock("sonner", () => ({
@@ -82,10 +84,15 @@ const countries: CountryRead[] = [
 describe("CreateEmployeeDialog", () => {
   const mockRouter = {
     refresh: vi.fn(),
+    push: vi.fn(),
   };
 
   beforeEach(() => {
     vi.mocked(useRouter).mockReturnValue(mockRouter as unknown as ReturnType<typeof useRouter>);
+    vi.mocked(usePathname).mockReturnValue("/employees");
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("search=existing") as unknown as ReturnType<typeof useSearchParams>,
+    );
   });
 
   afterEach(() => {
@@ -111,11 +118,11 @@ describe("CreateEmployeeDialog", () => {
     expect(screen.getByText("Create New Employee")).toBeInTheDocument();
   });
 
-  it("calls API and refreshes router when form is submitted successfully", async () => {
+  it("calls API, pushes to router with employeeId, and refreshes when form is submitted successfully", async () => {
     const user = userEvent.setup();
     const onSuccess = vi.fn();
     vi.mocked(createEmployeeEmployeesPost).mockResolvedValue({
-      data: { id: 1 },
+      data: { id: 123 },
       error: undefined,
       response: {},
     } as unknown as Awaited<ReturnType<typeof createEmployeeEmployeesPost>>);
@@ -152,6 +159,7 @@ describe("CreateEmployeeDialog", () => {
       });
     });
 
+    expect(mockRouter.push).toHaveBeenCalledWith("/employees?search=existing&employeeId=123");
     expect(mockRouter.refresh).toHaveBeenCalled();
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -185,6 +193,7 @@ describe("CreateEmployeeDialog", () => {
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Validation failed"));
     });
+    expect(mockRouter.push).not.toHaveBeenCalled();
   });
 
   it("shows an error toast if API throws an exception", async () => {
@@ -210,5 +219,6 @@ describe("CreateEmployeeDialog", () => {
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Network Error"));
     });
+    expect(mockRouter.push).not.toHaveBeenCalled();
   });
 });
