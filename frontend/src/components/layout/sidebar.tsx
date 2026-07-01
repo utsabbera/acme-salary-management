@@ -4,6 +4,7 @@ import { GalleryVerticalEnd, LayoutDashboardIcon, Sparkles, UsersIcon } from "lu
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -74,9 +75,12 @@ export function Sidebar() {
               JD
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1">
             <span className="text-sm font-medium leading-none">Jane Doe</span>
             <span className="text-xs text-muted-foreground mt-1">HR Admin</span>
+          </div>
+          <div className="rounded-md bg-muted/50">
+            <ThemeToggle />
           </div>
         </div>
       </div>
