@@ -53,14 +53,22 @@ export function EmployeesTable({ employees, departments, countries }: EmployeesT
   return (
     <div className="rounded-md border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted/50">
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Department</TableHead>
-            <TableHead>Country</TableHead>
-            <TableHead className="text-right">Current Compensation</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="text-xs uppercase tracking-wider font-semibold">Name</TableHead>
+            <TableHead className="text-xs uppercase tracking-wider font-semibold">Email</TableHead>
+            <TableHead className="text-xs uppercase tracking-wider font-semibold">
+              Department
+            </TableHead>
+            <TableHead className="text-xs uppercase tracking-wider font-semibold">
+              Country
+            </TableHead>
+            <TableHead className="text-right text-xs uppercase tracking-wider font-semibold">
+              Current Compensation
+            </TableHead>
+            <TableHead className="text-right text-xs uppercase tracking-wider font-semibold">
+              Actions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
