@@ -1,6 +1,8 @@
 "use client";
 
 import { MoreHorizontal } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 import * as React from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +33,31 @@ interface EmployeesTableProps {
 }
 
 export function EmployeesTable({ employees, departments, countries }: EmployeesTableProps) {
+  const searchParams = useSearchParams();
+  const urlId = searchParams.get("employeeId");
+  const [optimisticId, setOptimisticId] = React.useState<string | null>(null);
+  const topLoader = useTopLoader();
+
+  React.useEffect(() => {
+    if (optimisticId !== null && urlId === optimisticId) {
+      setOptimisticId(null);
+    }
+  }, [urlId, optimisticId]);
+
+  React.useEffect(() => {
+    const _ = searchParams.toString();
+    topLoader.done();
+  }, [searchParams, topLoader]);
+
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      setOptimisticId(customEvent.detail);
+    };
+    window.addEventListener("optimistic-navigate", handler);
+    return () => window.removeEventListener("optimistic-navigate", handler);
+  }, []);
+
   if (employees.length === 0) {
     return (
       <div className="flex h-32 items-center justify-center rounded-md border text-muted-foreground">
@@ -79,6 +106,8 @@ export function EmployeesTable({ employees, departments, countries }: EmployeesT
               formatCurrency={formatCurrency}
               departments={departments}
               countries={countries}
+              optimisticId={optimisticId}
+              setOptimisticId={setOptimisticId}
             />
           ))}
         </TableBody>
@@ -87,27 +116,35 @@ export function EmployeesTable({ employees, departments, countries }: EmployeesT
   );
 }
 
-import { useRouter, useSearchParams } from "next/navigation";
-
 function EmployeeRow({
   employee,
   formatCurrency,
   departments,
   countries,
+  optimisticId,
+  setOptimisticId,
 }: {
   employee: EmployeeRead;
   formatCurrency: (v: number, c: string) => string;
   departments: import("@/lib/generated").DepartmentRead[];
   countries: import("@/lib/generated").CountryRead[];
+  optimisticId: string | null;
+  setOptimisticId: (id: string) => void;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
-  const isSelected = searchParams.get("employeeId") === employee.id.toString();
+  const urlId = searchParams.get("employeeId");
+  const isSelected = optimisticId === employee.id.toString() || urlId === employee.id.toString();
+  const topLoader = useTopLoader();
 
   const handleRowClick = () => {
+    if (!isSelected) {
+      topLoader.start();
+    }
+    setOptimisticId(employee.id.toString());
     const params = new URLSearchParams(searchParams.toString());
     params.set("employeeId", employee.id.toString());
     router.push(`?${params.toString()}` as never);

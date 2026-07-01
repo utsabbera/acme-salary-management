@@ -10,6 +10,14 @@ vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(),
 }));
 
+const mockTopLoaderStart = vi.fn();
+vi.mock("nextjs-toploader", () => ({
+  useTopLoader: () => ({
+    start: mockTopLoaderStart,
+    done: vi.fn(),
+  }),
+}));
+
 describe("ClosePaneButton", () => {
   afterEach(() => {
     cleanup();
@@ -30,6 +38,7 @@ describe("ClosePaneButton", () => {
     const button = screen.getByRole("button", { name: /close pane/i });
     await user.click(button);
 
+    expect(mockTopLoaderStart).toHaveBeenCalled();
     expect(mockPush).toHaveBeenCalledWith("?department_id=21");
   });
 });

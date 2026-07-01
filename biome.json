@@ -39,7 +39,8 @@
       "!**/node_modules",
       "!**/.next",
       "!**/dist",
-      "!**/frontend/src/lib/generated/**"
+      "!**/frontend/src/lib/generated/**",
+      "!**/coverage/**"
     ]
   }
 }

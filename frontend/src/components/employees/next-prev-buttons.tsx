@@ -2,6 +2,7 @@
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 import { Button } from "@/components/ui/button";
 
 interface NextPrevButtonsProps {
@@ -14,9 +15,12 @@ interface NextPrevButtonsProps {
 export function NextPrevButtons({ prevId, nextId, prevOffset, nextOffset }: NextPrevButtonsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const topLoader = useTopLoader();
 
   const handleNavigate = (id: number | null, newOffset: number | null) => {
     if (id === null) return;
+    topLoader.start();
+    window.dispatchEvent(new CustomEvent("optimistic-navigate", { detail: id.toString() }));
     const params = new URLSearchParams(searchParams.toString());
     params.set("employeeId", id.toString());
 

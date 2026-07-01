@@ -298,4 +298,37 @@ describe("EmployeesTable", () => {
 
     expect(mockPush).toHaveBeenCalledWith("?employeeId=1");
   });
+
+  it("applies an optimistic highlight immediately on row click before URL updates", async () => {
+    const user = userEvent.setup();
+    const mockPush = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({
+      push: mockPush,
+      refresh: mockRefresh,
+    } as unknown as ReturnType<typeof useRouter>);
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams() as unknown as ReadonlyURLSearchParams,
+    );
+
+    render(
+      <EmployeesTable employees={mockEmployees} departments={departments} countries={countries} />,
+    );
+
+    const row1 = screen.getByText("John Doe").closest("tr");
+    const row2 = screen.getByText("Jane Smith").closest("tr");
+    if (!row1 || !row2) throw new Error("Row not found");
+
+    expect(row1).not.toHaveClass("bg-muted");
+    expect(row2).not.toHaveClass("bg-muted");
+
+    await user.click(row1);
+
+    expect(row1).toHaveClass("bg-muted");
+    expect(row2).not.toHaveClass("bg-muted");
+
+    await user.click(row2);
+
+    expect(row1).not.toHaveClass("bg-muted");
+    expect(row2).toHaveClass("bg-muted");
+  });
 });

@@ -9,6 +9,14 @@ vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(),
 }));
 
+const mockTopLoaderStart = vi.fn();
+vi.mock("nextjs-toploader", () => ({
+  useTopLoader: () => ({
+    start: mockTopLoaderStart,
+    done: vi.fn(),
+  }),
+}));
+
 describe("NextPrevButtons", () => {
   const mockPush = vi.fn();
 
@@ -38,6 +46,8 @@ describe("NextPrevButtons", () => {
 
   it("renders enabled arrows and pushes the new employeeId to the URL when clicked", async () => {
     const user = userEvent.setup();
+    const dispatchSpy = vi.spyOn(window, "dispatchEvent");
+
     render(<NextPrevButtons prevId={10} nextId={12} prevOffset={null} nextOffset={null} />);
 
     const prevButton = screen.getByRole("button", { name: /previous employee/i });
@@ -48,9 +58,20 @@ describe("NextPrevButtons", () => {
 
     await user.click(prevButton);
     expect(mockPush).toHaveBeenCalledWith("?department_id=2&employeeId=10");
+    expect(mockTopLoaderStart).toHaveBeenCalled();
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "optimistic-navigate", detail: "10" }),
+    );
+
+    mockTopLoaderStart.mockClear();
+    dispatchSpy.mockClear();
 
     await user.click(nextButton);
     expect(mockPush).toHaveBeenCalledWith("?department_id=2&employeeId=12");
+    expect(mockTopLoaderStart).toHaveBeenCalled();
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "optimistic-navigate", detail: "12" }),
+    );
   });
 
   it("includes the new offset in the URL if boundary is crossed", async () => {
