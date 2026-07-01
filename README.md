@@ -28,7 +28,6 @@ make typecheck                        # tsc (frontend) + mypy (backend)
 make gen-client                       # regenerate TS client from OpenAPI spec
 make migrate                          # apply Alembic migrations to head
 make seed                             # seed database with 10,000 employees
-
 ```
 
 ### Database Seeding
@@ -92,10 +91,11 @@ See the **[Deployment Guide](docs/deployment.md)** for a full overview of the CI
 - **Monorepo & Trunk-Based Development:** We use a single repository for both frontend and backend to ensure atomic commits and unified tooling. We optimize for continuous deployment by pushing small, frequent commits directly to `main`. See the [Engineering Practices ADR](docs/decisions/engineering-practices.md) for full details on this approach.
 - **Deployment & Hosting:** The application is continuously deployed via GitHub Actions. Frontend is hosted on Vercel, backend on Render, and the database on Neon (Serverless PostgreSQL). See the [Deployment & Hosting ADR](docs/decisions/deployment-and-hosting.md).
 
-# Commit Messages
+## Commit Messages
 
 Conventional Commits — subject line enforced by the commit-msg hook.
 
+```text
 <type>(<scope>): <description>
 
 <why this change was made — optional body for non-trivial commits>
@@ -116,7 +116,7 @@ The standard "Testing Trophy" pattern is strictly enforced across the stack:
 - **Unit Tests:** Used exclusively for complex, isolated business logic, Pydantic math, and raw SQL query builders.
 - **File Organization:** Always group tests into logical classes (e.g., `class TestPagination:`, `class TestSearch:`) to improve readability and allow for class-scoped fixtures, regardless of the file size.
 
-# Project Origins
+## Project Origins
 
 This project was bootstrapped and configured using the following tools and templates:
 - **Starter Repo**: [utsabbera/fastapi-nextjs-starter](https://github.com/utsabbera/fastapi-nextjs-starter)
