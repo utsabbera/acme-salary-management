@@ -48,6 +48,7 @@ interface UpdateSalaryDialogProps {
   employeeId: number;
   currencies: CurrencyRead[];
   currentSalary?: CurrentSalary | null;
+  defaultCurrencyCode?: string;
   trigger?: React.ReactElement;
   onSuccess?: () => void;
 }
@@ -56,6 +57,7 @@ export function UpdateSalaryDialog({
   employeeId,
   currencies,
   currentSalary,
+  defaultCurrencyCode = "USD",
   trigger,
   onSuccess,
 }: UpdateSalaryDialogProps) {
@@ -79,13 +81,13 @@ export function UpdateSalaryDialog({
               : undefined,
           }
         : {
-            currency_code: "USD",
+            currency_code: defaultCurrencyCode,
             base_salary: 0,
             housing_allowance: undefined,
             equity: undefined,
             other_allowance: undefined,
           },
-    [currentSalary],
+    [currentSalary, defaultCurrencyCode],
   );
 
   const {

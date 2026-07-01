@@ -137,6 +137,7 @@ export function EmployeeProfilePane({
                   employeeId={employee.id}
                   currencies={currencies}
                   currentSalary={employee.current_salary}
+                  defaultCurrencyCode={employee.country?.default_currency?.code}
                   trigger={
                     <Button variant="outline" size="sm">
                       <CoinsIcon className="mr-2 h-4 w-4" /> Adjust

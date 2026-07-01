@@ -15,7 +15,12 @@ const mockEmployee = {
   last_name: "Doe",
   email: "john.doe@example.com",
   department: { id: 1, name: "Engineering" },
-  country: { id: 1, name: "US", code: "US" },
+  country: {
+    id: 1,
+    name: "US",
+    code: "US",
+    default_currency: { id: 1, code: "USD", name: "US Dollar", symbol: "$" },
+  },
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-01-01T00:00:00Z",
   current_salary: null,
