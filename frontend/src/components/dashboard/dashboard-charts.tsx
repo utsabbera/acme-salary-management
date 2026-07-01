@@ -100,6 +100,7 @@ export function DashboardCharts({
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
+                width={75}
               />
               <XAxis type="number" hide />
               <ChartTooltip
