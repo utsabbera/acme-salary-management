@@ -21,6 +21,10 @@ vi.mock("@/components/ui/sonner", () => ({
   Toaster: () => <div />,
 }));
 
+vi.mock("@/components/layout/theme-toggle", () => ({
+  ThemeToggle: () => <button type="button">Toggle theme</button>,
+}));
+
 import RootLayout from "./layout";
 
 describe("RootLayout", () => {

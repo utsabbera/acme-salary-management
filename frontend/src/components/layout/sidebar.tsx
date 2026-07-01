@@ -4,7 +4,6 @@ import { GalleryVerticalEnd, LayoutDashboardIcon, Sparkles, UsersIcon } from "lu
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -13,14 +12,13 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 border-r bg-muted/20 hidden md:flex h-full flex-col">
-      <div className="flex h-14 items-center justify-between border-b px-4 lg:h-[60px] lg:px-6">
+      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
         <Link href={"/dashboard" as Route} className="flex items-center gap-2 font-semibold">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <GalleryVerticalEnd className="size-4" />
           </div>
           <span className="text-lg tracking-tight">Acme Salary</span>
         </Link>
-        <ThemeToggle />
       </div>
       <div className="flex-1 overflow-y-auto">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 mt-4 gap-1">

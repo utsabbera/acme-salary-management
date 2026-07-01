@@ -4,6 +4,7 @@ import "./globals.css";
 import NextTopLoader from "nextjs-toploader";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Toaster } from "@/components/ui/sonner";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
@@ -28,6 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Sidebar />
             <div className="flex flex-col flex-1 min-w-0">
               <main className="flex-1 overflow-y-auto flex flex-col min-w-0">{children}</main>
+            </div>
+            <div className="fixed top-3 right-4 z-50 rounded-md border bg-background shadow-sm">
+              <ThemeToggle />
             </div>
             <Toaster />
           </div>
