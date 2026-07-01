@@ -177,3 +177,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes premium-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--border) 50%,
+    var(--muted) 75%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: premium-shimmer 1.5s infinite linear !important;
+  background-color: var(--muted) !important;
+  border-radius: var(--radius) !important;
+}
+
+.dark .skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--accent) 50%,
+    var(--muted) 75%
+  ) !important;
+}

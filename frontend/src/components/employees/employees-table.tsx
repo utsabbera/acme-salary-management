@@ -51,8 +51,8 @@ export function EmployeesTable({ employees, departments, countries }: EmployeesT
   };
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="rounded-md border overflow-x-auto">
+      <Table className="min-w-[800px]">
         <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead className="text-xs uppercase tracking-wider font-semibold">Name</TableHead>

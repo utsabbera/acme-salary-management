@@ -5,8 +5,8 @@ import { EmployeesTable } from "@/components/employees/employees-table";
 import { Filters } from "@/components/employees/filters";
 import { Pagination } from "@/components/employees/pagination";
 import { SearchInput } from "@/components/employees/search-input";
+import { TableSkeleton } from "@/components/employees/table-skeleton";
 import { SidePeekLayout } from "@/components/layout/side-peek-layout";
-import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import {
   type CountryRead,
@@ -49,7 +49,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
     <div className="flex-1 flex flex-col relative h-full min-h-0 bg-background">
       <SidePeekLayout
         list={
-          <div className="flex flex-col gap-6 p-8 pt-6 pr-4 min-w-0 h-full">
+          <div className="flex flex-col gap-6 p-8 pt-6 pr-4 h-full overflow-x-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-3xl font-bold tracking-tight">Employees</h2>
             </div>
@@ -59,7 +59,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
               <div className="flex-1" />
               <CreateEmployeeDialog departments={departments} countries={countries} />
             </div>
-            <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+            <Suspense fallback={<TableSkeleton />}>
               <EmployeeData
                 search={search}
                 department_id={!Number.isNaN(department_id) ? department_id : undefined}
@@ -220,7 +220,7 @@ async function EmployeeData({
   const total = data?.total || 0;
 
   return (
-    <div className="flex flex-col gap-4 min-w-0 overflow-x-hidden">
+    <div className="flex flex-col gap-4 w-full overflow-x-auto">
       <EmployeesTable employees={employees} departments={departments} countries={countries} />
       <Pagination total={total} />
     </div>
