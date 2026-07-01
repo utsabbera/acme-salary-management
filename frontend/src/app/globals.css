@@ -178,6 +178,15 @@
   }
 }
 
+@keyframes slide-in-from-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.sidepeek-enter {
+  animation: slide-in-from-right 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes premium-shimmer {
   0% {
     background-position: -200% 0;
