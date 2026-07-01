@@ -62,34 +62,48 @@ export function UpdateSalaryDialog({
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
-  const defaultValues: Partial<SalaryFormData> = currentSalary
-    ? {
-        currency_code: currentSalary.currency.code,
-        base_salary: currentSalary.base_salary_minor_units / 100,
-        housing_allowance: currentSalary.housing_allowance_minor_units
-          ? currentSalary.housing_allowance_minor_units / 100
-          : undefined,
-        equity: currentSalary.equity_minor_units
-          ? currentSalary.equity_minor_units / 100
-          : undefined,
-        other_allowance: currentSalary.other_allowance_minor_units
-          ? currentSalary.other_allowance_minor_units / 100
-          : undefined,
-      }
-    : {
-        currency_code: "USD",
-        base_salary: 0,
-      };
+  const defaultValues: Partial<SalaryFormData> = React.useMemo(
+    () =>
+      currentSalary
+        ? {
+            currency_code: currentSalary.currency.code,
+            base_salary: currentSalary.base_salary_minor_units / 100,
+            housing_allowance: currentSalary.housing_allowance_minor_units
+              ? currentSalary.housing_allowance_minor_units / 100
+              : undefined,
+            equity: currentSalary.equity_minor_units
+              ? currentSalary.equity_minor_units / 100
+              : undefined,
+            other_allowance: currentSalary.other_allowance_minor_units
+              ? currentSalary.other_allowance_minor_units / 100
+              : undefined,
+          }
+        : {
+            currency_code: "USD",
+            base_salary: 0,
+            housing_allowance: undefined,
+            equity: undefined,
+            other_allowance: undefined,
+          },
+    [currentSalary],
+  );
 
   const {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<SalaryFormData>({
     resolver: zodResolver(salarySchema),
     defaultValues,
   });
+
+  React.useEffect(() => {
+    if (open) {
+      reset(defaultValues);
+    }
+  }, [open, defaultValues, reset]);
 
   const onSubmit = async (data: SalaryFormData) => {
     try {

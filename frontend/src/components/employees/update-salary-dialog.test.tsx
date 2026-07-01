@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { CurrencyRead } from "@/lib/generated";
+import type { CurrencyRead, CurrentSalary } from "@/lib/generated";
 import { addSalaryAdjustmentEmployeesEmployeeIdSalariesPost } from "@/lib/generated";
 import { UpdateSalaryDialog } from "./update-salary-dialog";
 
@@ -270,5 +270,69 @@ describe("UpdateSalaryDialog", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
+  });
+  it("resets dirty form state when re-opened", async () => {
+    const user = userEvent.setup();
+    render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+
+    const baseSalaryInput = screen.getByLabelText(/base salary/i);
+    await user.clear(baseSalaryInput);
+    await user.type(baseSalaryInput, "9999");
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+
+    expect(screen.getByLabelText(/base salary/i)).toHaveValue(0);
+  });
+
+  it("resets form values when opened with a new currentSalary", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+    expect(screen.getByLabelText(/base salary/i)).toHaveValue(0);
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    rerender(
+      <UpdateSalaryDialog
+        employeeId={1}
+        currencies={currencies}
+        currentSalary={
+          {
+            currency: currencies[1],
+            base_salary_minor_units: 500000,
+            housing_allowance_minor_units: null,
+            equity_minor_units: null,
+            other_allowance_minor_units: null,
+            valid_from: "2024-01-01",
+          } as unknown as CurrentSalary
+        }
+        trigger={<button type="button">Adjust</button>}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Adjust" }));
+
+    expect(screen.getByLabelText(/base salary/i)).toHaveValue(5000);
+    expect(screen.getByLabelText(/currency/i)).toHaveTextContent("GBP");
   });
 });
