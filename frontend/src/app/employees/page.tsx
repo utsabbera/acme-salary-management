@@ -6,7 +6,9 @@ import { Filters } from "@/components/employees/filters";
 import { Pagination } from "@/components/employees/pagination";
 import { SearchInput } from "@/components/employees/search-input";
 import { TableSkeleton } from "@/components/employees/table-skeleton";
+import { ServerWakeupLoader } from "@/components/layout/server-wakeup-loader";
 import { SidePeekLayout } from "@/components/layout/side-peek-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api";
 import {
   type CountryRead,
@@ -74,7 +76,23 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
         }
         detail={
           employeeId && !Number.isNaN(employeeId) ? (
-            <Suspense fallback={null}>
+            <Suspense
+              fallback={
+                <ServerWakeupLoader>
+                  <div className="flex flex-col h-full p-6 gap-6 w-full">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-16 w-16 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="flex-1 w-full rounded-xl" />
+                  </div>
+                </ServerWakeupLoader>
+              }
+            >
               <EmployeeProfileServerPane
                 id={employeeId}
                 departments={departments}
