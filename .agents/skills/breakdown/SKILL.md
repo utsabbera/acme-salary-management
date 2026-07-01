@@ -32,7 +32,7 @@ Present the proposed breakdown. For each slice show title and blockers. Ask if t
 Blockers first, so you can reference real issue numbers in "Blocked by".
 
 ```bash
-gh issue create --title "[Area] Short imperative title" --label "feature" --parent <epic-issue-number> --body "..."
+gh issue create --title "[Area] Short imperative title" --label "feature" --parent <epic-issue-number> --blocked-by <blocking-issue-number> --body "..."
 ```
 
 Infer label from: `feature`, `chore`, `bug`, `docs`.
@@ -48,7 +48,4 @@ Concise description of this vertical slice — end-to-end behavior, not layer-by
 - [ ] Criterion 1
 - [ ] Criterion 2
 
-## Blocked by
-
-- #<issue> or "None — can start immediately"
 </issue-template>
