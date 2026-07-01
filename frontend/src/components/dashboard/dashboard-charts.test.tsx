@@ -1,11 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { DashboardCharts, formatSalaryTick } from "./dashboard-charts";
+import { DashboardCharts, formatCurrencyTooltip, formatSalaryTick } from "./dashboard-charts";
 
 describe("DashboardCharts", () => {
   it("formats salary ticks correctly", () => {
     expect(formatSalaryTick(120000)).toBe("$120k");
     expect(formatSalaryTick(50000)).toBe("$50k");
+  });
+
+  it("formats currency tooltips correctly", () => {
+    expect(formatCurrencyTooltip(120000)).toBe("$120,000");
+    expect(formatCurrencyTooltip(123456.78)).toBe("$123,456.78");
+    expect(formatCurrencyTooltip([50000, 100000])).toBe("$50,000 - $100,000");
   });
 
   it("renders the charts without crashing", () => {

@@ -61,6 +61,13 @@ interface DashboardChartsProps {
 
 export const formatSalaryTick = (value: number) => `$${value / 1000}k`;
 
+export const formatCurrencyTooltip = (value: unknown) => {
+  if (Array.isArray(value) && value.length >= 2) {
+    return `$${Number(value[0]).toLocaleString()} - $${Number(value[1]).toLocaleString()}`;
+  }
+  return `$${Number(value).toLocaleString()}`;
+};
+
 export function DashboardCharts({
   chartDeptData,
   chartCountryData,
@@ -98,7 +105,7 @@ export function DashboardCharts({
               <ChartTooltip
                 cursor={false}
                 animationDuration={150}
-                content={<ChartTooltipContent hideLabel />}
+                content={<ChartTooltipContent hideLabel valueFormatter={formatCurrencyTooltip} />}
               />
               <Bar
                 dataKey="averageSalary"
@@ -142,7 +149,7 @@ export function DashboardCharts({
               <ChartTooltip
                 cursor={false}
                 animationDuration={150}
-                content={<ChartTooltipContent hideLabel />}
+                content={<ChartTooltipContent hideLabel valueFormatter={formatCurrencyTooltip} />}
               />
               <Bar
                 dataKey="totalSalary"
@@ -167,7 +174,7 @@ export function DashboardCharts({
               <ChartTooltip
                 cursor={false}
                 animationDuration={150}
-                content={<ChartTooltipContent hideLabel />}
+                content={<ChartTooltipContent hideLabel valueFormatter={formatCurrencyTooltip} />}
               />
               <Pie
                 data={chartComponentData}
@@ -216,7 +223,7 @@ export function DashboardCharts({
               <ChartTooltip
                 cursor={false}
                 animationDuration={150}
-                content={<ChartTooltipContent />}
+                content={<ChartTooltipContent valueFormatter={formatCurrencyTooltip} />}
               />
               <Bar
                 dataKey="range"

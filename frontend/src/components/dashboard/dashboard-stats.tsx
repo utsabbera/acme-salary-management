@@ -110,7 +110,7 @@ export async function DashboardStats() {
         number,
       ],
       median: d.p50_salary_usd_minor_units / 100,
-      fill: "var(--color-chart-5)",
+      fill: "var(--color-range)",
     };
   });
 
