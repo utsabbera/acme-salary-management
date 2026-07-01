@@ -5,7 +5,7 @@ This document outlines the agent-assisted development workflow used in this proj
 ## 1. New Requirement (Planning Phase)
 When a new requirement is introduced, we follow a structured planning process to ensure clarity and scope management before any code is written.
 
-- **Ideate**: We use the `ideate` skill to engage in Socratic dialogue and stress-test ideas. This helps clarify ambiguous requirements, resolve design decisions, and solidify the approach.
+- **Ideate**: We use the `ideate` skill and the `/grill-me` slash command to engage in Socratic dialogue and stress-test ideas. This helps clarify ambiguous requirements, resolve design decisions, and solidify the approach.
 - **Epic**: Once the idea is clear, we use the `epic` skill to synthesize the conversation into a Product Requirements Document (PRD) and file it as a high-level Epic in GitHub.
 - **Breakdown**: Finally, the `breakdown` skill is used to take the Epic and slice it into small, independently-grabbable vertical slices (GitHub Issues). This enables incremental delivery and testability.
 
@@ -13,8 +13,10 @@ When a new requirement is introduced, we follow a structured planning process to
 Once issues are broken down and ready for work, we transition into execution.
 
 - **Plan**: For a selected issue, we use the `plan` skill. This agent performs a deep dive into the codebase, researches the necessary changes, and produces an `implementation_plan.md` artifact. Execution pauses for user approval.
+- **Goal-Driven Execution**: For tasks requiring extensive autonomous work, we use the `/goal` slash command. This empowers the agent to work relentlessly and thoroughly until the objective is achieved, without stopping prematurely.
 - **TDD (Test-Driven Development)**: Once the plan is approved, we use the `tdd` skill to implement the changes using a red-green-refactor cycle. The agent writes a failing test for a vertical slice, implements minimal code to pass it, refactors, and repeats.
-- **Inner Loop Activities**: During TDD, we seamlessly integrate other specialized skills:
+- **Inner Loop Activities**: During TDD, we seamlessly integrate other specialized skills and tooling:
+  - **Browser**: We use the browser subagent to interactively verify UI changes, capture screenshots, and record demo workflows.
   - `review` for automated standards and spec compliance checks.
   - `commit` to logically group and stage changes with conventional commit messages.
   - `debug` for diagnosing complex test failures or regressions.
