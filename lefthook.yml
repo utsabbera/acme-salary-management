@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   commands:
     biome-check:
-      glob: "**/*.{ts,tsx,js,jsx}"
+      glob: "**/*.{ts,tsx,js,jsx,css,json}"
       run: pnpm biome check --write {staged_files}
       stage_fixed: true
     ruff-format:
