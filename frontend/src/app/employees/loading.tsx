@@ -14,16 +14,14 @@ export default function EmployeesLoading() {
 
               {/* Filters and Actions Skeleton */}
               <div className="flex items-center gap-4">
-                <Skeleton className="h-10 w-[300px]" />
-                <Skeleton className="h-10 w-[150px]" />
-                <Skeleton className="h-10 w-[150px]" />
+                <Skeleton className="h-8 w-full max-w-sm" />
+                <Skeleton className="h-8 w-[180px]" />
+                <Skeleton className="h-8 w-[180px]" />
                 <div className="flex-1" />
-                <Skeleton className="h-10 w-[180px]" />
+                <Skeleton className="h-8 w-[140px]" />
               </div>
 
-              <div className="mt-4">
-                <TableSkeleton />
-              </div>
+              <TableSkeleton />
             </div>
           </div>
         </div>
