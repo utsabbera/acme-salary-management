@@ -30,7 +30,7 @@ export function CreateEmployeeDialog({
   departments,
   countries,
   trigger = (
-    <Button>
+    <Button className="hover-glow">
       <UserPlusIcon className="w-4 h-4 mr-2" /> Add Employee
     </Button>
   ),

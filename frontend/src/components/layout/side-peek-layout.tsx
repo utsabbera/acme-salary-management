@@ -91,7 +91,7 @@ export function SidePeekLayout({
     return (
       <div className="flex flex-1 min-h-0 h-full w-full bg-background overflow-hidden">
         <div
-          className="h-full overflow-y-auto min-w-0 bg-background"
+          className="h-full overflow-hidden min-w-0 bg-background"
           style={{ flex: isOpen ? "0 0 60%" : "1 1 0%" }}
           data-testid="list-pane"
         >
@@ -117,7 +117,7 @@ export function SidePeekLayout({
     return (
       <div className="flex flex-1 min-h-0 h-full w-full bg-background overflow-hidden">
         <div
-          className="h-full overflow-y-auto min-w-0 bg-background flex-1"
+          className="h-full overflow-hidden min-w-0 bg-background flex-1"
           data-testid="list-pane"
         >
           {list}
@@ -135,7 +135,7 @@ export function SidePeekLayout({
       className="flex-1 min-h-0 h-full w-full bg-background overflow-hidden flex"
     >
       <ResizablePanel defaultSize={isOpen ? 60 : 100} minSize={40} className="min-w-0">
-        <div className="h-full overflow-y-auto min-w-0 bg-background" data-testid="list-pane">
+        <div className="h-full overflow-hidden min-w-0 bg-background" data-testid="list-pane">
           {list}
         </div>
       </ResizablePanel>

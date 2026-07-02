@@ -48,30 +48,23 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
   const currencies = currenciesRes.data ?? [];
 
   return (
-    <div className="flex-1 flex flex-col relative h-full min-h-0 bg-background">
+    <div className="absolute inset-0 flex flex-col bg-background">
       <SidePeekLayout
         list={
-          <div className="flex flex-col gap-6 p-8 pt-6 pr-4 h-full overflow-x-auto">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold tracking-tight">Employees</h2>
+          <div className="flex flex-col h-full p-8 pt-6 pr-4">
+            <div className="flex-1 min-h-0 flex flex-col">
+              <Suspense fallback={<TableSkeleton />}>
+                <EmployeeData
+                  search={search}
+                  department_id={!Number.isNaN(department_id) ? department_id : undefined}
+                  country_code={country_code}
+                  offset={offset}
+                  limit={limit}
+                  departments={departments}
+                  countries={countries}
+                />
+              </Suspense>
             </div>
-            <div className="flex items-center gap-4">
-              <SearchInput />
-              <Filters departments={departments} countries={countries} />
-              <div className="flex-1" />
-              <CreateEmployeeDialog departments={departments} countries={countries} />
-            </div>
-            <Suspense fallback={<TableSkeleton />}>
-              <EmployeeData
-                search={search}
-                department_id={!Number.isNaN(department_id) ? department_id : undefined}
-                country_code={country_code}
-                offset={offset}
-                limit={limit}
-                departments={departments}
-                countries={countries}
-              />
-            </Suspense>
           </div>
         }
         detail={
@@ -238,9 +231,19 @@ async function EmployeeData({
   const total = data?.total || 0;
 
   return (
-    <div className="flex flex-col gap-4 w-full overflow-x-auto">
-      <EmployeesTable employees={employees} departments={departments} countries={countries} />
-      <Pagination total={total} />
+    <div className="flex flex-col h-full min-h-0 w-full">
+      <div className="flex flex-col gap-4 h-full min-h-0">
+        <div className="flex items-center gap-4 mb-2 shrink-0">
+          <SearchInput />
+          <Filters departments={departments} countries={countries} />
+          <div className="flex-1" />
+          <CreateEmployeeDialog departments={departments} countries={countries} />
+        </div>
+        <div className="flex-1 min-h-0 overflow-auto">
+          <EmployeesTable employees={employees} departments={departments} countries={countries} />
+        </div>
+        <Pagination total={total} />
+      </div>
     </div>
   );
 }
