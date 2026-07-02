@@ -21,7 +21,7 @@ export function ServerWakeupLoader({ children }: { children?: React.ReactNode })
   }, []);
 
   return (
-    <div className="flex h-full w-full relative p-8 bg-background">
+    <div className="flex h-full w-full relative">
       <div
         className={cn(
           "fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 text-center bg-background/90 backdrop-blur-md transition-all duration-1000",
