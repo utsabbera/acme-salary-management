@@ -122,9 +122,14 @@ describe("DashboardStats", () => {
         mockData as NonNullable<typeof mockData>,
       );
 
-      expect(chartCountryData[0]?.country).toBe("US");
-      expect(countryConfig.US).toBeDefined();
-      expect(countryConfig.US?.label).toBe("US");
+      const dataItem = chartCountryData[0];
+      expect(dataItem).toBeDefined();
+      if (!dataItem) return;
+
+      expect(dataItem.country).toBe("US");
+      const safeKey = dataItem.safeKey;
+      expect(countryConfig[safeKey]).toBeDefined();
+      expect(countryConfig[safeKey]?.label).toBe("US");
     });
 
     it("ensures component chart data keys strictly match component chart config keys", () => {
