@@ -41,7 +41,7 @@ export function NavMain({
                     tooltip={item.title}
                     render={<Link href={item.url as Route} />}
                     isActive={pathname.startsWith(item.url)}
-                    className="text-base rounded-md border-l-2 border-transparent data-active:border-primary data-active:bg-primary/10 data-active:text-primary data-active:font-semibold hover:bg-muted/50 transition-colors"
+                    className="text-base rounded-md data-active:bg-primary/10 data-active:text-primary data-active:font-semibold hover:bg-muted/50 transition-colors"
                   >
                     {item.icon}
                     <span>{item.title}</span>

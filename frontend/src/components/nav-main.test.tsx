@@ -41,8 +41,6 @@ describe("NavMain", () => {
     const itemSpan = screen.getByText("Test Item");
     const itemLink = itemSpan.closest("a") || itemSpan.closest("button");
 
-    expect(itemLink?.className).toContain("data-active:border-primary");
-    expect(itemLink?.className).toContain("border-l-2");
     expect(itemLink?.className).toContain("data-active:bg-primary/10");
   });
 });
