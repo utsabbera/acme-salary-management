@@ -10,15 +10,19 @@ import { formatCurrency } from "@/lib/utils/currency";
 import { DashboardCharts } from "./dashboard-charts";
 
 export function buildCountryChartData(data: DashboardStatsSchema) {
-  const chartCountryData = data.country_totals.map((c) => ({
-    country: c.country,
-    totalSalary: c.total_salary_usd_minor_units / 100,
-    fill: `var(--color-${c.country})`,
-  }));
+  const chartCountryData = data.country_totals.map((c) => {
+    const safeKey = c.country.replace(/[^a-zA-Z0-9-]/g, "-").toLowerCase();
+    return {
+      country: c.country,
+      totalSalary: c.total_salary_usd_minor_units / 100,
+      fill: `var(--color-${safeKey})`,
+      safeKey,
+    };
+  });
 
   const countryConfig = chartCountryData.reduce(
     (acc, curr, index) => {
-      acc[curr.country] = {
+      acc[curr.safeKey] = {
         label: curr.country,
         color: `var(--color-chart-${(index % 5) + 1})`,
       };
@@ -83,15 +87,19 @@ export async function DashboardStats() {
   const { chartCountryData, countryConfig } = buildCountryChartData(data);
   const { chartComponentData, componentConfig } = buildComponentChartData(data);
 
-  const chartDeptData = data.department_averages.map((d, index) => ({
-    department: d.department,
-    averageSalary: d.average_salary_usd_minor_units / 100,
-    fill: `var(--color-chart-${(index % 5) + 1})`,
-  }));
+  const chartDeptData = data.department_averages.map((d) => {
+    const safeKey = d.department.replace(/[^a-zA-Z0-9-]/g, "-").toLowerCase();
+    return {
+      department: d.department,
+      averageSalary: d.average_salary_usd_minor_units / 100,
+      fill: `var(--color-${safeKey})`,
+      safeKey,
+    };
+  });
 
   const deptConfig = chartDeptData.reduce(
     (acc, curr, index) => {
-      acc[curr.department] = {
+      acc[curr.safeKey] = {
         label: curr.department,
         color: `var(--color-chart-${(index % 5) + 1})`,
       };
@@ -110,7 +118,6 @@ export async function DashboardStats() {
         number,
       ],
       median: d.p50_salary_usd_minor_units / 100,
-      fill: "var(--color-range)",
     };
   });
 

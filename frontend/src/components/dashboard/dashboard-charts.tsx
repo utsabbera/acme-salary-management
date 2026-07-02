@@ -45,7 +45,7 @@ interface DistributionData {
   department: string;
   range: [number, number];
   median: number;
-  fill: string;
+  fill?: string;
 }
 
 interface DashboardChartsProps {
