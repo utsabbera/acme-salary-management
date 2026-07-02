@@ -2,6 +2,7 @@
 
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import NProgress from "nprogress";
 import { useEffect, useState } from "react";
 import {
   Select,
@@ -40,6 +41,7 @@ export function Filters({ departments, countries }: FiltersProps) {
     params.delete("offset");
     params.delete("employeeId");
     const newQuery = params.toString();
+    NProgress.start();
     router.replace(`${pathname}${newQuery ? `?${newQuery}` : ""}` as Route);
   };
 
@@ -54,6 +56,7 @@ export function Filters({ departments, countries }: FiltersProps) {
     params.delete("offset");
     params.delete("employeeId");
     const newQuery = params.toString();
+    NProgress.start();
     router.replace(`${pathname}${newQuery ? `?${newQuery}` : ""}` as Route);
   };
 

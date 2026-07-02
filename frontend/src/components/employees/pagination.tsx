@@ -3,6 +3,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import NProgress from "nprogress";
 import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
@@ -24,6 +25,7 @@ export function Pagination({ total }: PaginationProps) {
     const params = new URLSearchParams(searchParams);
     params.set("offset", newOffset.toString());
     params.set("limit", limit.toString());
+    NProgress.start();
     router.replace(`${pathname}?${params.toString()}` as Route);
   };
 

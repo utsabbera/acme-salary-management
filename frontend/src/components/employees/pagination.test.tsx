@@ -15,6 +15,13 @@ vi.mock("next/navigation", () => ({
   usePathname: () => mockUsePathname(),
 }));
 
+const mockNProgressStart = vi.fn();
+vi.mock("nprogress", () => ({
+  default: {
+    start: () => mockNProgressStart(),
+  },
+}));
+
 describe("Pagination", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -58,6 +65,7 @@ describe("Pagination", () => {
     fireEvent.click(nextButton);
 
     expect(mockReplace).toHaveBeenCalledWith("/employees?offset=40&limit=20");
+    expect(mockNProgressStart).toHaveBeenCalled();
   });
 
   it("navigates to previous page", () => {
@@ -68,5 +76,6 @@ describe("Pagination", () => {
     fireEvent.click(prevButton);
 
     expect(mockReplace).toHaveBeenCalledWith("/employees?offset=20&limit=20");
+    expect(mockNProgressStart).toHaveBeenCalled();
   });
 });

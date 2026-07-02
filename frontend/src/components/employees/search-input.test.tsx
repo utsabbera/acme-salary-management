@@ -15,6 +15,13 @@ vi.mock("next/navigation", () => ({
   usePathname: () => mockUsePathname(),
 }));
 
+const mockNProgressStart = vi.fn();
+vi.mock("nprogress", () => ({
+  default: {
+    start: () => mockNProgressStart(),
+  },
+}));
+
 describe("SearchInput", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -40,6 +47,7 @@ describe("SearchInput", () => {
     await waitFor(
       () => {
         expect(mockReplace).toHaveBeenCalledWith("/employees?search=John");
+        expect(mockNProgressStart).toHaveBeenCalled();
       },
       { timeout: 1500 },
     );
@@ -55,6 +63,7 @@ describe("SearchInput", () => {
     await waitFor(
       () => {
         expect(mockReplace).toHaveBeenCalledWith("/employees?search=Doe");
+        expect(mockNProgressStart).toHaveBeenCalled();
       },
       { timeout: 1500 },
     );
@@ -70,6 +79,7 @@ describe("SearchInput", () => {
     await waitFor(
       () => {
         expect(mockReplace).toHaveBeenCalledWith("/employees");
+        expect(mockNProgressStart).toHaveBeenCalled();
       },
       { timeout: 1500 },
     );

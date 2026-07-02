@@ -2,6 +2,7 @@
 
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import NProgress from "nprogress";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 
@@ -30,6 +31,7 @@ export function SearchInput() {
 
       const newQueryString = params.toString();
       if (newQueryString !== searchParams.toString()) {
+        NProgress.start();
         router.replace(`${pathname}${newQueryString ? `?${newQueryString}` : ""}` as Route);
       }
     }, 500);

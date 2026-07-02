@@ -17,6 +17,13 @@ vi.mock("next/navigation", () => ({
   usePathname: () => mockUsePathname(),
 }));
 
+const mockNProgressStart = vi.fn();
+vi.mock("nprogress", () => ({
+  default: {
+    start: () => mockNProgressStart(),
+  },
+}));
+
 vi.mock("@/components/ui/select", () => ({
   Select: ({
     onValueChange,
@@ -92,6 +99,7 @@ describe("Filters", () => {
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith("/employees?department_id=1");
+      expect(mockNProgressStart).toHaveBeenCalled();
     });
   });
 
@@ -128,6 +136,7 @@ describe("Filters", () => {
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith("/employees?country_code=US");
+      expect(mockNProgressStart).toHaveBeenCalled();
     });
   });
 
