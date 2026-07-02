@@ -172,9 +172,44 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
   }
+
+  *:hover {
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: var(--radius);
+  }
+
+  ::-webkit-scrollbar-track:hover {
+    background: var(--muted);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: var(--radius);
+  }
+
+  *:hover::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
   }
 }
 
@@ -183,6 +218,7 @@
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -197,6 +233,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
