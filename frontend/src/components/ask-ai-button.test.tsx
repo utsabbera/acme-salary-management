@@ -15,7 +15,7 @@ describe("AskAiButton", () => {
       </TooltipProvider>,
     );
 
-    const gradient = container.querySelector("#ai-icon-gradient");
+    const gradient = container.querySelector(".bg-gradient-to-r");
     expect(gradient).not.toBeNull();
 
     expect(screen.getByText("Ask AI")).toBeInTheDocument();
