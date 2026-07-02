@@ -99,7 +99,7 @@ export function SidePeekLayout({
         </div>
         {isOpen && (
           <>
-            <div className="w-1.5 bg-border/50 shrink-0" />
+            <div className="w-px bg-border/50 shrink-0 mx-1.5" />
             <div
               className="h-full bg-muted/10 min-w-0 border-l overflow-y-auto"
               style={{ flex: "0 0 40%" }}
@@ -142,7 +142,10 @@ export function SidePeekLayout({
 
       {isOpen && (
         <>
-          <ResizableHandle className="w-1.5 bg-border/50 hover:bg-border active:bg-border transition-colors z-30" />
+          <ResizableHandle
+            withHandle
+            className="hover:bg-primary/20 active:bg-primary/30 transition-colors [&>div]:bg-primary/60 [&>div]:opacity-0 hover:[&>div]:opacity-100 active:[&>div]:opacity-100 z-10"
+          />
           <ResizablePanel
             defaultSize={40}
             minSize={25}
