@@ -38,7 +38,6 @@ describe("ClosePaneButton", () => {
     const button = screen.getByRole("button", { name: /close pane/i });
     await user.click(button);
 
-    expect(mockTopLoaderStart).toHaveBeenCalled();
     expect(mockPush).toHaveBeenCalledWith("?department_id=21");
   });
 });

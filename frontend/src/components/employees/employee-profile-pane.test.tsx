@@ -4,9 +4,18 @@ import { EmployeeProfilePane } from "./employee-profile-pane";
 
 const mockPush = vi.fn();
 const mockBack = vi.fn();
+const mockTopLoaderDone = vi.fn();
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, back: mockBack }),
   useSearchParams: vi.fn(() => new URLSearchParams("?employeeId=1")),
+}));
+
+vi.mock("nextjs-toploader", () => ({
+  useTopLoader: () => ({
+    done: mockTopLoaderDone,
+    start: vi.fn(),
+  }),
 }));
 
 const mockEmployee = {
@@ -47,6 +56,19 @@ describe("EmployeeProfilePane", () => {
     expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
 
     expect(screen.getByRole("button", { name: /close pane/i })).toBeInTheDocument();
+  });
+
+  it("calls topLoader.done() when rendered", () => {
+    render(
+      <EmployeeProfilePane
+        employee={mockEmployee}
+        departments={[]}
+        countries={[]}
+        currencies={[]}
+      />,
+    );
+
+    expect(mockTopLoaderDone).toHaveBeenCalled();
   });
 
   it("renders granular salary components if they exist in current_salary", () => {

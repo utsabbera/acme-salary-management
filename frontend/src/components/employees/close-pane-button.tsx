@@ -2,16 +2,13 @@
 
 import { ChevronsRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTopLoader } from "nextjs-toploader";
 import { Button } from "@/components/ui/button";
 
 export function ClosePaneButton() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const topLoader = useTopLoader();
 
   const handleClose = () => {
-    topLoader.start();
     const params = new URLSearchParams(searchParams.toString());
     params.delete("employeeId");
     router.push(`?${params.toString()}` as never);

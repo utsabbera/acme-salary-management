@@ -36,18 +36,11 @@ export function EmployeesTable({ employees, departments, countries }: EmployeesT
   const searchParams = useSearchParams();
   const urlId = searchParams.get("employeeId");
   const [optimisticId, setOptimisticId] = React.useState<string | null>(null);
-  const topLoader = useTopLoader();
-
   React.useEffect(() => {
     if (optimisticId !== null && urlId === optimisticId) {
       setOptimisticId(null);
     }
   }, [urlId, optimisticId]);
-
-  React.useEffect(() => {
-    const _ = searchParams.toString();
-    topLoader.done();
-  }, [searchParams, topLoader]);
 
   React.useEffect(() => {
     const handler = (e: Event) => {

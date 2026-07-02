@@ -9,6 +9,8 @@ import {
   PencilIcon,
   TrashIcon,
 } from "lucide-react";
+import { useTopLoader } from "nextjs-toploader";
+import * as React from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +51,13 @@ export function EmployeeProfilePane({
   prevOffset = null,
   nextOffset = null,
 }: EmployeeProfilePaneProps) {
+  const topLoader = useTopLoader();
+
+  React.useEffect(() => {
+    const _id = employee?.id;
+    topLoader.done();
+  }, [employee?.id, topLoader]);
+
   if (!employee) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center space-y-4 p-6">
