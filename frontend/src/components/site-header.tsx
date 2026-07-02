@@ -18,7 +18,10 @@ export function SiteHeader() {
       <div className="flex w-full items-center justify-between gap-1 px-4 lg:gap-2 lg:px-6">
         <div className="flex items-center gap-1 lg:gap-2">
           <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mx-2 h-4 data-vertical:self-auto" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 h-4 data-[orientation=vertical]:self-auto"
+          />
           <h1 className="text-base font-medium">{title}</h1>
         </div>
         <div className="flex items-center gap-2">
