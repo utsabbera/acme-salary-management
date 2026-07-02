@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { AskAiButton } from "@/components/ask-ai-button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -20,7 +21,10 @@ export function SiteHeader() {
           <Separator orientation="vertical" className="mx-2 h-4 data-vertical:self-auto" />
           <h1 className="text-base font-medium">{title}</h1>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <AskAiButton />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
