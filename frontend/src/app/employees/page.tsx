@@ -51,7 +51,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
     <div className="absolute inset-0 flex flex-col bg-background">
       <SidePeekLayout
         list={
-          <div className="flex flex-col h-full p-8 pt-6 pr-4">
+          <div className="flex flex-col h-full p-8 pt-6 pr-4 pb-4">
             <div className="flex-1 min-h-0 flex flex-col">
               <Suspense fallback={<TableSkeleton />}>
                 <EmployeeData
