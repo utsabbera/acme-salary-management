@@ -88,6 +88,7 @@ export function DashboardCharts({
         <CardContent>
           <ChartContainer config={deptConfig} className="h-[350px] w-full">
             <BarChart
+              id="department-chart"
               accessibilityLayer
               data={chartDeptData}
               layout="vertical"
@@ -128,6 +129,7 @@ export function DashboardCharts({
         <CardContent>
           <ChartContainer config={countryConfig} className="h-[350px] w-full">
             <BarChart
+              id="country-chart"
               accessibilityLayer
               data={chartCountryData}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -171,7 +173,7 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           <ChartContainer config={componentConfig} className="mx-auto aspect-square max-h-[350px]">
-            <PieChart>
+            <PieChart id="component-pie-chart">
               <ChartTooltip
                 cursor={false}
                 animationDuration={150}
@@ -203,6 +205,7 @@ export function DashboardCharts({
         <CardContent>
           <ChartContainer config={distributionConfig} className="h-[350px] w-full">
             <ComposedChart
+              id="distribution-chart"
               data={chartDistributionData}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
