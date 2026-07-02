@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
@@ -53,26 +52,36 @@ export function SidePeekLayout({
   list: React.ReactNode;
   detail: React.ReactNode;
 }) {
-  const searchParams = useSearchParams();
-  const employeeId = searchParams.get("employeeId");
+  const isOpen = !!detail;
   const [isMounted, setIsMounted] = React.useState(false);
   const [closingWidth, setClosingWidth] = React.useState<number | null>(null);
-  const prevEmployeeId = React.useRef(employeeId);
+  const prevIsOpen = React.useRef(isOpen);
   const detailInnerRef = React.useRef<HTMLDivElement>(null);
+  const prevDetail = React.useRef<React.ReactNode>(detail);
+  const isEntering = React.useRef(false);
+
+  if (isOpen && !prevIsOpen.current) {
+    isEntering.current = true;
+  } else if (!isOpen) {
+    isEntering.current = false;
+  }
 
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
   React.useEffect(() => {
-    if (prevEmployeeId.current && !employeeId) {
+    if (prevIsOpen.current && !isOpen) {
       const width = detailInnerRef.current?.getBoundingClientRect().width ?? 400;
       setClosingWidth(width);
-      prevEmployeeId.current = null;
+      prevIsOpen.current = false;
     } else {
-      prevEmployeeId.current = employeeId;
+      prevIsOpen.current = isOpen;
+      if (isOpen) {
+        prevDetail.current = detail;
+      }
     }
-  }, [employeeId]);
+  }, [isOpen, detail]);
 
   const handleClosingDone = React.useCallback(() => {
     setClosingWidth(null);
@@ -83,12 +92,12 @@ export function SidePeekLayout({
       <div className="flex flex-1 min-h-0 h-full w-full bg-background overflow-hidden">
         <div
           className="h-full overflow-y-auto min-w-0 bg-background"
-          style={{ flex: employeeId ? "0 0 60%" : "1 1 0%" }}
+          style={{ flex: isOpen ? "0 0 60%" : "1 1 0%" }}
           data-testid="list-pane"
         >
           {list}
         </div>
-        {employeeId && (
+        {isOpen && (
           <>
             <div className="w-1.5 bg-border/50 shrink-0" />
             <div
@@ -114,7 +123,7 @@ export function SidePeekLayout({
           {list}
         </div>
         <ClosingPane initialWidth={closingWidth} onDone={handleClosingDone}>
-          {detail}
+          {prevDetail.current}
         </ClosingPane>
       </div>
     );
@@ -125,13 +134,13 @@ export function SidePeekLayout({
       orientation="horizontal"
       className="flex-1 min-h-0 h-full w-full bg-background overflow-hidden flex"
     >
-      <ResizablePanel defaultSize={employeeId ? 60 : 100} minSize={40} className="min-w-0">
+      <ResizablePanel defaultSize={isOpen ? 60 : 100} minSize={40} className="min-w-0">
         <div className="h-full overflow-y-auto min-w-0 bg-background" data-testid="list-pane">
           {list}
         </div>
       </ResizablePanel>
 
-      {employeeId && (
+      {isOpen && (
         <>
           <ResizableHandle className="w-1.5 bg-border/50 hover:bg-border active:bg-border transition-colors z-30" />
           <ResizablePanel
@@ -141,7 +150,7 @@ export function SidePeekLayout({
           >
             <div
               ref={detailInnerRef}
-              className="h-full bg-muted/10 min-w-0 sidepeek-enter"
+              className={`h-full bg-muted/10 min-w-0 ${isEntering.current ? "sidepeek-enter" : ""}`}
               data-testid="detail-pane"
             >
               {detail}
