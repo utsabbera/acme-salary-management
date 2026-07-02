@@ -169,12 +169,18 @@ function EmployeeRow({
         </TableCell>
         <TableCell className="text-muted-foreground">{employee.email}</TableCell>
         <TableCell>
-          <Badge variant="secondary" className="font-normal text-xs">
+          <Badge
+            variant="secondary"
+            className="font-normal text-xs bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white/90 border-transparent"
+          >
             {employee.department.name}
           </Badge>
         </TableCell>
         <TableCell>
-          <Badge variant="outline" className="font-normal text-xs">
+          <Badge
+            variant="outline"
+            className="font-normal text-xs border-black/10 dark:border-white/20 dark:text-white/70"
+          >
             {employee.country.name}
           </Badge>
         </TableCell>
