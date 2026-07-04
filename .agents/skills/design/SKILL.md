@@ -53,9 +53,5 @@ Treat failure and emptiness as moments for direction, not mood. Explain what wen
 
 Keep the register conversational and tuned: plain verbs, sentence case, no filler, with tone matched to the brand and the audience. Let each element do exactly one job. A label labels, an example demonstrates, and nothing quietly does double duty.
 
-## Playwright MCP & CLI Layout Validation
-When running in a CLI environment, use the Playwright MCP server tools to validate design changes:
-1. Start the local dev server (e.g. `pnpm dev --port <PORT>`).
-2. Use Playwright MCP tools to navigate to the locally running application (e.g. `http://localhost:<PORT>`).
-3. Take automated screenshots or print console logs to inspect structural layouts and ensure components load successfully.
-4. If Playwright MCP tools are unavailable, fallback to describing the design tokens (colors, typography, grid spacing) in the plan using text descriptions and ASCII layouts, validating by inspecting compiled styles or running manual builds.
+## Playwright MCP & Visual Auditing
+When running in a CLI environment, run the `visual_auditor` subagent in an `inherit` workspace (following the rules in `workflow-and-boundaries.md`). It will handle browser execution and return visual feedback, keeping the parent context window clean. If Playwright MCP tools are unavailable, fallback to inspecting compiled styles or running manual builds.

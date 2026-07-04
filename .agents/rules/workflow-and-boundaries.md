@@ -40,7 +40,19 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## 4. Context Retrieval (Pre-flight Checklist)
 
 **MANDATORY FIRST STEP: Always read the `README.md` file.**
-Before you do any planning, execution, or even answering complex questions about the project, you MUST read the `README.md` to understand the project's tech stack, directory structure, and essential commands. This is your absolute source of truth. When running tasks, always adhere strictly to the project's tooling (e.g., `pnpm` exclusively for frontend, `uv` exclusively for backend) as detailed in the README's Commands section.
+Before you do any planning, execution, or even answering complex questions about the project, you MUST read the `README.md` to understand the directory structure and essential commands. This is your absolute source of truth.
 
 **Always check existing documentation before planning.**
 When starting a new feature, planning an architecture change, or running project commands for the first time, proactively use the `list_dir` and `view_file` tools to check the `docs/` directory for any existing conventions or constraints that might apply to your task. If you're unsure how a subsystem works, check `docs/decisions/` before assuming a default architecture.
+
+## 5. Subagent Definition and Invocation
+
+Whenever a skill or instruction specifies running, invoking, or using a subagent by name (e.g., `explore`, `reproduce`, `watch`, `verify`, `audit`, `validate`):
+1. **Locate Template**: Locate the corresponding Markdown template file in `.agents/subagents/<name>.md`.
+2. **Parse Frontmatter**: Read the template file and parse its YAML frontmatter to extract the boolean settings for permissions:
+   - `enable_write_tools`
+   - `enable_mcp_tools`
+   - `enable_subagent_tools`
+3. **Extract System Prompt**: Use the remaining Markdown content (everything after the ending `---` separator) as the `system_prompt` parameter.
+4. **Define Subagent**: Call the `define_subagent` tool with the extracted prompt and parameters.
+5. **Invoke Subagent**: Invoke the defined subagent using the `invoke_subagent` tool.

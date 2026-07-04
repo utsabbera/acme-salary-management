@@ -20,37 +20,28 @@ RIGHT: test1 → impl1 → test2 → impl2 → test3 → impl3
 
 ## Workflow
 
-### 1. Plan
+### 1. Plan & Verify Worktree
+- **Check Worktree**: Run `git worktree list` and verify you are inside the isolated worktree directory (e.g. `_worktrees/<name>`). Do not make changes in the default main workspace.
+- **Parse Plan**: Parse `implementation_plan.md` alongside any scope defined in `$ARGUMENTS`. If no plan exists, fetch acceptance criteria from GitHub using `gh issue view <N>`.
 
-First, parse the `implementation_plan.md` (created by the `plan` skill) alongside any scope defined in `$ARGUMENTS` (e.g., "Phase 1"). If no plan exists, fetch acceptance criteria from GitHub using `gh issue view <N>`.
+### 2. Launch Test Watcher
+To avoid polluting the parent context window with long, repetitive test runner outputs, run the `watch` subagent in a background `branch` workspace (isolated worktree). It runs in the background and sends you messages on file changes.
 
-Instead of just listing behaviors in chat, **create a `task.md` artifact** to track the behaviors to test.
-
-**Crucial**: Halt execution and get user approval on the `task.md` artifact before writing the first test.
-
-### 2. Tracer Bullet
-
-Write ONE test that confirms ONE thing end-to-end. Run it — confirm it fails. Write minimal code to pass. Confirm it passes.
-
-### 3. Incremental Loop
-
-For each remaining behavior:
-- Write next test → confirm it fails
-- Write minimal code to pass → confirm it passes
+### 3. Tracer Bullet & Incremental Loop
+For each behavior:
+- Write next test → wait for `watch` notification showing it fails
+- Write minimal code to pass → wait for `watch` notification showing it passes
 - Mark the corresponding item as `[x]` in `task.md` to track progress
 - One test at a time, no speculative features
 
 ### 4. Refactor
-
 After all tests pass:
 - Extract duplication
 - Deepen modules (move complexity behind simple interfaces)
-- Run tests after each refactor step. Never refactor while RED.
+- Allow `test_watcher` to verify tests after each refactor step. Never refactor while RED.
 
 ### 5. Close
-
-Run the full test suite. Upon completion, create a `walkthrough.md` artifact summarizing the work done.
-If an issue number was provided, offer: `gh issue close <N>`
+Upon completion, create a `walkthrough.md` artifact summarizing the work done. Offer to run `/ship` to merge and deploy the changes.
 
 ## Checklist Per Cycle
 

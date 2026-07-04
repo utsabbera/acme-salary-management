@@ -1,47 +1,50 @@
 ---
 name: plan
-description: Read an issue and create a concrete implementation plan as an artifact, seeking user approval before execution. Use when the user says "make a plan", "plan this issue", or "create an implementation plan".
+description: Read an issue, spawn parallel subagents to research the frontend/backend stacks, and create an implementation plan artifact. Use when the user says "make a plan", "plan this issue", or "create an implementation plan".
+argument-hint: "Issue number or URL"
 ---
 
-Read the provided issue and create a concrete implementation plan.
+Read the provided issue, research the codebase using specialized subagents, and create a concrete implementation plan.
 
 ## Process
 
-### 1. Gather context
+### 1. Fetch Issue Context
+- Extract the issue number `N` from the argument or context.
+- Run `gh issue view <N> --json number,title,body,labels` to retrieve the issue spec.
 
-Work from whatever is in the conversation. If the user passes an issue number or URL, fetch it with `gh issue view <N>`.
-Thoroughly research the task using research tools. Understand the codebase, dependencies, architecture, and implications of the requested changes.
+### 2. Run Parallel Research
+- Run two instances of the `explore` subagent in parallel (one with directory scope 'backend/' and one with 'frontend/'), passing them the issue details.
+- Wait for their summaries to resolve.
 
-### 2. Create Implementation Plan
-
-Create or update an `implementation_plan.md` artifact with your findings and proposed approach. Include any open questions to clarify ambiguity, underspecified requirements, or design intent directly in the implementation plan. 
-
-Set `request_feedback = true` and `user_facing = true` in the ArtifactMetadata.
+### 3. Create the Implementation Plan
+Create or update an `implementation_plan.md` artifact. Set `request_feedback = true` and `user_facing = true` in the ArtifactMetadata.
 
 Use the following format for the artifact:
 ```markdown
-# [Goal Description]
+# Implementation Plan - [Goal Description]
+
+- **Active Worktree**: `_worktrees/<name>` (Verify current worktree via `git worktree list`)
+- **Target Branch**: `feat/<desc>` (Verify current branch via `git branch --show-current`)
 
 Provide a brief description of the problem, any background context, and what the change accomplishes.
 
-Break down the implementation into numbered, logical phases (e.g., Phase 1: Database Models, Phase 2: API Endpoints, Phase 3: Frontend Integration). This ensures incremental delivery and easier testing.
+Break down the implementation into numbered, logical phases (e.g., Phase 1: Database Models, Phase 2: API Endpoints, Phase 3: Frontend Integration).
 
 ## User Review Required
 
-Document anything that requires user review or feedback, for example, breaking changes or significant design decisions. Use GitHub alerts (IMPORTANT/WARNING/CAUTION) to highlight critical items.
+Document anything that requires user review or feedback. Use GitHub alerts (IMPORTANT/WARNING/CAUTION) to highlight critical items.
 
 ## Open Questions
 
-Any clarifying or design questions for the user that will impact the implementation plan. Use GitHub alerts (IMPORTANT/WARNING/CAUTION) to highlight critical items.
+Any clarifying or design questions for the user. Use GitHub alerts (IMPORTANT/WARNING/CAUTION) to highlight critical items.
 
 ## Proposed Changes
 
-Group files by component (e.g., package, feature area, dependency layer) and order logically (dependencies first). Separate components with horizontal rules for visual clarity.
+Group files by component and order logically (dependencies first). Separate components with horizontal rules.
 
 ### [Component Name]
 
-Summary of what will change in this component, separated by files. For specific files, Use [NEW] and [DELETE] to demarcate new and deleted files, for example:
-
+Summary of changes, separated by files:
 #### [MODIFY] [file basename](file:///absolute/path/to/modifiedfile)
 #### [NEW] [file basename](file:///absolute/path/to/newfile)
 #### [DELETE] [file basename](file:///absolute/path/to/deletedfile)
@@ -51,6 +54,6 @@ Summary of what will change in this component, separated by files. For specific 
 Summary of how you will verify that your changes have the desired effects.
 ```
 
-### 3. Obtain User Approval
-
-Stop execution and wait for the user's explicit approval before proceeding to execute the plan.
+### 4. Obtain User Approval
+- Stop execution and wait for the user's explicit approval on the plan.
+- **Auto-Trigger TDD**: Once the user approves the implementation plan, immediately proceed to invoke the `tdd` skill (or `/tdd` command) to begin development, following the approved plan.

@@ -9,7 +9,7 @@ ifneq (,$(wildcard frontend/.env.local))
 endif
 FRONTEND_PORT ?= 3000
 
-.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed worktree
+.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed worktree worktree-clean
 
 install:
 	pnpm install
@@ -87,4 +87,17 @@ worktree:
 	@echo "Successfully created worktree _worktrees/$(name) on branch $(branch)"
 	@echo "Backend Port: $(WT_BACKEND_PORT), Frontend Port: $(WT_FRONTEND_PORT)"
 	@echo "Database URL: sqlite+aiosqlite:///./dev-$(name).db"
+
+worktree-clean:
+	@if [ -z "$(name)" ]; then \
+		echo "Usage: make worktree-clean name=<name> [branch=<branch>]"; \
+		exit 1; \
+	fi
+	git worktree remove _worktrees/$(name) || true
+	@if [ -n "$(branch)" ]; then \
+		git branch -d $(branch) || true; \
+	else \
+		git branch -d $(name) || true; \
+	fi
+
 

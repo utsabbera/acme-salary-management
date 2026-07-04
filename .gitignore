@@ -32,3 +32,4 @@ htmlcov/
 _worktrees/
 *.log
 *.tsbuildinfo
+.playwright-mcp/

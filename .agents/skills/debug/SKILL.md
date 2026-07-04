@@ -21,8 +21,7 @@ If `$ARGUMENTS` references a GitHub issue (`#N` or URL), fetch it with `gh issue
 
 ### 1. Investigate
 
-Reproduce the bug first. Then:
-
+To isolate the parent agent's context from long test logs, run the `reproduce` subagent in a `branch` workspace (isolated worktree) to find the root cause:
 1. Read the stack trace bottom-to-top — the root cause is upstream of the symptom.
 2. Instrument boundaries around the suspect site: log actual values, don't assume them.
 3. Walk the boundaries until valid input becomes invalid output — that transition is the root cause.
@@ -67,4 +66,4 @@ Tests: [tests added/modified]
 Confidence: [High / Medium / Low]
 ```
 
-Offer to run `/pr` to ship the fix.
+Offer to run `/ship` to merge, verify, and deploy the fix.
