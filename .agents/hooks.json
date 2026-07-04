@@ -1,0 +1,92 @@
+{
+  "hooks": [
+    {
+      "event": "pre_tool_call",
+      "tool": "run_command",
+      "match": {
+        "CommandLine": ".*alembic.*upgrade.*"
+      },
+      "script": "echo '[WARNING] Migration detected. Confirm this is intentional before proceeding.'"
+    },
+    {
+      "event": "pre_tool_call",
+      "tool": "run_command",
+      "match": {
+        "CommandLine": ".*seed.*"
+      },
+      "script": "echo '[WARNING] Seed script will mutate the database. Ensure you are on the correct DB.'"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "write_to_file",
+      "match": {
+        "TargetFile": ".*backend/app/models/.*"
+      },
+      "script": "echo '[INFO] Model changed — remember to generate a new Alembic migration.'"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "replace_file_content",
+      "match": {
+        "TargetFile": ".*backend/app/models/.*"
+      },
+      "script": "echo '[INFO] Model changed — remember to generate a new Alembic migration.'"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "multi_replace_file_content",
+      "match": {
+        "TargetFile": ".*backend/app/models/.*"
+      },
+      "script": "echo '[INFO] Model changed — remember to generate a new Alembic migration.'"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "write_to_file",
+      "match": {
+        "TargetFile": ".*\\.tsx?$"
+      },
+      "script": "pnpm biome check --reporter=compact \"$TOOL_ARG_TargetFile\" || true"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "replace_file_content",
+      "match": {
+        "TargetFile": ".*\\.tsx?$"
+      },
+      "script": "pnpm biome check --reporter=compact \"$TOOL_ARG_TargetFile\" || true"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "multi_replace_file_content",
+      "match": {
+        "TargetFile": ".*\\.tsx?$"
+      },
+      "script": "pnpm biome check --reporter=compact \"$TOOL_ARG_TargetFile\" || true"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "write_to_file",
+      "match": {
+        "TargetFile": ".*\\.py$"
+      },
+      "script": "uv run --project backend ruff check \"$TOOL_ARG_TargetFile\" || true"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "replace_file_content",
+      "match": {
+        "TargetFile": ".*\\.py$"
+      },
+      "script": "uv run --project backend ruff check \"$TOOL_ARG_TargetFile\" || true"
+    },
+    {
+      "event": "post_tool_call",
+      "tool": "multi_replace_file_content",
+      "match": {
+        "TargetFile": ".*\\.py$"
+      },
+      "script": "uv run --project backend ruff check \"$TOOL_ARG_TargetFile\" || true"
+    }
+  ]
+}

@@ -31,12 +31,6 @@
       "skillPath": "skills/ideate/SKILL.md",
       "computedHash": "42e106fc8df4854dd2a21c0b48a604c354fca3426d0c98a7b1456eae75887eca"
     },
-    "prd": {
-      "source": "utsabbera/skills",
-      "sourceType": "github",
-      "skillPath": "skills/prd/SKILL.md",
-      "computedHash": "1b8bfb279f04041cfc141a2eef3f396e76a923a969cd4cb1c77594052e5d009d"
-    },
     "refactor": {
       "source": "utsabbera/skills",
       "sourceType": "github",

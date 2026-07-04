@@ -1,7 +1,6 @@
 ---
-name: frontend-design
+name: design
 description: Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults.
-license: Complete terms in LICENSE.txt
 ---
 
 # Frontend Design
@@ -53,3 +52,10 @@ Use active voice as default. A control should say exactly what happens when it's
 Treat failure and emptiness as moments for direction, not mood. Explain what went wrong and how to fix it, in the interface's voice rather than a person's. Errors don't apologize, and they are never vague about what happened. An empty screen is an invitation to act.
 
 Keep the register conversational and tuned: plain verbs, sentence case, no filler, with tone matched to the brand and the audience. Let each element do exactly one job. A label labels, an example demonstrates, and nothing quietly does double duty.
+
+## Playwright MCP & CLI Layout Validation
+When running in a CLI environment, use the Playwright MCP server tools to validate design changes:
+1. Start the local dev server (e.g. `pnpm dev --port <PORT>`).
+2. Use Playwright MCP tools to navigate to the locally running application (e.g. `http://localhost:<PORT>`).
+3. Take automated screenshots or print console logs to inspect structural layouts and ensure components load successfully.
+4. If Playwright MCP tools are unavailable, fallback to describing the design tokens (colors, typography, grid spacing) in the plan using text descriptions and ASCII layouts, validating by inspecting compiled styles or running manual builds.
