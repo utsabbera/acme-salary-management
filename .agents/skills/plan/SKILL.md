@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Read an issue, spawn parallel subagents to research the frontend/backend stacks, and create an implementation plan artifact. Use when the user says "make a plan", "plan this issue", or "create an implementation plan".
+description: Read an issue, spawn explore subagents to research the relevant parts of the codebase, and create an implementation plan artifact. Use when the user says "make a plan", "plan this issue", or "create an implementation plan".
 argument-hint: "Issue number or URL"
 ---
 
@@ -13,8 +13,13 @@ Read the provided issue, research the codebase using specialized subagents, and 
 - Run `gh issue view <N> --json number,title,body,labels` to retrieve the issue spec.
 
 ### 2. Run Parallel Research
-- Run two instances of the `explore` subagent in parallel (one with directory scope 'backend/' and one with 'frontend/'), passing them the issue details.
-- Wait for their summaries to resolve.
+- **Infer scopes** from the issue before spawning agents:
+  - Check the issue **labels** for domain hints (e.g. `frontend`, `backend`, `api`, `ui`, `infra`, `db`).
+  - Check the issue **title and body** for explicit directory names or clear domain signals (e.g. mentions of `backend/`, `frontend/`, specific modules).
+- **Spawn `explore` subagents** based on what you find:
+  - If one or more clear scopes are identified → spawn one `explore` agent per scope in parallel, passing each agent its scope and the issue details.
+  - If no clear scopes are found → spawn a **single unscopped** `explore` agent over the full project root.
+- Wait for all agents' summaries to resolve before proceeding.
 
 ### 3. Create the Implementation Plan
 Create or update an `implementation_plan.md` artifact. Set `request_feedback = true` and `user_facing = true` in the ArtifactMetadata.
