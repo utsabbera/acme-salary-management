@@ -9,7 +9,7 @@ ifneq (,$(wildcard frontend/.env.local))
 endif
 FRONTEND_PORT ?= 3000
 
-.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed worktree worktree-clean
+.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed worktree worktree-clean plan
 
 install:
 	pnpm install
@@ -100,4 +100,9 @@ worktree-clean:
 		git branch -d $(name) || true; \
 	fi
 
-
+plan:
+	@if [ -z "$(issue)" ]; then \
+		echo "Usage: make plan issue=<number>"; \
+		exit 1; \
+	fi
+	@uv run scripts/dev/plan_issue.py $(issue)
