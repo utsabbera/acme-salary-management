@@ -9,7 +9,7 @@ ifneq (,$(wildcard frontend/.env.local))
 endif
 FRONTEND_PORT ?= 3000
 
-.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed worktree worktree-clean plan
+.PHONY: install dev dev-backend dev-frontend gen-client migrate lint typecheck test seed worktree worktree-clean plan issues
 
 install:
 	pnpm install
@@ -106,3 +106,10 @@ plan:
 		exit 1; \
 	fi
 	@uv run scripts/dev/plan_issue.py $(issue)
+
+issues: ## Create GitHub issues from a plan. Usage: make issues INPUT=path/to/issues.json
+	@if [ -z "$(INPUT)" ]; then \
+		echo "Usage: make issues INPUT=<path/to/issues.json>"; \
+		exit 1; \
+	fi
+	@python .agents/scripts/create_issues.py --plan $(INPUT)
