@@ -853,6 +853,24 @@ export type GetDashboardStatsDashboardStatsGetResponses = {
 
 export type GetDashboardStatsDashboardStatsGetResponse = GetDashboardStatsDashboardStatsGetResponses[keyof GetDashboardStatsDashboardStatsGetResponses];
 
+export type GetExchangeRatesExchangeRatesGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/exchange-rates';
+};
+
+export type GetExchangeRatesExchangeRatesGetResponses = {
+    /**
+     * Response Get Exchange Rates Exchange Rates Get
+     *
+     * Successful Response
+     */
+    200: Array<ExchangeRateRead>;
+};
+
+export type GetExchangeRatesExchangeRatesGetResponse = GetExchangeRatesExchangeRatesGetResponses[keyof GetExchangeRatesExchangeRatesGetResponses];
+
 export type CreateExchangeRateExchangeRatesPostData = {
     body: ExchangeRateCreate;
     path?: never;

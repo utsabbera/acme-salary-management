@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostData, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses, CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, CreateExchangeRateExchangeRatesPostData, CreateExchangeRateExchangeRatesPostErrors, CreateExchangeRateExchangeRatesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, GetCountriesCountriesGetData, GetCountriesCountriesGetResponses, GetCurrenciesCurrenciesGetData, GetCurrenciesCurrenciesGetResponses, GetDashboardStatsDashboardStatsGetData, GetDashboardStatsDashboardStatsGetResponses, GetDepartmentsDepartmentsGetData, GetDepartmentsDepartmentsGetResponses, GetEmployeeEmployeesEmployeeIdGetData, GetEmployeeEmployeesEmployeeIdGetErrors, GetEmployeeEmployeesEmployeeIdGetResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
+import type { AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostData, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostErrors, AddSalaryAdjustmentEmployeesEmployeeIdSalariesPostResponses, CreateEmployeeEmployeesPostData, CreateEmployeeEmployeesPostErrors, CreateEmployeeEmployeesPostResponses, CreateExchangeRateExchangeRatesPostData, CreateExchangeRateExchangeRatesPostErrors, CreateExchangeRateExchangeRatesPostResponses, DeleteEmployeeEmployeesEmployeeIdDeleteData, DeleteEmployeeEmployeesEmployeeIdDeleteErrors, DeleteEmployeeEmployeesEmployeeIdDeleteResponses, GetCountriesCountriesGetData, GetCountriesCountriesGetResponses, GetCurrenciesCurrenciesGetData, GetCurrenciesCurrenciesGetResponses, GetDashboardStatsDashboardStatsGetData, GetDashboardStatsDashboardStatsGetResponses, GetDepartmentsDepartmentsGetData, GetDepartmentsDepartmentsGetResponses, GetEmployeeEmployeesEmployeeIdGetData, GetEmployeeEmployeesEmployeeIdGetErrors, GetEmployeeEmployeesEmployeeIdGetResponses, GetExchangeRatesExchangeRatesGetData, GetExchangeRatesExchangeRatesGetResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListEmployeesEmployeesGetData, ListEmployeesEmployeesGetErrors, ListEmployeesEmployeesGetResponses, UpdateEmployeeEmployeesEmployeeIdPatchData, UpdateEmployeeEmployeesEmployeeIdPatchErrors, UpdateEmployeeEmployeesEmployeeIdPatchResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -78,6 +78,11 @@ export const addSalaryAdjustmentEmployeesEmployeeIdSalariesPost = <ThrowOnError 
  * Get Dashboard Stats
  */
 export const getDashboardStatsDashboardStatsGet = <ThrowOnError extends boolean = false>(options?: Options<GetDashboardStatsDashboardStatsGetData, ThrowOnError>): RequestResult<GetDashboardStatsDashboardStatsGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetDashboardStatsDashboardStatsGetResponses, unknown, ThrowOnError>({ url: '/dashboard/stats', ...options });
+
+/**
+ * Get Exchange Rates
+ */
+export const getExchangeRatesExchangeRatesGet = <ThrowOnError extends boolean = false>(options?: Options<GetExchangeRatesExchangeRatesGetData, ThrowOnError>): RequestResult<GetExchangeRatesExchangeRatesGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetExchangeRatesExchangeRatesGetResponses, unknown, ThrowOnError>({ url: '/exchange-rates', ...options });
 
 /**
  * Create Exchange Rate
