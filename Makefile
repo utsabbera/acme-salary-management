@@ -52,7 +52,7 @@ test-watch:
 	make -j2 test-watch-backend test-watch-frontend
 
 test-watch-backend:
-	cd backend && uv run ptw .
+	cd backend && uv run -q ptw . --now
 
 test-watch-frontend:
 	cd frontend && pnpm vitest
@@ -60,7 +60,7 @@ test-watch-frontend:
 
 test-cov:
 	cd frontend && pnpm test:cov
-	cd backend && uv run pytest
+	cd backend && uv run pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90
 
 
 seed:
