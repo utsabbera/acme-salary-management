@@ -78,10 +78,10 @@ Check if any new agent behaviors, stack patterns, or configurations were learned
 
 ### Step 8 — Cleanup Worktree
 
-Remove the local worktree and delete the local feature branch:
+Since the current `agy` interactive session is likely running inside the worktree itself, cleaning it up from within the session causes unexpected behavior (as the directory being used is deleted).
+
+Do **not** run the cleanup command automatically. Instead, output the exact command and instruct the user to close the session, navigate to the main repository directory, and run it themselves:
 
 ```bash
 make worktree-clean <name>
 ```
-
-Ask the user for the worktree name if not clear from context.
