@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,3 +23,8 @@ class ExchangeRateRepository:
 
         await self._session.flush()
         return rate_obj
+
+    async def get_all_rates(self) -> Sequence[ExchangeRate]:
+        stmt = select(ExchangeRate)
+        result = await self._session.execute(stmt)
+        return result.scalars().all()

@@ -16,3 +16,12 @@ async def create_exchange_rate(
     rate = await repo.add_rate(currency=data.currency, rate=data.rate)
     await session.commit()
     return ExchangeRateRead.model_validate(rate)
+
+
+@router.get("", response_model=list[ExchangeRateRead])
+async def get_exchange_rates(
+    session: DbDep,
+) -> list[ExchangeRateRead]:
+    repo = ExchangeRateRepository(session)
+    rates = await repo.get_all_rates()
+    return [ExchangeRateRead.model_validate(r) for r in rates]

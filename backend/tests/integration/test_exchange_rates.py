@@ -36,3 +36,32 @@ class TestExchangeRates:
         assert len(rates) == 1
 
         assert rates[0].rate == Decimal("1.2")
+
+
+class TestGetExchangeRates:
+    async def test_get_exchange_rates_includes_seed(self, client: AsyncClient) -> None:
+        response = await client.get("/exchange-rates")
+        assert response.status_code == 200
+        data = response.json()
+        currencies = {item["currency"]: item["rate"] for item in data}
+        assert "USD" in currencies
+        assert currencies["USD"] == 1.0
+
+    async def test_get_exchange_rates_multiple(
+        self, client: AsyncClient, db_session: AsyncSession
+    ) -> None:
+        db_session.add_all(
+            [
+                ExchangeRate(currency="CAD", rate=Decimal("1.35")),
+                ExchangeRate(currency="JPY", rate=Decimal("150.0")),
+            ]
+        )
+        await db_session.commit()
+
+        response = await client.get("/exchange-rates")
+        assert response.status_code == 200
+        data = response.json()
+        currencies = {item["currency"]: item["rate"] for item in data}
+        assert currencies["CAD"] == 1.35
+        assert currencies["JPY"] == 150.0
+        assert currencies["USD"] == 1.0
