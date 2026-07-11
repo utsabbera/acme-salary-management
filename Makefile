@@ -102,6 +102,7 @@ worktree:
 	@echo "Successfully created worktree _worktrees/$(WORKTREE_NAME) on branch $(branch)"
 	@echo "Backend Port: $(WT_BACKEND_PORT), Frontend Port: $(WT_FRONTEND_PORT)"
 	@echo "Database URL: sqlite+aiosqlite:///./dev-$(WORKTREE_NAME).db"
+	@cd _worktrees/$(WORKTREE_NAME) && exec $${SHELL:-zsh}
 
 worktree-clean:
 	@if [ -z "$(WORKTREE_NAME)" ]; then \
