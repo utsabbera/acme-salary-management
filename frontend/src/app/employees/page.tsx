@@ -14,10 +14,12 @@ import {
   type CountryRead,
   type CurrencyRead,
   type DepartmentRead,
+  type ExchangeRateRead,
   getCountriesCountriesGet,
   getCurrenciesCurrenciesGet,
   getDepartmentsDepartmentsGet,
   getEmployeeEmployeesEmployeeIdGet,
+  getExchangeRatesExchangeRatesGet,
   listEmployeesEmployeesGet,
 } from "@/lib/generated";
 
@@ -37,15 +39,17 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
   const employeeId =
     typeof params.employeeId === "string" ? parseInt(params.employeeId, 10) : undefined;
 
-  const [departmentsRes, countriesRes, currenciesRes] = await Promise.all([
+  const [departmentsRes, countriesRes, currenciesRes, exchangeRatesRes] = await Promise.all([
     getDepartmentsDepartmentsGet({ client: apiClient }),
     getCountriesCountriesGet({ client: apiClient }),
     getCurrenciesCurrenciesGet({ client: apiClient }),
+    getExchangeRatesExchangeRatesGet({ client: apiClient }),
   ]);
 
   const departments = departmentsRes.data ?? [];
   const countries = countriesRes.data ?? [];
   const currencies = currenciesRes.data ?? [];
+  const exchangeRates = exchangeRatesRes.data ?? [];
 
   return (
     <div className="absolute inset-0 flex flex-col bg-background">
@@ -91,6 +95,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                 departments={departments}
                 countries={countries}
                 currencies={currencies}
+                exchangeRates={exchangeRates}
                 search={search}
                 department_id={!Number.isNaN(department_id) ? department_id : undefined}
                 country_code={country_code}
@@ -110,6 +115,7 @@ async function EmployeeProfileServerPane({
   departments,
   countries,
   currencies,
+  exchangeRates,
   search,
   department_id,
   country_code,
@@ -120,6 +126,7 @@ async function EmployeeProfileServerPane({
   departments: DepartmentRead[];
   countries: CountryRead[];
   currencies: CurrencyRead[];
+  exchangeRates: ExchangeRateRead[];
   search?: string;
   department_id?: number;
   country_code?: string;
@@ -179,10 +186,12 @@ async function EmployeeProfileServerPane({
 
   return (
     <EmployeeProfilePane
+      key={data.id}
       employee={data}
       departments={departments}
       countries={countries}
       currencies={currencies}
+      exchangeRates={exchangeRates}
       prevId={prevId}
       nextId={nextId}
       prevOffset={prevOffset}

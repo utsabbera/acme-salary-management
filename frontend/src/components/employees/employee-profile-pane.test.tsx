@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { EmployeeProfilePane } from "./employee-profile-pane";
 
@@ -34,7 +34,7 @@ const mockEmployee = {
   updated_at: "2023-01-01T00:00:00Z",
   current_salary: null,
   salary_history: [],
-} as unknown as import("@/lib/generated").EmployeeRead;
+} as import("@/lib/generated").EmployeeRead;
 
 describe("EmployeeProfilePane", () => {
   afterEach(() => {
@@ -49,6 +49,7 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
 
@@ -65,6 +66,7 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
 
@@ -80,10 +82,10 @@ describe("EmployeeProfilePane", () => {
         housing_allowance_minor_units: 1000000,
         equity_minor_units: 2000000,
         other_allowance_minor_units: 500000,
-        currency: { code: "USD", name: "US Dollar" },
+        currency: { id: 1, code: "USD", name: "US Dollar" },
         valid_from: "2023-01-01",
       },
-    } as unknown as import("@/lib/generated").EmployeeRead;
+    } as import("@/lib/generated").EmployeeRead;
 
     render(
       <EmployeeProfilePane
@@ -91,8 +93,11 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
+
+    fireEvent.click(screen.getByRole("button", { name: /view breakdown/i }));
 
     expect(screen.getByText("Base Salary")).toBeInTheDocument();
     expect(screen.getByText("$60,000.00")).toBeInTheDocument();
@@ -116,10 +121,10 @@ describe("EmployeeProfilePane", () => {
         housing_allowance_minor_units: null,
         equity_minor_units: 0,
         other_allowance_minor_units: null,
-        currency: { code: "USD", name: "US Dollar" },
+        currency: { id: 1, code: "USD", name: "US Dollar" },
         valid_from: "2023-01-01",
       },
-    } as unknown as import("@/lib/generated").EmployeeRead;
+    } as import("@/lib/generated").EmployeeRead;
 
     render(
       <EmployeeProfilePane
@@ -127,8 +132,11 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
+
+    fireEvent.click(screen.getByRole("button", { name: /view breakdown/i }));
 
     expect(screen.getByText("Base Salary")).toBeInTheDocument();
     expect(screen.getAllByText("$50,000.00").length).toBeGreaterThan(0);
@@ -145,6 +153,7 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
     expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
@@ -157,6 +166,7 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
 
@@ -170,6 +180,7 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
     expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
@@ -178,10 +189,11 @@ describe("EmployeeProfilePane", () => {
   it("renders 'Employee not found' when employee is undefined", () => {
     render(
       <EmployeeProfilePane
-        employee={undefined as unknown as import("@/lib/generated").EmployeeRead}
+        employee={undefined}
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
     expect(screen.getByText("Employee not found")).toBeInTheDocument();
@@ -193,18 +205,18 @@ describe("EmployeeProfilePane", () => {
       salary_history: [
         {
           salary_minor_units: 9000000,
-          currency: { code: "USD", name: "US Dollar" },
+          currency: { id: 1, code: "USD", name: "US Dollar" },
           valid_from: "2022-01-01",
           valid_to: "2023-01-01",
         },
         {
           salary_minor_units: 8000000,
-          currency: { code: "USD", name: "US Dollar" },
+          currency: { id: 1, code: "USD", name: "US Dollar" },
           valid_from: "2021-01-01",
           valid_to: "2022-01-01",
         },
       ],
-    } as unknown as import("@/lib/generated").EmployeeRead;
+    } as import("@/lib/generated").EmployeeRead;
 
     render(
       <EmployeeProfilePane
@@ -212,6 +224,7 @@ describe("EmployeeProfilePane", () => {
         departments={[]}
         countries={[]}
         currencies={[]}
+        exchangeRates={[]}
       />,
     );
 
@@ -219,5 +232,57 @@ describe("EmployeeProfilePane", () => {
 
     expect(screen.getByText("$90,000.00")).toBeInTheDocument();
     expect(screen.getByText("$80,000.00")).toBeInTheDocument();
+  });
+
+  describe("USD Toggle", () => {
+    const salariedEmployeeEur = {
+      ...mockEmployee,
+      country: {
+        ...mockEmployee.country,
+        default_currency: { id: 2, code: "EUR", name: "Euro", symbol: "€" },
+      },
+      current_salary: {
+        salary_minor_units: 5000000,
+        base_salary_minor_units: 5000000,
+        currency: { id: 2, code: "EUR", name: "Euro" },
+        valid_from: "2023-01-01",
+      },
+    } as import("@/lib/generated").EmployeeRead;
+
+    const mockRates = [
+      { currency: "EUR", rate: 1.1 },
+    ] as import("@/lib/generated").ExchangeRateRead[];
+
+    it("renders USD toggle in the header", () => {
+      render(
+        <EmployeeProfilePane
+          employee={salariedEmployeeEur}
+          departments={[]}
+          countries={[]}
+          currencies={[]}
+          exchangeRates={mockRates}
+        />,
+      );
+      expect(screen.getByRole("button", { name: /usd/i })).toBeInTheDocument();
+    });
+
+    it("toggles salary values to USD", async () => {
+      render(
+        <EmployeeProfilePane
+          employee={salariedEmployeeEur}
+          departments={[]}
+          countries={[]}
+          currencies={[]}
+          exchangeRates={mockRates}
+        />,
+      );
+
+      expect(screen.getAllByText("€50,000.00").length).toBeGreaterThan(0);
+
+      const toggle = screen.getByRole("button", { name: /usd/i });
+      fireEvent.click(toggle);
+
+      expect(screen.getAllByText("$55,000.00").length).toBeGreaterThan(0);
+    });
   });
 });
