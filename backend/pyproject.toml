@@ -30,6 +30,7 @@ dev = [
     "sqlalchemy[mypy]>=2.0",
     "faker>=25.0.0",
     "aiosqlite>=0.22.1",
+    "pytest-watcher>=0.6.3",
 ]
 
 [tool.ruff]

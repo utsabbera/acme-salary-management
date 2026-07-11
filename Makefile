@@ -48,6 +48,15 @@ test:
 	cd frontend && pnpm vitest run
 	cd backend && uv run pytest
 
+test-watch:
+	make -j2 test-watch-backend test-watch-frontend
+
+test-watch-backend:
+	cd backend && uv run ptw .
+
+test-watch-frontend:
+	cd frontend && pnpm vitest
+
 
 test-cov:
 	cd frontend && pnpm test:cov
