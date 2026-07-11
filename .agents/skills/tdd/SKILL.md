@@ -25,20 +25,20 @@ RIGHT: test1 → impl1 → test2 → impl2 → test3 → impl3
 - **Parse Plan**: Parse `implementation_plan.md` alongside any scope defined in `$ARGUMENTS`. If no plan exists, fetch acceptance criteria from GitHub using `gh issue view <N>`.
 
 ### 2. Launch Test Watcher
-To avoid polluting the parent context window with long, repetitive test runner outputs, run the `watch` subagent in a background `branch` workspace (isolated worktree). It runs in the background and sends you messages on file changes.
+To avoid polluting the context window with full test suite dumps, launch a background task to watch your tests using the `run_command` tool (e.g., `make test-watch-backend` or `make test-watch-frontend`). The test watcher will run in the background and the system will automatically notify you with its output as you modify files. Alternatively, run targeted synchronous tests (e.g., `uv run pytest tests/path/to/test.py`) when you need immediate, specific feedback without the noise of the full suite.
 
 ### 3. Tracer Bullet & Incremental Loop
 For each behavior:
-- Write next test → wait for `watch` notification showing it fails
-- Write minimal code to pass → wait for `watch` notification showing it passes
-- Mark the corresponding item as `[x]` in `task.md` to track progress
-- One test at a time, no speculative features
+- Write next test → save and wait for the background test watcher to notify you of the failure (or run the test directly).
+- Write minimal code to pass → wait for the test watcher to notify you of the success.
+- Mark the corresponding item as `[x]` in `task.md` to track progress.
+- One test at a time, no speculative features.
 
 ### 4. Refactor
 After all tests pass:
 - Extract duplication
 - Deepen modules (move complexity behind simple interfaces)
-- Allow `test_watcher` to verify tests after each refactor step. Never refactor while RED.
+- Allow the background test watcher to verify tests after each refactor step. Never refactor while RED.
 
 ### 5. Close
 Upon completion, create a `walkthrough.md` artifact summarizing the work done. Offer to run `/ship` to merge and deploy the changes.
