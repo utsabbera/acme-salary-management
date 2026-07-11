@@ -99,7 +99,7 @@ Triggered by typing `/build`. Orchestrates planning through to a fully tested im
   - `design` — visual layout verification via the `visual_auditor` subagent (Playwright)
   - `commit` — logical grouping with conventional commit messages
   - `refactor` — safe restructuring while tests are green
-- **File-scoped Hooks**: `biome check` and `ruff check` run automatically on every file write.
+- **Pre-commit Hooks**: `biome check` and `ruff check` run automatically on every commit.
 
 ---
 
@@ -153,4 +153,4 @@ Subagent templates live under `.agents/subagents/`. The parent agent parses thei
 
 ---
 
-*Skills live in `.agents/skills/`, workflows in `.agents/workflows/`, and scripts in `.agents/scripts/`. Git hooks enforce lint and type checks on every file write.*
+*Skills live in `.agents/skills/`. Git hooks enforce lint and type checks on every commit.*
