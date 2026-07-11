@@ -51,8 +51,9 @@ def trust_workspace(worktree_path):
 
 def format_clean_title(raw_title):
     title = re.sub(r'^\[.*?\]\s*', '', raw_title).lower()
-    title = re.sub(r'[^a-z0-9]+', '-', title).strip('-')[:30].strip('-')
-    return title or "issue"
+    title = re.sub(r'[^a-z0-9]+', ' ', title).strip()
+    words = title.split()[:3]
+    return '-'.join(words) or "issue"
 
 def setup_worktree(issue_num, branch_name, worktree_name, worktree_path):
     trust_workspace(worktree_path)
