@@ -22,6 +22,9 @@ Read the provided issue, research the codebase using specialized subagents, and 
 - Wait for all agents' summaries to resolve before proceeding.
 
 ### 3. Create the Implementation Plan
+
+**Design Pass:** If the issue involves `frontend` or `ui`, invoke the `design` skill's "first pass" concept to define concrete UI/UX choices before generating the plan.
+
 Create or update an `implementation_plan.md` artifact. Set `request_feedback = true` and `user_facing = true` in the ArtifactMetadata.
 
 Use the following format for the artifact:
@@ -42,6 +45,14 @@ Document anything that requires user review or feedback. Use GitHub alerts (IMPO
 ## Open Questions
 
 Any clarifying or design questions for the user. Use GitHub alerts (IMPORTANT/WARNING/CAUTION) to highlight critical items.
+
+## Design System & Tokens (If applicable)
+
+For frontend/UI issues, detail the concrete design choices following the `design` skill's two-pass rule:
+- **Palette**: 4-6 specific hex values.
+- **Typography**: Specific font families for display, body, and utility roles.
+- **Layout Strategy**: E.g., `grid auto-cols-fr` for ledgers, fixed containers to prevent layout shifts.
+- **Signature Element**: The single unique visual/interactive hook.
 
 ## Proposed Changes
 

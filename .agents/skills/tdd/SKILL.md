@@ -34,11 +34,12 @@ For each behavior:
 - Mark the corresponding item as `[x]` in `task.md` to track progress.
 - One test at a time, no speculative features.
 
-### 4. Refactor
+### 4. Refactor & Visual Audit
 After all tests pass:
 - Extract duplication
 - Deepen modules (move complexity behind simple interfaces)
 - Allow the background test watcher to verify tests after each refactor step. Never refactor while RED.
+- **Visual Audit (UI/Frontend Only):** If you built user-facing UI, invoke the `visual_auditor` subagent (in an `inherit` workspace) to capture a screenshot via Playwright MCP. Critique the visual result against the `## Design System & Tokens` defined in your implementation plan before declaring the component complete.
 
 ### 5. Close
 Upon completion, create a `walkthrough.md` artifact summarizing the work done. Offer to run `/ship` to merge and deploy the changes.

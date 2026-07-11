@@ -18,6 +18,7 @@ Cover these areas in order, skipping any that are already clear from context:
 5. **Technical decisions** — Schema changes? API contracts? Which modules are affected?
 6. **Testing approach** — What makes a good test for this? What behaviour matters most?
 7. **Risks & assumptions** — What could go wrong? What are we assuming is true?
+8. **Design & Aesthetic** — (If UI-facing) What is the visual signature or key interaction? Are we leaning minimalist or maximalist?
 
 Push back if the user's chosen answer conflicts with existing architecture or data integrity principles.
 
@@ -50,6 +51,10 @@ The solution, from the user's perspective.
 ## User Stories
 
 Numbered list. Format: "As a <actor>, I want <feature>, so that <benefit>." Be extensive — cover all aspects of the feature.
+
+## Design Direction
+
+(If UI-facing) The agreed-upon aesthetic, visual signature, and structural metaphor (e.g., "Ledger-style layout") based on the `design` skill's philosophy.
 
 ## Implementation Decisions
 
