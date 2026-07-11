@@ -3,8 +3,8 @@
 create_issues.py — Execute an issues.json plan by creating GitHub issues and linking them to the project.
 
 Usage:
-    python .agents/scripts/create_issues.py --plan <path/to/issues.json>
-    python .agents/scripts/create_issues.py --plan <path/to/issues.json> --dry-run
+    python scripts/dev/create_issues.py --plan <path/to/issues.json>
+    python scripts/dev/create_issues.py --plan <path/to/issues.json> --dry-run
 """
 
 import argparse
