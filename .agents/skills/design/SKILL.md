@@ -55,3 +55,9 @@ Keep the register conversational and tuned: plain verbs, sentence case, no fille
 
 ## Playwright MCP & Visual Auditing
 When running in a CLI environment, run the `visual_auditor` subagent in an `inherit` workspace (following the rules in `workflow-and-boundaries.md`). It will handle browser execution and return visual feedback, keeping the parent context window clean. If Playwright MCP tools are unavailable, fallback to inspecting compiled styles or running manual builds.
+
+## Project-Specific UI Patterns
+When designing interfaces for this project, particularly around financial data, follow these established patterns:
+- **Prevent Layout Shifts:** Place interactive elements (like toggles or filters) in fixed containers or sticky headers if toggling them changes the length or size of nearby dynamic text.
+- **Eliminate Redundant Labels:** Do not display currency code tags (like `USD` or `INR`) if the formatted value already includes the currency symbol (like `$`), to keep data presentation clean.
+- **Financial Ledgers:** When displaying breakdowns of numbers, use equal-width columns (e.g., `grid auto-cols-fr`) with small, uppercase, tracking-wide labels stacked above monospace values to create a structured, ledger-like aesthetic.
