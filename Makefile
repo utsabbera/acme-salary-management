@@ -72,42 +72,44 @@ PORT_OFFSET ?= 1
 WT_BACKEND_PORT = $(shell expr 8000 + $(PORT_OFFSET))
 WT_FRONTEND_PORT = $(shell expr 3000 + $(PORT_OFFSET))
 
+ifneq (,$(filter worktree worktree-clean,$(firstword $(MAKECMDGOALS))))
+  WORKTREE_NAME := $(word 2,$(MAKECMDGOALS))
+  $(eval $(WORKTREE_NAME):;@:)
+endif
+branch ?= $(WORKTREE_NAME)
+
 worktree:
-	@if [ -z "$(name)" ] || [ -z "$(branch)" ]; then \
-		echo "Usage: make worktree name=<name> branch=<branch> [PORT_OFFSET=1]"; \
+	@if [ -z "$(WORKTREE_NAME)" ]; then \
+		echo "Usage: make worktree <name> [branch=<branch>] [PORT_OFFSET=1]"; \
 		exit 1; \
 	fi
-	@if [ -d "_worktrees/$(name)" ]; then \
-		echo "Error: Worktree _worktrees/$(name) already exists."; \
+	@if [ -d "_worktrees/$(WORKTREE_NAME)" ]; then \
+		echo "Error: Worktree _worktrees/$(WORKTREE_NAME) already exists."; \
 		exit 1; \
 	fi
 	@if git show-ref --verify --quiet refs/heads/$(branch); then \
-		git worktree add _worktrees/$(name) $(branch); \
+		git worktree add _worktrees/$(WORKTREE_NAME) $(branch); \
 	else \
-		git worktree add -b $(branch) _worktrees/$(name); \
+		git worktree add -b $(branch) _worktrees/$(WORKTREE_NAME); \
 	fi
 	@# Generate environment files for backend and frontend in the new worktree
-	@echo "DATABASE_URL=sqlite+aiosqlite:///./dev-$(name).db" > _worktrees/$(name)/backend/.env
-	@echo "DEBUG=true" >> _worktrees/$(name)/backend/.env
-	@echo "CORS_ORIGINS=[\"http://localhost:$(WT_FRONTEND_PORT)\"]" >> _worktrees/$(name)/backend/.env
-	@echo "PORT=$(WT_BACKEND_PORT)" >> _worktrees/$(name)/backend/.env
-	@echo "NEXT_PUBLIC_API_URL=http://localhost:$(WT_BACKEND_PORT)" > _worktrees/$(name)/frontend/.env.local
-	@echo "PORT=$(WT_FRONTEND_PORT)" >> _worktrees/$(name)/frontend/.env.local
-	@echo "Successfully created worktree _worktrees/$(name) on branch $(branch)"
+	@echo "DATABASE_URL=sqlite+aiosqlite:///./dev-$(WORKTREE_NAME).db" > _worktrees/$(WORKTREE_NAME)/backend/.env
+	@echo "DEBUG=true" >> _worktrees/$(WORKTREE_NAME)/backend/.env
+	@echo "CORS_ORIGINS=[\"http://localhost:$(WT_FRONTEND_PORT)\"]" >> _worktrees/$(WORKTREE_NAME)/backend/.env
+	@echo "PORT=$(WT_BACKEND_PORT)" >> _worktrees/$(WORKTREE_NAME)/backend/.env
+	@echo "NEXT_PUBLIC_API_URL=http://localhost:$(WT_BACKEND_PORT)" > _worktrees/$(WORKTREE_NAME)/frontend/.env.local
+	@echo "PORT=$(WT_FRONTEND_PORT)" >> _worktrees/$(WORKTREE_NAME)/frontend/.env.local
+	@echo "Successfully created worktree _worktrees/$(WORKTREE_NAME) on branch $(branch)"
 	@echo "Backend Port: $(WT_BACKEND_PORT), Frontend Port: $(WT_FRONTEND_PORT)"
-	@echo "Database URL: sqlite+aiosqlite:///./dev-$(name).db"
+	@echo "Database URL: sqlite+aiosqlite:///./dev-$(WORKTREE_NAME).db"
 
 worktree-clean:
-	@if [ -z "$(name)" ]; then \
-		echo "Usage: make worktree-clean name=<name> [branch=<branch>]"; \
+	@if [ -z "$(WORKTREE_NAME)" ]; then \
+		echo "Usage: make worktree-clean <name> [branch=<branch>]"; \
 		exit 1; \
 	fi
-	git worktree remove _worktrees/$(name) || true
-	@if [ -n "$(branch)" ]; then \
-		git branch -d $(branch) || true; \
-	else \
-		git branch -d $(name) || true; \
-	fi
+	git worktree remove _worktrees/$(WORKTREE_NAME) || true
+	git branch -d $(branch) || true
 
 plan:
 	@if [ -z "$(issue)" ]; then \

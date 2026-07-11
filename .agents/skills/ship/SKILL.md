@@ -81,7 +81,7 @@ Check if any new agent behaviors, stack patterns, or configurations were learned
 Remove the local worktree and delete the local feature branch:
 
 ```bash
-make worktree-clean name=<name>
+make worktree-clean <name>
 ```
 
 Ask the user for the worktree name if not clear from context.

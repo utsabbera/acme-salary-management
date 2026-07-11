@@ -65,7 +65,7 @@ def setup_worktree(issue_num, branch_name, worktree_name, worktree_path):
     logger.info("Creating worktree", branch=branch_name, worktree=worktree_name)
     try:
         subprocess.run(
-            ["make", "worktree", f"name={worktree_name}", f"branch={branch_name}", f"PORT_OFFSET={issue_num}"],
+            ["make", "worktree", worktree_name, f"branch={branch_name}", f"PORT_OFFSET={issue_num}"],
             check=True
         )
         logger.info("Installing dependencies in the background...")

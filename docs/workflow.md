@@ -20,7 +20,7 @@ graph TD
     %% Phase 2: Setup
     subgraph P2["Setup"]
         MakeIssues --> Orient["/orient"]
-        Orient --> Worktree["make worktree name= branch="]
+        Orient --> Worktree["make worktree <name> [branch=]"]
     end
 
     %% Phase 3: Build
@@ -81,7 +81,7 @@ Before implementation, orient and isolate the workspace.
 - **Orient**: At the start of every session, run `/orient` to get a snapshot of active branches, worktrees, recent commits, and assigned issues.
 - **Isolate**: Create a dedicated git worktree for the issue:
   ```bash
-  make worktree name=<name> branch=<branch> [PORT_OFFSET=1]
+  make worktree <name> [branch=<branch>] [PORT_OFFSET=1]
   ```
   This creates an isolated workspace under `_worktrees/<name>`, sets up worktree-specific environment files, configures non-conflicting ports, and provisions a dedicated SQLite database.
 
@@ -114,7 +114,7 @@ Triggered by typing `/ship`. Runs the full shipping ceremony.
 5. **Squash merge & push** — merges the feature branch into `main` with a conventional commit (`Closes #<id>`), triggers the pre-push test hook and remote build pipeline.
 6. **GitHub sync** — posts an outcome summary on the closed issue, scans for deferred backlog items.
 7. **`/learn`** — reminder to persist any new agent behaviors or patterns discovered during the session.
-8. **Cleanup** — `make worktree-clean name=<name>`.
+8. **Cleanup** — `make worktree-clean <name>`.
 
 ---
 
