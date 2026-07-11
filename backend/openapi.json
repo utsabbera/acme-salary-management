@@ -378,6 +378,29 @@
       }
     },
     "/exchange-rates": {
+      "get": {
+        "tags": [
+          "exchange-rates"
+        ],
+        "summary": "Get Exchange Rates",
+        "operationId": "get_exchange_rates_exchange_rates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExchangeRateRead"
+                  },
+                  "type": "array",
+                  "title": "Response Get Exchange Rates Exchange Rates Get"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "exchange-rates"

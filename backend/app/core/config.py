@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     debug: bool = True
     database_url: str = "postgresql+asyncpg://postgres:password@localhost:5432/acme_salary"
     cors_origins: list[str] = ["http://localhost:3000"]
+    port: int = 8000
 
 
 settings = Settings()
