@@ -7,7 +7,7 @@ description: Stress-test a plan or idea through relentless Socratic dialogue, th
 
 ## Interview Process
 
-Ask one question at a time. Wait for the answer before asking the next. If a question can be answered by exploring the codebase, do that instead of asking.
+Use the `ask_question` tool (the native question-answer interface) to ask one question at a time. For each question, provide multiple-choice options representing potential directions, prefixing your recommended option with "(Recommended)". Wait for the answer before asking the next. If a question can be answered by exploring the codebase, do that instead of asking.
 
 Cover these areas in order, skipping any that are already clear from context:
 
@@ -19,7 +19,7 @@ Cover these areas in order, skipping any that are already clear from context:
 6. **Testing approach** — What makes a good test for this? What behaviour matters most?
 7. **Risks & assumptions** — What could go wrong? What are we assuming is true?
 
-For each question, provide your recommended answer. Push back if an answer conflicts with existing architecture or data integrity principles.
+Push back if the user's chosen answer conflicts with existing architecture or data integrity principles.
 
 Once all areas are resolved, write:
 
