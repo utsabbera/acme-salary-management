@@ -112,4 +112,4 @@ issues: ## Create GitHub issues from a plan. Usage: make issues INPUT=path/to/is
 		echo "Usage: make issues INPUT=<path/to/issues.json>"; \
 		exit 1; \
 	fi
-	@python scripts/dev/create_issues.py --plan $(INPUT)
+	@uv run scripts/dev/create_issues.py --plan $(INPUT)
