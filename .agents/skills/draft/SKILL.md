@@ -1,3 +1,8 @@
+---
+name: draft
+description: Orchestrate the full feature planning ceremony from stress-testing the idea to issue generation.
+---
+
 # Draft Workflow
 
 Orchestrate the full feature planning ceremony: stress-test the idea, produce a Feature Brief, plan the issues, and generate `issues.json` ready for `make issues`.

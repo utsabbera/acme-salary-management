@@ -1,3 +1,8 @@
+---
+name: ship
+description: Orchestrate the full shipping ceremony from validation and review to merging and cleanup.
+---
+
 # Ship Workflow
 
 Orchestrate the full shipping ceremony: validate, review, merge, push, sync GitHub, and clean up the worktree.

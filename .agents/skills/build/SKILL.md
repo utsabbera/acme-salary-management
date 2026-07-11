@@ -1,3 +1,8 @@
+---
+name: build
+description: Orchestrate the full implementation cycle from planning to test-driven development (TDD).
+---
+
 # Build Workflow
 
 Orchestrate the full implementation cycle: produce an implementation plan, then drive the red-green-refactor TDD loop until all tests pass and the user is satisfied.
